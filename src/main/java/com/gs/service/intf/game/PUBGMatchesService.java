@@ -2,7 +2,7 @@ package com.gs.service.intf.game;
 
 import com.gs.model.dto.game.PUBGMatchesDTO;
 import com.gs.model.dto.vo.PUBGMatchesVO;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.gs.model.entity.jpa.db1.game.PUBGMatches;
 
 import java.util.List;
 
@@ -24,17 +24,42 @@ public interface PUBGMatchesService {
 
     /**
      *
-     * @param memberId
+     * @param name
+     * @return
+     */
+    List<String> getPlayerMatches(String name);
+
+    /**
+     *
+     * @param pubgMatchesId
      * @param defMatchId
+     * @param defMatchIndex
+     */
+    public void getPUBGMatches(String pubgMatchesId, Long defMatchId, Integer defMatchIndex);
+
+    /**
+     *
+     * @param key
      * @param pageNum
      * @param pageSize
      * @return
      */
+    List<PUBGMatchesVO> queryPBUGMatchBykey(
+            String key,
+            Integer pageNum,
+            Integer pageSize);
+
+
+    /**
+     *
+     * @param memberId
+     * @param defMatchId
+     * @return
+     */
     PUBGMatchesDTO getPUBGMatchesByDefMatchId(
-            @RequestParam Long memberId,
-            @RequestParam Long defMatchId,
-            @RequestParam Integer pageNum,
-            @RequestParam Integer pageSize);
+            Long memberId,
+            Long defMatchId,
+            Integer index);
 
     /**
      *
@@ -45,10 +70,10 @@ public interface PUBGMatchesService {
      * @return
      */
     List<PUBGMatchesDTO> getPUBGMatchesByMatchType(
-            @RequestParam Long memberId,
-            @RequestParam String matchType,
-            @RequestParam Integer pageNum,
-            @RequestParam Integer pageSize);
+            Long memberId,
+            String matchType,
+            Integer pageNum,
+            Integer pageSize);
 
     /**
      *
@@ -59,11 +84,11 @@ public interface PUBGMatchesService {
      * @return
      */
     List<PUBGMatchesVO> getPUBGMatchesSortByMatchType(
-            @RequestParam Long memberId,
-            @RequestParam Long teamId,
-            @RequestParam String matchType,
-            @RequestParam Integer pageNum,
-            @RequestParam Integer pageSize);
+            Long memberId,
+            Long teamId,
+            String matchType,
+            Integer pageNum,
+            Integer pageSize);
 
     /**
      *
@@ -74,10 +99,10 @@ public interface PUBGMatchesService {
      * @return
      */
     List<PUBGMatchesDTO> findPUBGMatchesByPUBGPlayerNameAndMatchType(
-            @RequestParam String PUBGPlayerName,
-            @RequestParam String matchType,
-            @RequestParam Integer pageNum,
-            @RequestParam Integer pageSize);
+            String PUBGPlayerName,
+            String matchType,
+            Integer pageNum,
+            Integer pageSize);
 
     /**
      *
@@ -88,8 +113,15 @@ public interface PUBGMatchesService {
      * @return
      */
     List<PUBGMatchesDTO> findPUBGMatchesByPUBGPlayerIdAndMatchType(
-            @RequestParam String PUBGPlayerId,
-            @RequestParam String matchType,
-            @RequestParam Integer pageNum,
-            @RequestParam Integer pageSize);
+            String PUBGPlayerId,
+            String matchType,
+            Integer pageNum,
+            Integer pageSize);
+
+    /**
+     *
+     * @param defMatchId
+     * @return
+     */
+    List<PUBGMatches> findPUBGMatchesByDefMatchId(Long defMatchId );
 }

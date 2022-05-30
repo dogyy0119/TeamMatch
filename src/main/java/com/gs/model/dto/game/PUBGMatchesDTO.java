@@ -19,6 +19,8 @@ public class PUBGMatchesDTO {
 
     private Long defMatchId;
 
+    private Integer defMatchIndex;
+
     private String type;
 
 //    private String data;

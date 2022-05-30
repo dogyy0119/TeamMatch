@@ -2,12 +2,17 @@ package com.gs.controller;
 
 
 import com.gs.convert.TeamOrderConvert;
+import com.gs.model.dto.def.DefMatchManageDTO;
+import com.gs.model.dto.def.DefMatchOrderDTO;
 import com.gs.model.dto.def.TeamOrderDTO;
 import com.gs.model.dto.vo.TeamOrderVO;
 import com.gs.model.entity.jpa.db1.def.*;
+
 import com.gs.model.entity.jpa.db1.team.Member;
 import com.gs.model.entity.jpa.db1.team.Team;
+import com.gs.model.entity.jpa.db1.team.TeamMember;
 import com.gs.repository.jpa.def.*;
+
 import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.repository.jpa.team.TeamMemberRepository;
 import com.gs.repository.jpa.team.TeamRepository;
@@ -19,6 +24,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Api(tags = "战队比赛内部申请接口")
@@ -73,8 +79,13 @@ public class TeamOrderController {
             defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamOrderVO.getTeamId());
 
             Team team = teamRepository.findTeamById(defMatchOrder.getOrderId());
-            if (team == null) R.error("defMatchOrderId 有误！");
+            if (team == null) return R.error("defMatchOrderId 有误！");
 
+            Member member1 = memberRepository.findMemberById(teamOrderVO.getMemberId());
+            if (member1 == null) return R.error("defMatchOrderId 有误！");
+
+            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member1);
+            if(teamOrderList.size() > 0 ) return R.error("请勿重复操作。");
         } catch (Exception exception) {
             return R.error("请检查参数！");
         }
@@ -95,8 +106,8 @@ public class TeamOrderController {
     @ApiOperation(value = "更新战队比赛内部申请")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public R updateTeamOrder(@RequestParam Long memberId, @RequestBody TeamOrderVO teamOrderVO) {
-        Optional<TeamOrder> teamOrder = teamOrderRepository.findById(teamOrderVO.getId());
-        if( !teamOrder.isPresent() ) {
+        Optional<TeamOrder> teamOrderOptional = teamOrderRepository.findById(teamOrderVO.getId());
+        if( !teamOrderOptional.isPresent() ) {
             return R.error("主键 id 有误");
         }
 
@@ -105,28 +116,39 @@ public class TeamOrderController {
             Member member = memberRepository.findMemberById(memberId);
             if (member == null) return R.error("memberid 有误！");
 
+            Team team = teamRepository.findTeamById(teamOrderVO.getTeamId());
+            if (team == null) return R.error("defMatchOrderId 有误！");
+
+            TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
+            if (teamMember == null) return R.error("memberId or teamId 有误！");
+            if(teamMember.getJob() == 3) return R.error("操作者不是队长或副队长，没有权限！");
+
             DefMatch defMatch = defMatchRepository.findDefMatchById(teamOrderVO.getMatchId());
 
             DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatch);
 
             defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamOrderVO.getTeamId());
 
-            Team team = teamRepository.findTeamById(defMatchOrder.getOrderId());
-            if (team == null) R.error("defMatchOrderId 有误！");
+            Member member1 = memberRepository.findMemberById(teamOrderVO.getMemberId());
+            if (member1 == null) return R.error("memberid 有误！");
 
+            TeamOrder teamOrder = teamOrderOptional.get();
+            if( teamOrder.getMember().getId() != teamOrderVO.getMemberId()) {
+                return R.error("TeamOrderVO 里面 memberid 有问题");
+            }
+
+            if (defMatchOrder != null) {
+                TeamOrderDTO teamOrderDTO = new TeamOrderDTO();
+                teamOrderDTO.setId(teamOrderVO.getId());
+                teamOrderDTO.setMemberId(teamOrderVO.getMemberId());
+                teamOrderDTO.setDefMatchOrderId(defMatchOrder.getId());
+                teamOrderDTO.setStatus(teamOrderVO.getStatus());
+                teamOrderDTO.setIsLike(teamOrder.getIsLike());
+
+                teamOrderService.update(teamOrderDTO);
+            }
         } catch (Exception exception) {
             return R.error("请检查参数！");
-        }
-
-        if (defMatchOrder != null) {
-            TeamOrderDTO teamOrderDTO = new TeamOrderDTO();
-            teamOrderDTO.setId(teamOrderVO.getId());
-            teamOrderDTO.setMemberId(teamOrderVO.getMemberId());
-            teamOrderDTO.setDefMatchOrderId(defMatchOrder.getId());
-            teamOrderDTO.setStatus(teamOrderVO.getStatus());
-
-
-            teamOrderService.update(teamOrderDTO);
         }
 
         return R.success();
@@ -214,8 +236,9 @@ public class TeamOrderController {
         }
 
         if (defMatchOrder != null) {
-            TeamOrder teamOrder = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
-            TeamOrderDTO teamOrderDTO = teamOrderConvert.toDto(teamOrder);
+            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
+            if(teamOrderList.size() == 0) return R.error("未找到对应报名，无法点赞");
+            TeamOrderDTO teamOrderDTO = teamOrderConvert.toDto(teamOrderList.get(0));
 
             if(teamOrderDTO == null) return R.error("teamOrderDTO is null");
             teamOrderDTO.setIsLike(isLike);
@@ -258,8 +281,9 @@ public class TeamOrderController {
         }
 
         if (defMatchOrder != null) {
-            TeamOrder teamOrder = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
-            teamOrderDTO = teamOrderConvert.toDto(teamOrder);
+            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
+            if(teamOrderList.size() > 0)
+                teamOrderDTO = teamOrderConvert.toDto(teamOrderList.get(0));
         }
 
         return teamOrderDTO != null ? R.success( teamOrderDTO.getIsLike() ): R.success();

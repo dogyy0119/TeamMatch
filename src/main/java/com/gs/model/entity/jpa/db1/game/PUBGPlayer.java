@@ -30,7 +30,29 @@ public class PUBGPlayer extends PUBGPlayerBase implements Serializable {
 //    @Column(name = "pubg_player_base")
 //    private PUBGPlayerBase pubgPlayerBase;
 
+    /**
+     * 击杀
+     */
     @Column(name = "kills")
     private String kills;
+
+    /**
+     *  伤害
+     */
+    @Column(name = "damageDealt")
+    private String damageDealt;
+
+
+    /**
+     *  助攻
+     */
+    @Column(name = "assists")
+    private String assists;
+
+    /**
+     *  助攻
+     */
+    @Column(name = "timeSurvived")
+    private String timeSurvived;
 
 }

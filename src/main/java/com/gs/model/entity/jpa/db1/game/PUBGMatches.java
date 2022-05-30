@@ -36,6 +36,9 @@ public class PUBGMatches extends AbstractBaseTimeEntity implements  Serializable
     @Column(name = "defMatchId")
     private Long defMatchId;
 
+    @Column(name = "defMatchIndex")
+    private Integer defMatchIndex;
+
 //    /**
 //     * 赛季
 //     */
@@ -45,7 +48,7 @@ public class PUBGMatches extends AbstractBaseTimeEntity implements  Serializable
 
     /**
      *  比赛类型
-      */
+     */
     @Column(name = "pubgMatchType")
     private String type;
 
@@ -62,3 +65,4 @@ public class PUBGMatches extends AbstractBaseTimeEntity implements  Serializable
     @JoinColumn(name = "pubgMatchesId", referencedColumnName = "pubgMatchesId")
     private List<PUBGTeam> teamMembers = new ArrayList<>();
 }
+

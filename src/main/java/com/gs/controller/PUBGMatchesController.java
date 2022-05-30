@@ -31,15 +31,24 @@ public class PUBGMatchesController {
         return R.success();
     }
 
-    @ApiOperation(value = "查询PUBGName和MatchType比赛")
+    @ApiOperation(value = "查询比赛")
+    @RequestMapping(value = "/getPUBGMatchesByKey", method = RequestMethod.GET)
+    public R getPUBGMatchesByKey(
+            @RequestParam String key,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
+
+        return R.success( pubgMatchesService.queryPBUGMatchBykey(key,pageNum,pageSize) );
+    }
+
+    @ApiOperation(value = "查询PUBGName和defMatchId比赛")
     @RequestMapping(value = "/getPUBGMatchesByDefMatchId", method = RequestMethod.GET)
     public R getPUBGMatchesByDefMatchId(
             @RequestParam Long memberId,
             @RequestParam Long defMatchId,
-            @RequestParam Integer pageNum,
-            @RequestParam Integer pageSize) {
+            @RequestParam Integer index) {
 
-        return R.success( pubgMatchesService.getPUBGMatchesByDefMatchId(memberId,defMatchId,pageNum,pageSize) );
+        return R.success( pubgMatchesService.getPUBGMatchesByDefMatchId(memberId,defMatchId,index) );
     }
 
 

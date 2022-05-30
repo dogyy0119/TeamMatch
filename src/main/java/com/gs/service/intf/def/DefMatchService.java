@@ -81,4 +81,19 @@ public interface DefMatchService {
             Integer pageNum,
             Integer pageSize);
 
+
+    /**
+     *
+     * @param littleTime
+     * @param bigTime
+     * @return
+     */
+    List<DefMatchDTO> getMatchesByTime(Date littleTime, Date bigTime);
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    List<DefMatchDTO> getMatchByKey(String key);
 }

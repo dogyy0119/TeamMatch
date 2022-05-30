@@ -2,7 +2,9 @@ package com.gs.service.impl.def;
 
 import com.gs.convert.DefMatchConvert;
 import com.gs.model.dto.def.DefMatchDTO;
+import com.gs.model.dto.def.DefMatchManageDTO;
 import com.gs.model.entity.jpa.db1.def.DefMatch;
+import com.gs.model.entity.jpa.db1.def.DefMatchManage;
 import com.gs.repository.jpa.def.DefMatchRepository;
 import com.gs.service.intf.def.DefMatchService;
 import com.gs.service.intf.team.MemberService;
@@ -15,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
@@ -63,7 +66,6 @@ public class DefMatchServiceImpl implements DefMatchService {
 
     @Override
     public Page<DefMatch> findMatchesByMember(Long memberId, Pageable pageable) {
-
         Page<DefMatch> pages = defMatchRepository.findAll(new Specification<DefMatch>() {
 
             public Predicate toPredicate(Root<DefMatch> root,
@@ -81,13 +83,6 @@ public class DefMatchServiceImpl implements DefMatchService {
             }
 
         }, pageable);
-
-//        List<DefMatchDTO> defMatchDTOList = new ArrayList<>();
-//        for (DefMatch entity : pages){
-//
-//            DefMatchDTO dto =  defMatchConvert.toDto(entity);
-//            defMatchDTOList.add(dto);
-//        }
 
         return pages;
     }
@@ -143,39 +138,31 @@ public class DefMatchServiceImpl implements DefMatchService {
             public Predicate toPredicate(Root<DefMatch> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<Integer> gameModePath = root.get("gameMode");
-
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
                 predicates.add(cb.equal(gameModePath, gameMode));
-
                 query.where(predicates.toArray(new Predicate[predicates.size()]));
                 return null;
             }
-
         }, pageable);
 
         return pages;
     }
 
-
     @Override
     public List<DefMatchDTO> getManageMatchesPage(Long memberId, Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
-
         Page<DefMatch> ordersPage = defMatchRepository.findAll(new Specification<DefMatch>() {
-
             public Predicate toPredicate(Root<DefMatch> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<Long> memberIdPath = root.join("member").get("id");
-
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
-
                 predicates.add(cb.equal( memberIdPath, memberId));
                 query.where(predicates.toArray(new Predicate[predicates.size()]));
                 return null;
@@ -184,13 +171,85 @@ public class DefMatchServiceImpl implements DefMatchService {
         }, pageable);
 
         List<DefMatchDTO> defMatchDTOSList = new ArrayList<>();
-
         for (DefMatch entry : ordersPage) {
-
             defMatchDTOSList.add( defMatchConvert.toDto(entry) );
         }
 
         return defMatchDTOSList;
+    }
+
+    /**
+     *
+     * @param littleTime
+     * @param bigTime
+     * @return
+     */
+    @Override
+    public List<DefMatchDTO> getMatchesByTime(Date littleTime, Date bigTime) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(0, 10, sort);
+
+        Page<DefMatch> ordersPage = defMatchRepository.findAll(new Specification<DefMatch>() {
+
+            public Predicate toPredicate(Root<DefMatch> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<Date> gameStartTimePath = root.get("gameStartTime");
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.greaterThanOrEqualTo( gameStartTimePath, littleTime));
+                predicates.add(cb.lessThanOrEqualTo( gameStartTimePath, bigTime));
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        }, pageable);
+
+        List<DefMatchDTO> defMatchSList = new ArrayList<>();
+        for (DefMatch entry : ordersPage) {
+            System.out.println("entry:" + entry.getGameStartTime() );
+            defMatchSList.add( defMatchConvert.toDto(entry)  );
+        }
+        return defMatchSList;
+    }
+
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    @Override
+    public List<DefMatchDTO> getMatchByKey(String key) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(0, 10, sort);
+
+        Page<DefMatch> ordersPage = defMatchRepository.findAll(new Specification<DefMatch>() {
+            public Predicate toPredicate(Root<DefMatch> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<String>  namePath= root.get("name");
+
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+
+                predicates.add(cb.like(namePath, key));
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        }, pageable);
+
+        List<DefMatchDTO> defMatchSList = new ArrayList<>();
+        for (DefMatch entry : ordersPage) {
+            defMatchSList.add( defMatchConvert.toDto(entry)  );
+        }
+
+        return defMatchSList;
 
     }
 
