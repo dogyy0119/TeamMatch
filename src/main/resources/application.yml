@@ -1,0 +1,20 @@
+spring:
+  spring:
+    jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+  #应用唯一标识
+  application:
+    name: MATCH-CENTER
+  profiles:
+    active: local
+server:
+  port: 8081
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+# jwt
+jwt:
+  secret: dfj89ewqjf90j
+

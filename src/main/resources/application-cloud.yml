@@ -1,0 +1,55 @@
+# 开发环境配置
+spring:
+  # 数据源配置(双数据源,单数据源的时候可以吧db2删除掉)
+  datasource:
+    db1: # 数据源1
+      # mysql数据源配置例
+#      url: jdbc:mysql://172.27.238.31:3306/test1?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
+#      jdbc-url: ${spring.datasource.db1.url}
+#      username: root
+#      password: 123456
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+
+      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=TestDB
+      jdbc-url: ${spring.datasource.db1.url}
+      #驱动名称
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      #用户名
+      username: sa
+      #密码
+      password: Asdfgh123
+
+    # db2: # 数据源2
+      # orcale数据源配置例
+      # driver-class-name: oracle.jdbc.driver.OracleDriver
+      # url: jdbc:oracle:thin:@localhost:1521:dbServerName
+      # username: system
+      # password: system
+  jpa:
+    #设置数据库方言
+    #for mysql org.hibernate.dialect.MySQL5Dialect
+    #for sqlserver org.hibernate.dialect.SQLServerDialect
+    #for oracle org.hibernate.dialect.Oracle10gDialect
+    database-platform: org.hibernate.dialect.SQLServer2008Dialect
+    generate-ddl: true #boolean类型,是否生成ddl
+    hibernate:
+      #自动更新enum
+      #none: does nothing with the schema, makes no changes to the database
+      #validate: validate the schema, makes no changes to the database.
+      #update: update the schema.
+      #create: creates the schema, destroying previous data.
+      #create-drop: drop the schema when the SessionFactory is closed explicitly, typically when the application is stopped.
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true  #日志中显示sql语句
+
+#  cloud:
+#    consul:
+#      host: 172.27.238.8
+#      port: 8500
+#      discovery:
+#        heartbeat:
+#          enabled: true
+#        service-name: ${spring.application.name}
+#        instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
