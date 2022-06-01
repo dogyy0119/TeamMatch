@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Setter
 @ToString
 @Table(name="t_pubg_player")
-public class PUBGPlayer extends PUBGPlayerBase implements Serializable {
+public class PUBGPlayer extends PUBGPlayerBase implements Serializable , Comparable<PUBGPlayer> {
 
     /**
      * PUBG 玩家 id ， 从PUBG 官网获取
@@ -50,9 +50,13 @@ public class PUBGPlayer extends PUBGPlayerBase implements Serializable {
     private String assists;
 
     /**
-     *  助攻
+     *  生存时间 （s）
      */
     @Column(name = "timeSurvived")
     private String timeSurvived;
 
+    @Override
+    public int compareTo(PUBGPlayer o) {
+        return this.getKills().compareTo(o.getKills());
+    }
 }

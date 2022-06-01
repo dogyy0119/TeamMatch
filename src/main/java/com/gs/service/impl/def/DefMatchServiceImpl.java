@@ -222,26 +222,28 @@ public class DefMatchServiceImpl implements DefMatchService {
      * @return
      */
     @Override
-    public List<DefMatchDTO> getMatchByKey(String key) {
-
+    public List<DefMatchDTO> getMatchByKey(String key,
+                                           Integer pageNum,
+                                           Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(0, 10, sort);
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> ordersPage = defMatchRepository.findAll(new Specification<DefMatch>() {
             public Predicate toPredicate(Root<DefMatch> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<String>  namePath= root.get("name");
-
+                Path<Date> datePath = root.get("gameStartTime");
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
-
-                predicates.add(cb.like(namePath, key));
+                predicates.add(cb.lessThanOrEqualTo(datePath, new Date()));
+                Predicate p1 = cb.like(namePath.as(String.class), "%" + key + "%");
+//                Predicate p2 = cb.or(cb.like(email.as(String.class), "%" + key + "%"), p1);
+                predicates.add(p1);
                 query.where(predicates.toArray(new Predicate[predicates.size()]));
                 return null;
             }
-
         }, pageable);
 
         List<DefMatchDTO> defMatchSList = new ArrayList<>();

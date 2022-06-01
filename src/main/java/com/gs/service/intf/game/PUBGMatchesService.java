@@ -39,6 +39,18 @@ public interface PUBGMatchesService {
 
     /**
      *
+     * @param memberId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    List<PUBGMatchesVO> getPUBGMatchesByMemberId(
+            Long memberId,
+            Integer pageNum,
+            Integer pageSize);
+
+    /**
+     *
      * @param key
      * @param pageNum
      * @param pageSize
@@ -51,15 +63,22 @@ public interface PUBGMatchesService {
 
 
     /**
-     *
-     * @param memberId
      * @param defMatchId
      * @return
      */
     PUBGMatchesDTO getPUBGMatchesByDefMatchId(
-            Long memberId,
             Long defMatchId,
             Integer index);
+
+    /**
+     * @param defMatchId
+     * @return
+     */
+    void updatePUBGMatchesByDefMatchId(
+            Long memberId,
+            Long defMatchId,
+            Integer index,
+            PUBGMatchesDTO pubgMatchesDTO);
 
     /**
      *

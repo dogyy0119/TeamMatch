@@ -5,7 +5,7 @@ import com.gs.model.entity.jpa.db1.game.PUBGTeam;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,17 +13,35 @@ import java.util.List;
 @ToString
 public class PUBGMatchesDTO {
 
-    private Long id;
+    /**
+     * 比赛 ID
+     */
+//    private Long id;
 
+
+    /**
+     * pubg 比赛ID
+     */
     private String pubgMatchesId;
 
+    /**
+     *  定义比赛 id
+     */
     private Long defMatchId;
 
+    /**
+     *  定义比赛 index
+     */
     private Integer defMatchIndex;
+
+    /**
+     *  比赛类型
+     */
 
     private String type;
 
-//    private String data;
-
-    private List<PUBGTeam> teamMembers = new ArrayList<>();
+    /**
+     * 战队成员列表
+     */
+    private List<PUBGTeamDTO> teamMembers = new ArrayList<>();
 }

@@ -16,26 +16,23 @@ import java.io.Serializable;
 public class PUBGPlayerBase implements Serializable {
 
     /**
-     * PUBG 玩家 id ， 从PUBG 官网获取
+     * PUBG 玩家 name ， 从PUBG 官网获取
      */
     @Column(name = "pubgPlayerName")
     private String pubgPlayerName;
 
+    /**
+     * PUBG 玩家 id ， 从PUBG 官网获取
+     */
     @Column(name = "pubgPlayerId")
     private String pubgPlayerId;
 
     /**
-     * PUBG 玩家 id ， 从PUBG 官网获取
+     * PUBG 玩家 Team， 从PUBG 官网获取
      */
     @JsonIgnore
     @ManyToOne(targetEntity=PUBGTeam.class)
     @JoinColumn(name="pubgTeamId",referencedColumnName="pubgTeamId")
     private PUBGTeam pubgTeam;
-
-//    /**
-//     * member id
-//     */
-//    @Column(name = "memberId")
-//    private Long memberId;
 
 }

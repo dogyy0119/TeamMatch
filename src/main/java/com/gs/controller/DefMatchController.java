@@ -172,4 +172,15 @@ public class DefMatchController {
 
         return R.success( defMatchService.getManageMatchesPage( memberId, pageNum, pageSize) );
     }
+
+    @ApiOperation(value = "按名字查询比赛")
+    @RequestMapping(value = "/getManageMatchesPageByKey", method = RequestMethod.GET)
+    public R getManageMatchesPageByKey(
+            @RequestParam String key,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
+
+        return R.success( defMatchService.getMatchByKey( key, pageNum, pageSize) );
+    }
+
 }

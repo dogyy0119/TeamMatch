@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @ToString
 @Table(name = "t_pubg_team")
-public class PUBGTeam implements Serializable {
+public class PUBGTeam implements Serializable , Comparable<PUBGTeam>{
 
     /**
      * PUBG 玩家 id ， 从PUBG 官网获取
@@ -24,11 +24,20 @@ public class PUBGTeam implements Serializable {
     @Column(name = "pubgTeamId")
     private String pubgTeamId;
 
+    /**
+     * 队伍排名
+     */
+    @Column(name = "pubgTeamName")
+    private String teamName;
+
+    /**
+     * 队伍排名
+     */
     @Column(name = "pubgTeamIndex")
     private Integer index;
 
     /**
-     * member id
+     * Pubg 比赛 Id
      */
     @JsonIgnore
     @ManyToOne(targetEntity=PUBGMatches.class)
@@ -38,30 +47,13 @@ public class PUBGTeam implements Serializable {
     /**
      * 战队成员列表
      */
-    @OneToMany(targetEntity = PUBGPlayer.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = PUBGPlayer.class, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
     @JoinColumn(name = "pubgTeamId", referencedColumnName = "pubgTeamId")
     private List<PUBGPlayer> teamMembers = new ArrayList<>();
 
-    @Override
-    public int hashCode() {
-        return pubgTeamId != null ? pubgTeamId.hashCode() : 0;
-    }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-
-        PUBGTeam other = (PUBGTeam) obj;
-
-        if (this.pubgTeamId != other.pubgTeamId) {
-
-            return false;
-        }
-        return true;
+    public int compareTo(PUBGTeam o) {
+        return this.getIndex().compareTo( o.getIndex());
     }
-
-
 }

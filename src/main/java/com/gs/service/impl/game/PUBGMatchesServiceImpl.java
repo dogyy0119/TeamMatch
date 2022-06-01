@@ -4,10 +4,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.gs.config.PUBGConfig;
 import com.gs.convert.DefMatchConvert;
-import com.gs.convert.DefMatchManageConvert;
 import com.gs.convert.PUBGMatchesConvert;
 import com.gs.model.dto.def.DefMatchDTO;
-import com.gs.model.dto.def.TeamOrderDTO;
 import com.gs.model.dto.game.PUBGMatchesDTO;
 import com.gs.model.dto.vo.PUBGMatchesVO;
 import com.gs.model.entity.jpa.db1.def.*;
@@ -449,10 +447,49 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     }
 
     @Override
-    public PUBGMatchesDTO getPUBGMatchesByDefMatchId(Long memberId, Long defMatchId, Integer index) {
+    public PUBGMatchesDTO getPUBGMatchesByDefMatchId(Long defMatchId, Integer index) {
         PUBGMatches pubgMatches = pubgMatchesRepository.findPUBGMatchesByDefMatchIdAndDefMatchIndex(defMatchId, index);
         if (pubgMatches == null) return null;
+        List<PUBGTeam> pubgTeamList = pubgMatches.getTeamMembers();
+        Collections.sort(pubgTeamList);
+        pubgMatches.setTeamMembers(pubgTeamList);
         return pubgMatchesConvert.toDto(pubgMatches);
+    }
+
+    @Override
+    public void updatePUBGMatchesByDefMatchId(Long memberId, Long defMatchId, Integer index, PUBGMatchesDTO pubgMatchesDTO) {
+        PUBGMatches pubgMatches = pubgMatchesRepository.findPUBGMatchesByDefMatchIdAndDefMatchIndex(defMatchId, index);
+        System.out.println("pubgMatchesDTO   :"+pubgMatchesDTO.getType());
+        if (pubgMatches == null) {
+            System.out.println(" pubgMatches is null");
+            return;
+        }
+
+        PUBGMatches pubgMatches1 = pubgMatchesConvert.toEntity(pubgMatchesDTO);
+        if (pubgMatches1 == null ) {
+            System.out.println(" pubgMatches1 is null");
+            return;
+        }
+
+        if( !pubgMatches1.getPubgMatchesId().equals(pubgMatches.getPubgMatchesId()) ||
+                !pubgMatches1.getDefMatchId().equals(pubgMatches.getDefMatchId()) ||
+                !pubgMatches1.getDefMatchIndex().equals(pubgMatches.getDefMatchIndex()) ){
+            System.out.println( pubgMatches1.getPubgMatchesId() );
+            System.out.println( pubgMatches.getPubgMatchesId() );
+            System.out.println( pubgMatches1.getDefMatchId() );
+            System.out.println( pubgMatches.getDefMatchId() );
+            System.out.println( pubgMatches1.getDefMatchIndex() );
+            System.out.println( pubgMatches.getDefMatchIndex() );
+
+
+            System.out.println(" pubgMatches is not same pubgMatches1");
+            return;
+        }
+        pubgMatches1.setData( pubgMatches.getData() );
+        System.out.println("pubgMatchesDTO:"+pubgMatchesDTO.getType());
+        System.out.println("pubgMatches1:"+pubgMatches1.getType());
+        pubgMatchesRepository.save(pubgMatches1);
+        return;
     }
 
     @Override
@@ -633,6 +670,54 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
 
     @Override
+    public List<PUBGMatchesVO> getPUBGMatchesByMemberId(
+            Long memberId,
+            Integer pageNum,
+            Integer pageSize) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+
+        Page<DefMatch> defMatchPage = defMatchRepository.findAll(new Specification<DefMatch>() {
+
+            public Predicate toPredicate(Root<DefMatch> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<Long> memberIdPath = root.join("member").get("id");
+                Path<Date> gameStartTimePath = root.get("gameStartTime");
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.lessThanOrEqualTo( gameStartTimePath, new Date()));
+                Predicate p1 = cb.equal(memberIdPath, memberId);
+
+                predicates.add(p1);
+
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        }, pageable);
+
+
+        List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
+
+        for (DefMatch entry : defMatchPage) {
+            for(Integer i = 1; i <= entry.getGameNum(); i++) {
+                PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
+                pubgMatchesVO.setDefMatchName(entry.getName());
+                pubgMatchesVO.setGameTime(entry.getGameStartTime());
+                pubgMatchesVO.setDefMatchId(entry.getId());
+                pubgMatchesVO.setIndex(i);
+                pubgMatchesVO.setIsLike(0);
+                pubgMatchesVOList.add(pubgMatchesVO);
+            }
+        }
+
+        return pubgMatchesVOList;
+    }
+
+    @Override
     public List<PUBGMatchesVO> queryPBUGMatchBykey(
             String key,
             Integer pageNum,
@@ -646,11 +731,12 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             public Predicate toPredicate(Root<DefMatch> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<String> name = root.get("name");
-
+                Path<Date> gameStartTimePath = root.get("gameStartTime");
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.lessThanOrEqualTo( gameStartTimePath, new Date()));
                 Predicate p1 = cb.like(name.as(String.class), "%" + key + "%");
 
                 predicates.add(p1);
@@ -665,14 +751,15 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
 
         for (DefMatch entry : defMatchPage) {
-            PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
-            pubgMatchesVO.setDefMatchName(entry.getName());
-            pubgMatchesVO.setGameTime(entry.getGameStartTime());
-            pubgMatchesVO.setDefMatchId(entry.getId());
-            pubgMatchesVO.setIndex(0);
-            pubgMatchesVO.setIsLike(0);
-
-            pubgMatchesVOList.add(pubgMatchesVO);
+            for(Integer i = 1; i <= entry.getGameNum(); i++) {
+                PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
+                pubgMatchesVO.setDefMatchName(entry.getName());
+                pubgMatchesVO.setGameTime(entry.getGameStartTime());
+                pubgMatchesVO.setDefMatchId(entry.getId());
+                pubgMatchesVO.setIndex(i);
+                pubgMatchesVO.setIsLike(0);
+                pubgMatchesVOList.add(pubgMatchesVO);
+            }
         }
 
         return pubgMatchesVOList;

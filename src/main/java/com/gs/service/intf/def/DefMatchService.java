@@ -5,6 +5,7 @@ import com.gs.model.dto.def.DefMatchDTO;
 import com.gs.model.entity.jpa.db1.def.DefMatch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.List;
@@ -95,5 +96,7 @@ public interface DefMatchService {
      * @param key
      * @return
      */
-    List<DefMatchDTO> getMatchByKey(String key);
+    List<DefMatchDTO> getMatchByKey(String key,
+                                    Integer pageNum,
+                                    Integer pageSize);
 }

@@ -1,5 +1,9 @@
 package com.gs.controller;
 
+import cn.hutool.json.JSONUtil;
+import com.gs.model.dto.game.PUBGMatchesDTO;
+import com.gs.model.entity.jpa.db1.def.DefMatch;
+import com.gs.repository.jpa.def.DefMatchRepository;
 import com.gs.service.intf.game.PUBGMatchesService;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
@@ -7,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import cn.hutool.json.JSONObject;
 
 @Api(tags = "获取PUBG比赛数据接口")
 @RestController
@@ -16,6 +21,9 @@ public class PUBGMatchesController {
 
     @Autowired
     private PUBGMatchesService pubgMatchesService;
+
+    @Autowired
+    private DefMatchRepository defMatchRepository;
 
     @ApiOperation(value = "创建比赛")
     @PostMapping
@@ -31,6 +39,16 @@ public class PUBGMatchesController {
         return R.success();
     }
 
+    @ApiOperation(value = "查询memberId 创建的比赛")
+    @RequestMapping(value = "/getPUBGMatchesByMemberId", method = RequestMethod.GET)
+    public R getPUBGMatchesByMemberId(
+            @RequestParam Long memberId,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
+
+        return R.success( pubgMatchesService.getPUBGMatchesByMemberId(memberId,pageNum,pageSize) );
+    }
+
     @ApiOperation(value = "查询比赛")
     @RequestMapping(value = "/getPUBGMatchesByKey", method = RequestMethod.GET)
     public R getPUBGMatchesByKey(
@@ -44,11 +62,35 @@ public class PUBGMatchesController {
     @ApiOperation(value = "查询PUBGName和defMatchId比赛")
     @RequestMapping(value = "/getPUBGMatchesByDefMatchId", method = RequestMethod.GET)
     public R getPUBGMatchesByDefMatchId(
-            @RequestParam Long memberId,
             @RequestParam Long defMatchId,
             @RequestParam Integer index) {
 
-        return R.success( pubgMatchesService.getPUBGMatchesByDefMatchId(memberId,defMatchId,index) );
+        return R.success( pubgMatchesService.getPUBGMatchesByDefMatchId(defMatchId,index) );
+    }
+
+    @ApiOperation(value = "修改PUBGName和defMatchId比赛")
+    @RequestMapping(value = "/updatePUBGMatchesByDefMatchId", method = RequestMethod.POST)
+    public R updatePUBGMatchesByDefMatchId(
+            @RequestParam Long memberId,
+            @RequestParam Long defMatchId,
+            @RequestParam Integer index,
+            @RequestBody String body) {
+        DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchId);
+        JSONObject requestJson = new JSONObject(body);
+        JSONObject pubgMatchesDTOJson = requestJson.getJSONObject("pubgMatchesDTO");
+        String token = requestJson.get("token").toString();
+
+        System.out.println("tokenJson:" + token);
+
+        PUBGMatchesDTO pubgMatchesDTO = JSONUtil.toBean(pubgMatchesDTOJson, PUBGMatchesDTO.class);
+
+        System.out.println("memberId:" + memberId + "defMatchId:" + defMatchId + "index:" + index);
+        System.out.println("pubgMatchesDTO:" + pubgMatchesDTO.getPubgMatchesId());
+
+        if(defMatch.getMember().getId() != memberId) return R.error("memberId 不是比赛创建者，无权利修改比赛");
+
+        pubgMatchesService.updatePUBGMatchesByDefMatchId(memberId,defMatchId,index,pubgMatchesDTO);
+        return R.success( );
     }
 
 

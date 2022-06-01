@@ -25,11 +25,12 @@ public class PUBGMatches extends AbstractBaseTimeEntity implements  Serializable
     /**
      * 比赛 ID
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
+//
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Column(name = "id")
+//    private Long id;
 
+    @Id
     @Column(name = "pubgMatchesId")
     private String pubgMatchesId;
 
@@ -61,7 +62,7 @@ public class PUBGMatches extends AbstractBaseTimeEntity implements  Serializable
     /**
      * 战队成员列表
      */
-    @OneToMany(targetEntity = PUBGTeam.class, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = PUBGTeam.class, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
     @JoinColumn(name = "pubgMatchesId", referencedColumnName = "pubgMatchesId")
     private List<PUBGTeam> teamMembers = new ArrayList<>();
 }
