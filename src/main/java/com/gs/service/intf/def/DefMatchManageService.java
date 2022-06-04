@@ -36,7 +36,7 @@ public interface DefMatchManageService {
      * 更新比赛
      * @param  dto 用户dto
      */
-    void update(DefMatchManageDTO dto);
+    Boolean update(DefMatchManageDTO dto);
 
     /**
      * 删除比赛

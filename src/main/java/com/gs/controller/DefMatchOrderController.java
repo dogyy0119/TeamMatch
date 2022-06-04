@@ -72,7 +72,7 @@ public class DefMatchOrderController {
         // 队长报名
         if (defMatchManageDTO.getMode() == 1 ) {
            Boolean isExists = teamRepository.existsTeamById(defMatchOrderDTO.getOrderId());
-           if( !isExists ) return R.error("战队id 有问题");
+           if( !isExists ) return R.error("战队id :" + defMatchOrderDTO.getOrderId() + " 有问题");
 
             Member member = memberRepository.findMemberById(memberId);
             if(member == null) return R.error("MemberId 有问题 ！");
@@ -117,34 +117,55 @@ public class DefMatchOrderController {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public R updateMatchOrder(@RequestParam Long memberId, @RequestBody DefMatchOrderDTO defMatchOrderDTO) {
 
-        Optional<DefMatchOrder> defMatchManage = defMatchOrderRepository.findById(defMatchOrderDTO.getId());
-        if( !defMatchManage.isPresent() ) {
+        System.out.println( defMatchOrderDTO.getId() );
+        System.out.println( defMatchOrderDTO.getMatchId() );
+        System.out.println( defMatchOrderDTO.getOrderId() );
+        System.out.println( defMatchOrderDTO.getStatus() );
+        System.out.println( defMatchOrderDTO.getMode() );
+
+        Optional<DefMatchOrder> defMatchOrder = defMatchOrderRepository.findById(defMatchOrderDTO.getId());
+        if( !defMatchOrder.isPresent() ) {
             return R.error("主键 id 有误");
         }
+
+
 
         try {
             DefMatchManageDTO defMatchManageDTO = defMatchManageService.findByMatchId(defMatchOrderDTO.getMatchId());
             DefMatchOrderDTO defMatchOrderDTO1 = defMatchOrderService.findByMatchIdAndOrderId(defMatchManageDTO.getMatchId(), defMatchOrderDTO.getOrderId());
+
+            System.out.println(" defMatchOrderDTO " + defMatchOrderDTO.getStatus());
+            System.out.println(" defMatchOrderDTO1 " + defMatchOrderDTO1.getId());
+            System.out.println(" defMatchOrderDTO1 " + defMatchOrderDTO1.getStatus());
+            System.out.println(" defMatchManageDTO " + defMatchManageDTO.getCurOrder());
             // 申请加入比赛通过
             if (defMatchOrderDTO.getStatus() == 1
                     && defMatchOrderDTO1.getStatus() != 1
                     && defMatchManageDTO.getAllOrder() > defMatchManageDTO.getCurOrder()) {
                 defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() + 1);
+                System.out.println(" update(defMatchManageDTO)");
                 defMatchManageService.update(defMatchManageDTO);
             }
 
             if (defMatchOrderDTO.getStatus() == -1) {
                 if (defMatchOrderDTO1.getStatus() == 1) {
+
+                    System.out.println(" update(defMatchManageDTO) = -1");
                     defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() - 1);
                     defMatchManageService.update(defMatchManageDTO);
                 }
             }
-        } catch (Exception exception) {
-            return R.error("");
-        }
-        defMatchOrderService.update(defMatchOrderDTO);
 
-        return R.success();
+            boolean success = defMatchOrderService.update(defMatchOrderDTO);
+            if ( !success ) {
+                return R.error("失败");
+            }
+
+        } catch (Exception exception) {
+            return R.error("异常");
+        }
+
+        return R.success("成功");
     }
 
     @ApiOperation(value = "查询自定义管理")

@@ -34,7 +34,7 @@ public interface DefMatchOrderService {
      * 更新比赛
      * @param  dto 用户dto
      */
-    void update(DefMatchOrderDTO dto);
+    Boolean update(DefMatchOrderDTO dto);
 
     /**
      * 删除比赛

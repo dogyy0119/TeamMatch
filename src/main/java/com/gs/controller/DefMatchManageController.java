@@ -45,8 +45,12 @@ public class DefMatchManageController {
             return R.error("主键 id 有误");
         }
 
-        defMatchManageService.update( defMatchManageDTO );
-        return R.success();
+        Boolean res = defMatchManageService.update( defMatchManageDTO );
+        if ( res ) {
+            return R.success("成功");
+        } else  {
+            return R.error("失败");
+        }
     }
 
     @ApiOperation(value = "查询自定义管理")

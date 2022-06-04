@@ -90,18 +90,27 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
     }
 
     @Override
-    public void update(DefMatchOrderDTO dto) {
+    public Boolean update(DefMatchOrderDTO dto) {
         Optional<DefMatch> defMatchOptional = defMatchRepository.findById(dto.getMatchId());
-        if ( defMatchOptional == null ) return;
+        if ( defMatchOptional.get() == null ) return false;
         DefMatch defMatch = defMatchOptional.get();
-        if (defMatch == null) return ;
-        DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatch);
+        if (defMatch == null) return false;
 
-        DefMatchOrder entity =defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, dto.getOrderId());
+        System.out.println( "DefMatch id:" + defMatch.getId());
+//        DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatch);
 
+        Optional<DefMatchOrder> defMatchOrderOptional =defMatchOrderRepository.findById(dto.getId());
+
+        if(defMatchOrderOptional.get() == null) return false;
+
+        DefMatchOrder entity = defMatchOrderOptional.get();
+
+        System.out.println( "dto.getStatus():" + dto.getStatus());
         entity.setStatus(dto.getStatus());
 
         defMatchOrderRepository.save(entity);
+
+        return true;
     }
 
     @Override

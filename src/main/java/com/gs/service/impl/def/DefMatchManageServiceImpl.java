@@ -80,8 +80,20 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
     }
 
     @Override
-    public void update(DefMatchManageDTO dto) {
-        defMatchManageRepository.save(defMatchManageConvert.toEntity(dto));
+    public Boolean update(DefMatchManageDTO dto) {
+        Optional<DefMatchManage> defMatchManageOptional = defMatchManageRepository.findById(dto.getId());
+        if(defMatchManageOptional.get() == null ) {
+            return false;
+        }
+        DefMatchManage defMatchManage = defMatchManageOptional.get();
+
+        defMatchManage.setState(dto.getState());
+        defMatchManage.setCurOrder(dto.getCurOrder());
+
+        System.out.println( " dto :" + dto.getId());
+        System.out.println( " dto getCurOrder :" + dto.getCurOrder());
+        defMatchManageRepository.save(defMatchManage);
+        return true;
     }
 
     @Override
@@ -96,8 +108,13 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
     public DefMatchManagerOrders getMatchManagesPageByMatch(Long memberId, Long matchId, Integer pageNum, Integer pageSize) {
 
         DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByMemberIdAndDefMatchId(memberId, matchId);
+
+        if(defMatchManage == null) {
+            System.out.println( "defMatchManage: is null" );
+            return  null;
+        }
+
         System.out.println( "defMatchManage:" + defMatchManage.getId() );
-        if(defMatchManage == null) { return  null; }
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
@@ -107,8 +124,6 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
             public Predicate toPredicate(Root<DefMatchOrder> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<Long> defMatchManageIdPath = root.join("defMatchManage").get("id");
-//                Path<Integer> statusPath = root.get("status");
-
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
@@ -127,14 +142,13 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
         for (DefMatchOrder entry : ordersPage) {
             DefMatchOrderDTO defMatchOrderDTO = defMatchOrderConvert.toDto(entry);
 
-            Team team = teamRepository.findTeamById(defMatchOrderDTO.getOrderId());
-
-            DefMatchOrderTeamVO defMatchOrderTeamVO = new DefMatchOrderTeamVO( defMatchOrderDTO );
-            defMatchOrderTeamVO.setId( team.getId() );
-            //defMatchOrderTeamVO.setTeamId( team.getTeamId() );
-            defMatchOrderTeamVO.setTeamName( team.getName() );
-
-            defMatchOrderTeamVOS.add( defMatchOrderTeamVO );
+            if (defMatchOrderDTO.getMode() == 1) {
+                Team team = teamRepository.findTeamById(defMatchOrderDTO.getOrderId());
+                DefMatchOrderTeamVO defMatchOrderTeamVO = new DefMatchOrderTeamVO( defMatchOrderDTO );
+                defMatchOrderTeamVO.setId( entry.getId() );
+                defMatchOrderTeamVO.setTeamName(team.getName());
+                defMatchOrderTeamVOS.add( defMatchOrderTeamVO );
+            }
         }
 
         DefMatchManagerOrders defMatchManagerOrders = new DefMatchManagerOrders( defMatchManageConvert.toDto(defMatchManage) );
