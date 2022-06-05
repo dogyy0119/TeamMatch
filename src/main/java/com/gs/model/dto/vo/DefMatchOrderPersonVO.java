@@ -1,20 +1,20 @@
 package com.gs.model.dto.vo;
 
-import com.gs.model.dto.def.DefMatchManageDTO;
 import com.gs.model.dto.def.DefMatchOrderDTO;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
 @Data
 @ToString
-public class DefMatchOrderTeamVO extends DefMatchOrderDTO {
+public class DefMatchOrderPersonVO extends DefMatchOrderDTO {
 
-    Long   id;
+    Long id;
 
-    Long teamId;
+    Long personId;
 
-    String teamName;
+    String personName;
 
-    public DefMatchOrderTeamVO(DefMatchOrderDTO defMatchOrderDTO) {
+    public DefMatchOrderPersonVO(DefMatchOrderDTO defMatchOrderDTO) {
         this.setOrderId(defMatchOrderDTO.getOrderId());
         this.setMatchId(defMatchOrderDTO.getMatchId());
         this.setMode(defMatchOrderDTO.getMode());

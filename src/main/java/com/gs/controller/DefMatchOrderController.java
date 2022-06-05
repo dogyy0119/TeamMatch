@@ -103,9 +103,17 @@ public class DefMatchOrderController {
             defMatchOrderDTO.setStatus(0);
         }
 
+        System.out.println("defMatchOrderDTO id:" + defMatchOrderDTO.getId());
+        System.out.println("defMatchOrderDTO getOrderId:" + defMatchOrderDTO.getOrderId());
+
+
         DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManageConvert.toEntity(defMatchManageDTO), defMatchOrderDTO.getOrderId());
 
-        if(defMatchOrder != null)  { return R.error("该比赛已经申请过了"); }
+        if(defMatchOrder != null)  {
+            System.out.println("defMatchOrder id:" + defMatchOrder.getId());
+            System.out.println("defMatchOrder getOrderId:" + defMatchOrder.getOrderId());
+            return R.error("该比赛已经申请过了");
+        }
 
         DefMatchOrderDTO dto = defMatchOrderService.create(defMatchOrderDTO);
 

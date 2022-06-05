@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @ToString
 public class DefMatchManagerOrders extends DefMatchManageDTO {
-    List<DefMatchOrderTeamVO> defMatchOrderDTOS = new ArrayList<>();
+    List<DefMatchOrderDTO> defMatchOrderDTOS = new ArrayList<>();
 
     public DefMatchManagerOrders(DefMatchManageDTO defMatchManageDTO) {
         this.setId( defMatchManageDTO.getId() );

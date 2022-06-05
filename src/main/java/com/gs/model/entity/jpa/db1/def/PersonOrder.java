@@ -34,6 +34,7 @@ public class PersonOrder {
     /**
      * 对应定义比赛表 id
      */
+    @JsonIgnore
     @OneToOne(targetEntity = Member.class, cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinColumn(name = "memberId", nullable = false)
     private Member member;

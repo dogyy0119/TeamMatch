@@ -6,14 +6,17 @@ import com.gs.convert.DefMatchOrderConvert;
 import com.gs.model.dto.def.DefMatchManageDTO;
 import com.gs.model.dto.def.DefMatchOrderDTO;
 import com.gs.model.dto.vo.DefMatchManagerOrders;
+import com.gs.model.dto.vo.DefMatchOrderPersonVO;
 import com.gs.model.dto.vo.DefMatchOrderTeamVO;
 import com.gs.model.entity.jpa.db1.def.DefMatch;
 import com.gs.model.entity.jpa.db1.def.DefMatchManage;
 import com.gs.model.entity.jpa.db1.def.DefMatchOrder;
+import com.gs.model.entity.jpa.db1.team.Member;
 import com.gs.model.entity.jpa.db1.team.Team;
 import com.gs.repository.jpa.def.DefMatchManageRepository;
 import com.gs.repository.jpa.def.DefMatchOrderRepository;
 import com.gs.repository.jpa.def.DefMatchRepository;
+import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.def.DefMatchManageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +55,9 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Override
     public DefMatchManageDTO findById(Long id) {
@@ -137,7 +143,7 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
 
         }, pageable);
 
-        List<DefMatchOrderTeamVO> defMatchOrderTeamVOS = new ArrayList<>();
+        List<DefMatchOrderDTO> defMatchOrderTeamVOS = new ArrayList<>();
 
         for (DefMatchOrder entry : ordersPage) {
             DefMatchOrderDTO defMatchOrderDTO = defMatchOrderConvert.toDto(entry);
@@ -146,8 +152,16 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
                 Team team = teamRepository.findTeamById(defMatchOrderDTO.getOrderId());
                 DefMatchOrderTeamVO defMatchOrderTeamVO = new DefMatchOrderTeamVO( defMatchOrderDTO );
                 defMatchOrderTeamVO.setId( entry.getId() );
+                defMatchOrderTeamVO.setTeamId( team.getId() );
                 defMatchOrderTeamVO.setTeamName(team.getName());
                 defMatchOrderTeamVOS.add( defMatchOrderTeamVO );
+            } else {
+                Member member = memberRepository.findMemberById(defMatchOrderDTO.getOrderId());
+                DefMatchOrderPersonVO defMatchOrderPersonVO = new DefMatchOrderPersonVO(defMatchOrderDTO);
+                defMatchOrderPersonVO.setId(entry.getId());
+                defMatchOrderPersonVO.setPersonId( member.getId() );
+                defMatchOrderPersonVO.setPersonName( member.getName() );
+                defMatchOrderTeamVOS.add(defMatchOrderPersonVO);
             }
         }
 

@@ -10,11 +10,9 @@ import com.gs.model.entity.jpa.db1.def.DefMatchManage;
 import com.gs.model.entity.jpa.db1.def.DefMatchOrder;
 import com.gs.model.entity.jpa.db1.def.PersonOrder;
 import com.gs.model.entity.jpa.db1.team.Member;
-import com.gs.repository.jpa.def.DefMatchManageRepository;
-import com.gs.repository.jpa.def.DefMatchOrderRepository;
-import com.gs.repository.jpa.def.DefMatchRepository;
-import com.gs.repository.jpa.def.PersonOrderRepository;
+import com.gs.repository.jpa.def.*;
 import com.gs.repository.jpa.team.MemberRepository;
+import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.def.DefMatchOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,6 +49,9 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
     private MemberRepository memberRepository;
 
     @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
     private PersonOrderRepository personOrderRepository;
 
     @Override
@@ -77,14 +78,22 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         DefMatchOrder entity = defMatchOrderConvert.toEntity(dto);
         DefMatchOrder defMatchOrder = defMatchOrderRepository.save(entity);
 
+        System.out.println("create defMatchOrder" + defMatchOrder.getMode());
+
         //创建个人点赞
-        if(entity.getMode() == 0) {
-            Member member = memberRepository.findMemberById(entity.getOrderId());
+        if(defMatchOrder.getMode() == 0) {
+            System.out.println("entity.getOrderId()" + defMatchOrder.getOrderId());
+            Member member = memberRepository.findMemberById(defMatchOrder.getOrderId());
             PersonOrder personOrder = new PersonOrder();
-            personOrder.setDefMatchOrder(entity);
+            personOrder.setDefMatchOrder(defMatchOrder);
             personOrder.setMember(member);
             personOrder.setIsLike(0);
-            personOrderRepository.save(personOrder);
+            PersonOrder personOrder1 =  personOrderRepository.save(personOrder);
+            if( personOrder1 != null ) {
+                System.out.println("x defMatchOrder" + personOrder1.getId());
+            } else {
+                System.out.println("save defMatchOrder" + personOrder1.getId());
+            }
         }
         return defMatchOrderConvert.toDto(defMatchOrder);
     }
@@ -178,13 +187,21 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
     public List<DefMatchDTO> getMatchPage(Integer mode, Long orderId, Integer status, Integer pageNum, Integer pageSize) {
         if( mode == 1 ) // 战队
         {
-            // 验证 member id 是否存在
-            boolean exists = memberRepository.existsById(orderId);
-            if( !exists ) return null;
+            //验证 teamId 是否存在
+            boolean exists = teamRepository.existsTeamById(orderId);
+            if( !exists ) {
+                System.out.println( "不存在 此战队  :" + orderId );
+                return null;
+            }
 
         } else if ( mode == 0 ) //个人报名
         {
-            //验证 teamId 是否存在
+            // 验证 member id 是否存在
+            boolean exists = memberRepository.existsById(orderId);
+            if( !exists ) {
+                System.out.println("不存在 此玩家  :" + orderId);
+                return null;
+            }
         }
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
