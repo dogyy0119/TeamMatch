@@ -1,7 +1,9 @@
 package com.gs.controller.team;
 
+import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.team.TeamRequestDTO;
 import com.gs.service.intf.team.TeamRequestService;
+import com.gs.service.intf.team.TeamService;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,10 +19,14 @@ import org.springframework.web.bind.annotation.*;
 public class TeamRequestController {
 
     private final TeamRequestService teamRequestService;
+    private final TeamService teamService;
 
     @ApiOperation(value = "发送战队请求")
     @RequestMapping(value = "/sendTeamRequest", method = RequestMethod.POST)
     public R sendTeamRequest(@RequestBody TeamRequestDTO teamRequestDTO) {
+        if (null != teamService.findTeamMemberByTeamIdAndMemberId(teamRequestDTO.getTeamId(), teamRequestDTO.getFromId())){
+            return R.error(CodeEnum.IS_MEMBER_ALREADY_IN_TEAM.getCode(), "您已经在该战队");
+        }
         return R.result(teamRequestService.sendTeamRequest(teamRequestDTO));
     }
 

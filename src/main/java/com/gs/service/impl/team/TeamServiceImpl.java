@@ -154,7 +154,8 @@ public class TeamServiceImpl implements TeamService {
         return teamVoList;
     }
 
-    private TeamMember findTeamMemberByTeamIdAndMemberId(Long teamId, Long memberId) {
+    @Override
+    public TeamMember findTeamMemberByTeamIdAndMemberId(Long teamId, Long memberId) {
         List<TeamMember> teamMembers = teamRepository.findTeamById(teamId).getTeamMembers();
 
         for (TeamMember teamMember : teamMembers) {
@@ -948,6 +949,7 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public List<TeamVo> queryTeamBykey(
+            Long currentMemberId,
             String key,
             Integer pageNum,
             Integer pageSize) {
@@ -978,7 +980,9 @@ public class TeamServiceImpl implements TeamService {
         List<TeamVo> teamVoList = new ArrayList<>();
 
         for (Team entry : teamPage) {
-            teamVoList.add(teamToVoConvert.toVo(entry));
+            if (null == findTeamMemberByTeamIdAndMemberId(entry.getId(), currentMemberId)){
+                teamVoList.add(teamToVoConvert.toVo(entry));
+            }
         }
 
         return teamVoList;

@@ -40,6 +40,7 @@ public interface MemberService {
      * @return 符合条件得Team List
      */
     List<MemberVo> queryMembersBykey(
+            Long currentMemberId,
             String key,
             Integer pageNum,
             Integer pageSize);

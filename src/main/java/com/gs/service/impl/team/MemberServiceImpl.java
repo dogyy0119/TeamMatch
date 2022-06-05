@@ -61,6 +61,7 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public List<MemberVo> queryMembersBykey(
+            Long currentMemberId,
             String key,
             Integer pageNum,
             Integer pageSize) {
@@ -97,7 +98,9 @@ public class MemberServiceImpl implements MemberService {
         List<MemberVo> memberList = new ArrayList<>();
 
         for (Member entry : memberPage) {
-            memberList.add(memberToVoConvert.toVo(entry));
+            if (currentMemberId != entry.getId()){
+                memberList.add(memberToVoConvert.toVo(entry));
+            }
         }
 
         return memberList;

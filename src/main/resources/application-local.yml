@@ -10,7 +10,7 @@ spring:
 #      password: 123456
 #      driver-class-name: com.mysql.cj.jdbc.Driver
 
-      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=test
+      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=testdb3
       jdbc-url: ${spring.datasource.db1.url}
       username: sa
       password: 123456

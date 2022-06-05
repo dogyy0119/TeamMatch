@@ -1,5 +1,6 @@
 package com.gs.controller.team;
 
+import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.team.MemberRequestDTO;
 import com.gs.service.intf.team.MemberRequestService;
 import com.gs.utils.R;
@@ -21,6 +22,9 @@ public class MemberRequestController {
     @ApiOperation(value = "发送成员请求")
     @RequestMapping(value = "/sendMemberRequest", method = RequestMethod.POST)
     public R sendMemberRequest(@RequestBody MemberRequestDTO memberRequestDTO) {
+        if (memberRequestDTO.getFromId() == memberRequestDTO.getToId()){
+            return R.error(CodeEnum.IS_REQUEST_INVITATION_OWN.getCode(), "不能邀请自己加入战队");
+        }
         return R.result(memberRequestService.sendMemberRequest(memberRequestDTO));
     }
 

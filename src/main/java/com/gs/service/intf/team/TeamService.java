@@ -5,6 +5,7 @@ import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.team.TeamCreateDTO;
 import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
+import com.gs.model.entity.jpa.db1.team.TeamMember;
 import com.gs.model.vo.team.TeamVo;
 
 import java.util.List;
@@ -50,6 +51,14 @@ public interface TeamService {
      */
     List<TeamVo> getTeamPage(Integer pageNum, Integer pageSize);
 
+    /**
+     * 获取战队成员
+     *
+     * @param teamId teamId
+     * @param memberId  memberId
+     * @return 是否成功添加
+     */
+    TeamMember findTeamMemberByTeamIdAndMemberId(Long teamId, Long memberId);
     /**
      * 处理战队请求的消息
      *
@@ -204,6 +213,7 @@ public interface TeamService {
      * @return 符合条件得Team List
      */
     List<TeamVo> queryTeamBykey(
+            Long currentMemberId,
             String key,
             Integer pageNum,
             Integer pageSize);

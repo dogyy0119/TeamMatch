@@ -104,6 +104,10 @@ public enum CodeEnum {
      */
     IS_REQUEST_NOT_EXIST("10022", "战队请求不存在"),
     /**
+     * 自己不能邀请自己
+     */
+    IS_REQUEST_INVITATION_OWN("10022", "自己不能邀请自己"),
+    /**
      * 系统异常
      */
     IS_EXCEPTION("99999", "系统异常");

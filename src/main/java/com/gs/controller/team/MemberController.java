@@ -31,9 +31,10 @@ public class MemberController {
 
     @ApiOperation(value = "模糊查询队员")
     @RequestMapping(value = "/queryMember", method = RequestMethod.GET)
-    public R getMember(@RequestParam String key,
+    public R queryMember(@RequestParam Long currentMemberId,
+                       @RequestParam String key,
                        @RequestParam Integer pageNum,
                        @RequestParam Integer pageSize) {
-        return R.success(memberService.queryMembersBykey(key, pageNum, pageSize));
+        return R.success(memberService.queryMembersBykey(currentMemberId, key, pageNum, pageSize));
     }
 }

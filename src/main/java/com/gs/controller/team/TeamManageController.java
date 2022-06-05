@@ -170,7 +170,7 @@ public class TeamManageController {
     @RequestMapping(value = "/updateTeamInfo", method = RequestMethod.POST)
     public R updateTeamInfo(
             @RequestParam("manageMemberId") Long manageMemberId,
-            @Validated @RequestBody TeamUpdateInfoDTO teamUpdateInfoDTO){
+            @Validated @RequestBody TeamUpdateInfoDTO teamUpdateInfoDTO) {
 
         return R.result(teamService.updateTeamInfo(manageMemberId, teamUpdateInfoDTO));
     }
@@ -251,9 +251,11 @@ public class TeamManageController {
 
     @ApiOperation(value = "模糊查询战队")
     @RequestMapping(value = "/queryTeam", method = RequestMethod.GET)
-    public R queryTeam(@RequestParam String key,
-                       @RequestParam Integer pageNum,
-                       @RequestParam Integer pageSize) {
-        return R.success(teamService.queryTeamBykey(key, pageNum, pageSize));
+    public R queryTeam(
+            @RequestParam Long currentMemberId,
+            @RequestParam String key,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
+        return R.success(teamService.queryTeamBykey(currentMemberId, key, pageNum, pageSize));
     }
 }
