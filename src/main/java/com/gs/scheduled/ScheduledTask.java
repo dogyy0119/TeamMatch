@@ -55,7 +55,7 @@ public class ScheduledTask {
     @Scheduled(cron = "0 */1 * * * ?")
     public void gamePrepare(){
 
-        List<DefMatchDTO> defMatchDTOS =defMatchService.getMatchesByTime(GameBefore(30),new Date());
+        List<DefMatchDTO> defMatchDTOS = defMatchService.getMatchesByTime(GameBefore(30),new Date());
         for(DefMatchDTO defMatchDTO: defMatchDTOS) {
             if(prepareMap.get(defMatchDTO.getId()) == null) {
                 prepareMap.put(defMatchDTO.getId(), defMatchDTO);

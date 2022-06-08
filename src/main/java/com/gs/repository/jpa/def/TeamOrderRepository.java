@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface TeamOrderRepository extends JpaRepository<TeamOrder, Long>, JpaSpecificationExecutor<TeamOrder> {
     List<TeamOrder> findTeamOrderByDefMatchOrderAndMember(DefMatchOrder defMatchOrder, Member member);
-
+    List<TeamOrder> findTeamOrderByDefMatchOrder(DefMatchOrder defMatchOrder);
 }
