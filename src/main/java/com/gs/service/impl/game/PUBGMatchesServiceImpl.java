@@ -508,6 +508,15 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         return getMatchesByPlayers(pubgPlayerList, matchType, pageNum, pageSize);
     }
 
+    /**
+     * 根据 memberId 和 teamId 比赛类型返回比赛
+     * @param memberId
+     * @param teamId
+     * @param matchType
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @Override
     public List<PUBGMatchesVO> getPUBGMatchesSortByMatchType(Long memberId, Long teamId, String matchType, Integer pageNum, Integer pageSize) {
 
@@ -577,7 +586,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                     if (personOrder != null) pubgMatchesVO.setIsLike(personOrder.getIsLike());
                 } else {
                     DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
-                    defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
+//                    defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
                     Team team = teamRepository.findTeamById(defMatchOrder.getOrderId());
                     if (team != null) {
                         List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
@@ -613,6 +622,11 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         return getMatchesByPlayers(pubgPlayerList, matchType, pageNum, pageSize);
     }
 
+    /**
+     * 根据比赛Id 返回PUBG 比赛 （包含多长小比赛）
+     * @param defMatchId
+     * @return
+     */
     @Override
     public List<PUBGMatches> findPUBGMatchesByDefMatchId(Long defMatchId) {
         List<PUBGMatches> pubgMatchesList = pubgMatchesRepository.findPUBGMatchesByDefMatchId(defMatchId);
@@ -668,7 +682,13 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         return pubgMatchesList;
     }
 
-
+    /**
+     * 获取自己创建的PUBG赛事 （用于修改比赛数据）
+     * @param memberId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @Override
     public List<PUBGMatchesVO> getPUBGMatchesByMemberId(
             Long memberId,
@@ -761,6 +781,56 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 pubgMatchesVOList.add(pubgMatchesVO);
             }
         }
+
+        return pubgMatchesVOList;
+    }
+
+    public List<PUBGMatchesVO> queryPBUGMatchAchiByTeamId(
+            Long teamId,
+            Integer pageNum,
+            Integer pageSize) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        Page<DefMatchOrder> defMatchOrderPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
+
+            public Predicate toPredicate(Root<DefMatchOrder> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<Integer> status = root.get("status");
+                Path<Long> orderId = root.get("orderId");
+                Path<Integer> mode = root.get("mode");
+
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                Predicate p1 = cb.equal(status, 1);
+                Predicate p2 = cb.equal(mode, 0);
+                Predicate p3 = cb.equal(orderId, teamId);
+                predicates.add(p1);
+                predicates.add(p2);
+                predicates.add(p3);
+
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        }, pageable);
+
+        for (DefMatchOrder entry : defMatchOrderPage) {
+            DefMatch defMatch = entry.getDefMatchManage().getDefMatch();
+            Date startTime = defMatch.getGameStartTime();
+            if(startTime.toInstant().isBefore(new Date().toInstant())) {
+
+                List<TeamOrder> teamOrderList =teamOrderRepository.findTeamOrderByDefMatchOrder(entry);
+                TeamOrder teamOrder = teamOrderList.get(0);
+                Member member = teamOrder.getMember();
+                String name = member.getPubgName();
+
+            }
+        }
+
+        List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
 
         return pubgMatchesVOList;
     }

@@ -23,7 +23,7 @@ public interface PUBGMatchesService {
 
 
     /**
-     *
+     * 根据PUBG 玩家名字，返回玩家比赛列表
      * @param name
      * @return
      */
