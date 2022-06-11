@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -98,7 +99,7 @@ public class MemberServiceImpl implements MemberService {
         List<MemberVo> memberList = new ArrayList<>();
 
         for (Member entry : memberPage) {
-            if (currentMemberId != entry.getId()){
+            if (!Objects.equals(currentMemberId, entry.getId())){
                 memberList.add(memberToVoConvert.toVo(entry));
             }
         }

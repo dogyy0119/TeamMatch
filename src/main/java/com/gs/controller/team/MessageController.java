@@ -17,20 +17,48 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    @ApiOperation(value = "获取历史聊天信息")
-    @RequestMapping(value = "/getTeamChatMsgs", method = RequestMethod.GET)
-    public R getTeamChatMsgs(@RequestParam String teamId,
-                             @RequestParam Long memberId,
-                             @RequestParam Integer pageNum,
-                             @RequestParam Integer pageSize) {
+    @ApiOperation(value = "获取群聊历史信息")
+    @RequestMapping(value = "/getGroupChatMsgs", method = RequestMethod.GET)
+    public R getGroupChatMsgs(@RequestParam String teamId,
+                              @RequestParam Integer pageNum,
+                              @RequestParam Integer pageSize) {
 
-        return R.success(messageService.getTeamChatMsgs(teamId, memberId, pageNum, pageSize));
+        return R.success(messageService.getGroupChatMsgs(teamId, pageNum, pageSize));
+    }
+
+    @ApiOperation(value = "删除群聊历史信息")
+    @RequestMapping(value = "/deleteGroupChatMsgs", method = RequestMethod.GET)
+    public R deleteGroupChatMsgs(@RequestParam String teamId) {
+
+        messageService.deleteGroupChatMsgs(teamId);
+        return R.success();
+    }
+
+    @ApiOperation(value = "获取私聊历史信息")
+    @RequestMapping(value = "/getPrivateChatMsgs", method = RequestMethod.GET)
+    public R getPrivateChatMsgs(@RequestParam String teamId,
+                                @RequestParam Long fromId,
+                                @RequestParam Long toId,
+                                @RequestParam Integer pageNum,
+                                @RequestParam Integer pageSize) {
+
+        return R.success(messageService.getPrivateChatMsgs(teamId, fromId, toId, pageNum, pageSize));
+    }
+
+    @ApiOperation(value = "删除私聊历史信息")
+    @RequestMapping(value = "/deletePrivateChatMsgs", method = RequestMethod.GET)
+    public R deletePrivateChatMsgs(@RequestParam String teamId,
+                                   @RequestParam Long fromId,
+                                   @RequestParam Long toId) {
+
+        messageService.deletePrivateChatMsgs(teamId, fromId, toId);
+        return R.success();
     }
 
     @ApiOperation(value = "删除所有已发送的消息")
     @RequestMapping(value = "/deleteTeamChatMsgs", method = RequestMethod.GET)
     public R deleteTeamChatMsgs(@RequestParam Long teamId,
-                             @RequestParam Long memberId) {
+                                @RequestParam Long memberId) {
 
         messageService.deleteTeamChatMsgs(teamId, memberId);
         return R.success();

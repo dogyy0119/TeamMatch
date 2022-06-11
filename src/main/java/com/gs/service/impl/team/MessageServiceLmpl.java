@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -42,7 +43,7 @@ public class MessageServiceLmpl implements MessageService {
     }
 
     @Override
-    public List<MessageVo> getTeamChatMsgs(String teamId, Long memberId, Integer pageNum, Integer pageSize){
+    public List<MessageVo> getGroupChatMsgs(String teamId, Integer pageNum, Integer pageSize){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
@@ -52,14 +53,13 @@ public class MessageServiceLmpl implements MessageService {
             public Predicate toPredicate(Root<Message> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<String> teamIdPath = root.get("teamId");
-                Path<Long> toIdPath = root.get("toId");
-                Path<Long> fromIdPath = root.get("fromId");
+                Path<Integer> typePath = root.get("type");
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
                 predicates.add(cb.equal(teamIdPath, teamId));
-                predicates.add(cb.or(cb.equal(toIdPath, memberId), cb.equal(fromIdPath, memberId)));
+                predicates.add(cb.equal(typePath, 4));
 
                 query.where(predicates.toArray(new Predicate[predicates.size()]));
                 return null;
@@ -74,6 +74,108 @@ public class MessageServiceLmpl implements MessageService {
         }
 
         return messageVoList;
+    }
+
+    @Override
+    public void deleteGroupChatMsgs(String teamId){
+
+        List<Message> messagePage = messageRepository.findAll(new Specification<Message>() {
+
+            public Predicate toPredicate(Root<Message> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<String> teamIdPath = root.get("teamId");
+                Path<Integer> typePath = root.get("type");
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(teamIdPath, teamId));
+                predicates.add(cb.equal(typePath, 4));
+
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+
+        });
+
+
+        messageRepository.deleteAll(messagePage);
+
+        return ;
+    }
+
+    @Override
+    public List<MessageVo> getPrivateChatMsgs(String teamId, Long fromId, Long toId, Integer pageNum, Integer pageSize){
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+
+        Page<Message> messagePage = messageRepository.findAll(new Specification<Message>() {
+
+            public Predicate toPredicate(Root<Message> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<String> teamIdPath = root.get("teamId");
+                Path<Long> toIdPath = root.get("toId");
+                Path<Long> fromIdPath = root.get("fromId");
+                Path<Integer> typePath = root.get("type");
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(teamIdPath, teamId));
+                predicates.add(cb.equal(typePath, 3));
+                predicates.add(cb.or(cb.and(cb.equal(toIdPath, fromId), cb.equal(fromIdPath, toId)), cb.and(cb.equal(toIdPath, toId), cb.equal(fromIdPath, fromId))));
+
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        }, pageable);
+
+        List<MessageVo> messageVoList = new ArrayList<>();
+
+        for (Message message : messagePage) {
+            messageVoList.add(messageVoConvert.toVo(message));
+        }
+
+        return messageVoList;
+    }
+
+    @Override
+    public void deletePrivateChatMsgs(String teamId, Long fromId, Long toId){
+
+        List<Message> messagePage = messageRepository.findAll(new Specification<Message>() {
+
+            public Predicate toPredicate(Root<Message> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<String> teamIdPath = root.get("teamId");
+                Path<Long> toIdPath = root.get("toId");
+                Path<Long> fromIdPath = root.get("fromId");
+                Path<Integer> typePath = root.get("type");
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(teamIdPath, teamId));
+                predicates.add(cb.equal(typePath, 3));
+                predicates.add(cb.or(cb.and(cb.equal(toIdPath, fromId), cb.equal(fromIdPath, toId)), cb.and(cb.equal(toIdPath, toId), cb.equal(fromIdPath, fromId))));
+
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        });
+
+
+        messageRepository.deleteAll(messagePage);
+
+        return;
+    }
+
+    @Transactional
+    public void deleteTeamChatMsgs(Date date){
+        messageRepository.deleteAllByCreateTimeBefore(date);
     }
 
     @Override

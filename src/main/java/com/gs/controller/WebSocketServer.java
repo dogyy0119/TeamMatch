@@ -95,18 +95,18 @@ public class WebSocketServer {
         initServiceImp();
 
         //查看当前是否有接收到的系统消息
-        try {
-            MessageVo messageVo = new MessageVo();
-
-            String memberName = memberService.getMemberById(userId).getName();
-            String content = memberName + " 已上线";
-            messageVo.setContent(content);
-            messageVo.setType(1);
-            messageVo.setCreateTime(sdf.format(new Date()));
-            sendBroadcastMessage(messageVo);
-        } catch (IOException e) {
-            log.error("用户:" + userId + ",网络异常!!!!!!");
-        }
+//        try {
+//            MessageVo messageVo = new MessageVo();
+//
+//            String memberName = memberService.getMemberById(userId).getName();
+//            String content = memberName + " 已上线";
+//            messageVo.setContent(content);
+//            messageVo.setType(1);
+//            messageVo.setCreateTime(sdf.format(new Date()));
+//            sendBroadcastMessage(messageVo);
+//        } catch (IOException e) {
+//            log.error("用户:" + userId + ",网络异常!!!!!!");
+//        }
     }
 
     /**
@@ -122,18 +122,18 @@ public class WebSocketServer {
                     webTeamSocketMap.remove(teamId);
                 }
 
-                try {
-                    MessageVo messageVo = new MessageVo();
-
-                    String memberName = memberService.getMemberById(userId).getName();
-                    String content = memberName + " 已下线";
-                    messageVo.setContent(content);
-                    messageVo.setType(2);
-                    messageVo.setCreateTime(sdf.format(new Date()));
-                    sendBroadcastMessage(messageVo);
-                } catch (IOException e) {
-                    log.error("用户:" + userId + ",网络异常!!!!!!");
-                }
+//                try {
+//                    MessageVo messageVo = new MessageVo();
+//
+//                    String memberName = memberService.getMemberById(userId).getName();
+//                    String content = memberName + " 已下线";
+//                    messageVo.setContent(content);
+//                    messageVo.setType(2);
+//                    messageVo.setCreateTime(sdf.format(new Date()));
+//                    sendBroadcastMessage(messageVo);
+//                } catch (IOException e) {
+//                    log.error("用户:" + userId + ",网络异常!!!!!!");
+//                }
 
             } else {
                 log.error("team:" + teamId + "user:" + userId + ",关闭异常（team下不存在user的socket连接）!!!!!!");

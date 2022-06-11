@@ -38,12 +38,21 @@ public class MessageVo {
 
     @ApiModelProperty(value = "发送者Name")
     private String fromName;
+    /**
+     * 发送者头像
+     */
+    private String fromAvatar;
 
     @ApiModelProperty(value = "接收者Id")
     private Long toId;
 
     @ApiModelProperty(value = "接收者Name")
     private String toName;
+
+    /**
+     * 发送者头像
+     */
+    private String toAvatar;
 
     @ApiModelProperty(value = "消息类型：1、用户上线消息；2、用户下线消息；98，单对单聊天；99、群聊")
     private Integer type;

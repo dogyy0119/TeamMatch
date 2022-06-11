@@ -1,5 +1,6 @@
 package com.gs.convert.team;
 
+import com.gs.model.entity.jpa.db1.team.Member;
 import com.gs.model.entity.jpa.db1.team.Message;
 import com.gs.model.vo.team.MessageVo;
 import com.gs.repository.jpa.team.MemberRepository;
@@ -16,7 +17,6 @@ import java.util.List;
  * 消息实体类转Vo工具类
  * User: lys
  * DateTime: 2022-05-10
- *
  **/
 @Component
 //@Mapper(componentModel = "spring",uses = {},unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -27,8 +27,10 @@ public class MessageVoConvert {
     protected TeamRepository teamRepository;
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     /**
      * Entity转Vo
+     *
      * @param entity 对应数据库的实体
      * @return 输出Vo
      */
@@ -49,11 +51,15 @@ public class MessageVoConvert {
             }
 
             if (null != entity.getFromId() && this.memberRepository.existsById(entity.getFromId())) {
-                messageVo.setFromName(this.memberRepository.findMemberById(entity.getFromId()).getName());
+                Member fromMember = this.memberRepository.findMemberById(entity.getFromId());
+                messageVo.setFromName(fromMember.getName());
+                messageVo.setFromAvatar(fromMember.getAvatar());
             }
 
             if (null != entity.getToId() && this.memberRepository.existsById(entity.getToId())) {
-                messageVo.setToName(this.memberRepository.findMemberById(entity.getToId()).getName());
+                Member toMember = this.memberRepository.findMemberById(entity.getToId());
+                messageVo.setToName(toMember.getName());
+                messageVo.setToAvatar(toMember.getAvatar());
             }
 
             return messageVo;
@@ -62,6 +68,7 @@ public class MessageVoConvert {
 
     /**
      * Entity集合转DTO集合
+     *
      * @param entityList 对应数据库的实体
      * @return 输出Vo
      */
@@ -72,8 +79,8 @@ public class MessageVoConvert {
             List<MessageVo> list = new ArrayList(entityList.size());
             Iterator var3 = entityList.iterator();
 
-            while(var3.hasNext()) {
-                Message message = (Message)var3.next();
+            while (var3.hasNext()) {
+                Message message = (Message) var3.next();
                 list.add(this.toVo(message));
             }
 
