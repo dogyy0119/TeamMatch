@@ -38,14 +38,14 @@ public class ScheduledTask {
     private static Date GameBefore(Integer minites){
         long time = minites*60*1000;//30分钟
         Date now = new Date();
-        Date beforeDate = new Date(now.getTime() - time);//minites分钟之前的时间
+        Date beforeDate = new Date(now.getTime() + time);//minites分钟之前的时间
         return beforeDate;
     }
 
     private static Date GameAfter(Integer minites){
         long time = minites*60*1000;//30分钟
         Date now = new Date();
-        Date afterDate = new Date(now.getTime() + time);//minites分钟之后的时间
+        Date afterDate = new Date(now.getTime() - time);//minites分钟之后的时间
         return afterDate;
     }
 

@@ -67,16 +67,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui.html", "/webjars/**").permitAll() // 解除swagger拦截
                 .antMatchers("/api/login").permitAll()
                 .antMatchers("/api/mobileValidCode/*/*").permitAll()
-                .antMatchers("/game/v1.0/gameteam/manager/*").permitAll()
-                .antMatchers("/game/v1.0/gameteam/manager/*/*").permitAll()
-                .antMatchers("/game/v1.0/gameteam/manager/*/*/*").permitAll()
+                .antMatchers("/game/v1.0/app/gameteam/manager/*").permitAll()
+                .antMatchers("/game/v1.0/app/gameteam/manager/*/*").permitAll()
+                .antMatchers("/game/v1.0/app/gameteam/manager/*/*/*").permitAll()
                 .antMatchers("/logo/*").permitAll()
-                .antMatchers("/game/v1.0/matches/DefMatchOrder/**").permitAll()
-                .antMatchers("/game/v1.0/matches/DefMatch/**").permitAll()
-                .antMatchers("/game/v1.0/matches/DefMatchManage/**").permitAll()
+                .antMatchers("/game/v1.0/app/matches/DefMatchOrder/**").permitAll()
+                .antMatchers("/game/v1.0/app/matches/DefMatch/**").permitAll()
+                .antMatchers("/game/v1.0/app/matches/DefMatchManage/**").permitAll()
                 .antMatchers("/ist/**").permitAll()
-                .antMatchers("/game/v1.0/matches/PUBG/Manager/**").permitAll()
-                .antMatchers("/game/v1.0/matches/TeamOrder/**").permitAll()
+                .antMatchers("/game/v1.0/app/matches/PUBG/Manager/**").permitAll()
+                .antMatchers("/game/v1.0/app/matches/TeamOrder/**").permitAll()
                 .antMatchers("/actuator/*").permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().
@@ -89,15 +89,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.cors(Customizer.withDefaults());
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.addAllowedOriginPattern("*");
+//        configuration.addAllowedMethod("*");
+//        configuration.addAllowedHeader("*");
+//        configuration.setAllowCredentials(true);
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 }
