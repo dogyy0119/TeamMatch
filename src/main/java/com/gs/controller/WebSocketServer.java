@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ZhangFZ
  * @date 2020/9/29 10:30
  **/
-@ServerEndpoint("/game/v1.0/gameteam/manager/{teamId}/{userId}")
+@ServerEndpoint("/game/v1.0/app/gameteam/manager/{teamId}/{userId}")
 @Component
 @Slf4j
 public class WebSocketServer {

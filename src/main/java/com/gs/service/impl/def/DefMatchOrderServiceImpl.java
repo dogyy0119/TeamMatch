@@ -10,6 +10,7 @@ import com.gs.model.entity.jpa.db1.def.DefMatchManage;
 import com.gs.model.entity.jpa.db1.def.DefMatchOrder;
 import com.gs.model.entity.jpa.db1.def.PersonOrder;
 import com.gs.model.entity.jpa.db1.team.Member;
+import com.gs.model.entity.jpa.db1.team.Team;
 import com.gs.repository.jpa.def.*;
 import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.repository.jpa.team.TeamRepository;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,9 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
 
     @Autowired
     private PersonOrderRepository personOrderRepository;
+
+//    @Resource
+//    private CostManagerRemoteService costManagerRemoteService;
 
     @Override
     public DefMatchOrderDTO findById(Long id) {
@@ -108,14 +113,33 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         System.out.println( "DefMatch id:" + defMatch.getId());
 //        DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatch);
 
-        Optional<DefMatchOrder> defMatchOrderOptional =defMatchOrderRepository.findById(dto.getId());
+        Optional<DefMatchOrder> defMatchOrderOptional = defMatchOrderRepository.findById(dto.getId());
 
         if(defMatchOrderOptional.get() == null) return false;
 
         DefMatchOrder entity = defMatchOrderOptional.get();
 
+//        if(dto.getStatus() == 1 && entity.getStatus() != 1) {
+//            CostDto costDto = new CostDto();
+//            if(entity.getMode() == 0) {
+//                costDto.setMemberId(entity.getOrderId());
+//                costDto.setTeamId(0L);
+//
+//            } else {
+//                Team team = teamRepository.getById(entity.getOrderId());
+//                costDto.setMemberId(team.getCreateMemberId());
+//                costDto.setTeamId(entity.getOrderId());
+//
+//            }
+//            costDto.setFee(defMatch.getGameBill());
+//
+//            costManagerRemoteService.createCost(costDto);
+//        }
+
         System.out.println( "dto.getStatus():" + dto.getStatus());
         entity.setStatus(dto.getStatus());
+
+
 
         defMatchOrderRepository.save(entity);
 
