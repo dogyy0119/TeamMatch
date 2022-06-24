@@ -41,6 +41,12 @@ public class Logo implements Serializable {
     private Long memberId;
 
     /**
+     * logo类型(1、战队Logo；2、联盟Logo；3、联盟比赛Logo)
+     */
+    @Column(name = "type")
+    private Integer type;
+
+    /**
      * 该Logo存储路径（相对路径）
      */
     @Column(name = "url")

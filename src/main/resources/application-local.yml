@@ -41,7 +41,7 @@ spring:
       enable_lazy_load_no_trans: true
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: false  #日志中显示sql语句
+    show-sql: true  #日志中显示sql语句
 
 
 #  cloud:

@@ -29,7 +29,7 @@ public interface MemberService {
      * @param memberId id
      * @return member
      */
-    Member getMemberById(Long memberId);
+    MemberVo getMemberById(Long memberId);
 
     /**
      * 根据关键字进行模糊查询

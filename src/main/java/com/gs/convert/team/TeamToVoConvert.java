@@ -8,6 +8,7 @@ import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * 战队实体类转VO工具类
@@ -29,4 +30,6 @@ public abstract  class TeamToVoConvert {
     @Mapping(target = "teamMembers", expression = "java(teamMemberToVoConvert.toVo(entity.getTeamMembers()))")
     @Mapping(target = "createTime", expression = "java(sdf.format(entity.getCreateTime()))")
     public abstract TeamVo toVo(Team entity);
+
+    public abstract List<TeamVo> toVo(List<Team> entityLst);
 }

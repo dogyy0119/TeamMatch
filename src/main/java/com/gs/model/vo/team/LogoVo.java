@@ -41,6 +41,11 @@ public class LogoVo implements Serializable {
     private String url;
 
     /**
+     * logo类型(1、战队Logo；2、联盟Logo；3、联盟比赛Logo)
+     */
+    private Integer type;
+
+    /**
      * 文件大小
      */
     private Long size;

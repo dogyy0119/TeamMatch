@@ -14,28 +14,24 @@ public class MemberRequestDTO implements Serializable {
     /**
      * 该消息所属的team ID
      */
-    @NotBlank
     @IsTeamExist
     private Long teamId;
 
     /**
      * 发送者
      */
-    @NotBlank
     @IsMemberExist
     private Long fromId;
 
     /**
      * 接收者
      */
-    @NotBlank
     @IsMemberExist
     private Long toId;
 
     /**
      * 1、邀请人加入战队；
      */
-    @NotBlank
     private Integer type;
 
     /**

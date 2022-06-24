@@ -67,7 +67,8 @@ public class Team implements Serializable {
     /**
      * 战队成员列表
      */
-    @OneToMany(targetEntity = TeamMember.class, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = TeamMember.class, cascade = CascadeType.ALL
+            , orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "teamId", referencedColumnName = "id")
     private List<TeamMember> teamMembers = new ArrayList<>();
 

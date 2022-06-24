@@ -23,7 +23,7 @@ public class TeamRequestController {
 
     @ApiOperation(value = "发送战队请求")
     @RequestMapping(value = "/sendTeamRequest", method = RequestMethod.POST)
-    public R sendTeamRequest(@RequestBody TeamRequestDTO teamRequestDTO) {
+    public R sendTeamRequest(@Validated @RequestBody TeamRequestDTO teamRequestDTO) {
         if (null != teamService.findTeamMemberByTeamIdAndMemberId(teamRequestDTO.getTeamId(), teamRequestDTO.getFromId())){
             return R.error(CodeEnum.IS_MEMBER_ALREADY_IN_TEAM.getCode(), "您已经在该战队");
         }

@@ -207,48 +207,6 @@ public class TeamManageController {
 
     }
 
-    @ApiOperation(value = "上传logo")
-    @RequestMapping(value = "/uploadLogo", method = RequestMethod.POST)
-    public R uploadLogo(
-            @RequestParam("manageMemberId") Long manageMemberId,
-            @RequestParam(name = "file") MultipartFile file) {
-
-//        if (!memberService.existsById(manageMemberId)) {
-//            return R.error(CodeEnum.IS_MEMBER_NOT_EXIST.getCode(), "该用户不存在");
-//        }
-
-//        if (!teamService.existByTeamId(teamId)) {
-//            return R.error(CodeEnum.IS_TEAM_NOT_EXIST.getCode(), "该战队不存在");
-//        }
-
-        if (file == null) {
-            return R.error("请选择要上传的图片");
-        }
-        if (file.getSize() > 1024 * 1024 * 10) {
-            return R.error("文件大小不能大于10M");
-        }
-        //获取文件后缀
-        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1, file.getOriginalFilename().length());
-        if (!"jpg,jpeg,gif,png".toUpperCase().contains(suffix.toUpperCase())) {
-            return R.error("请选择jpg,jpeg,gif,png格式的图片");
-        }
-
-        return R.success(logoService.uploadImage(file, manageMemberId));
-
-    }
-
-    @ApiOperation(value = "获取Logo列表")
-    @RequestMapping(value = "/getLogoList", method = RequestMethod.GET)
-    public R getLogoListByTeam(@RequestParam(name = "memberId") Long memberId) {
-        return R.success(logoService.getLogoList(memberId));
-    }
-
-    @ApiOperation(value = "删除logo")
-    @RequestMapping(value = "/deleteLogo", method = RequestMethod.GET)
-    public R deleteLogo(@RequestParam(name = "logoId") Long logoId) {
-        return R.success(logoService.deleteLogo(logoId));
-    }
-
     @ApiOperation(value = "模糊查询战队")
     @RequestMapping(value = "/queryTeam", method = RequestMethod.GET)
     public R queryTeam(

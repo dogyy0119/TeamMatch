@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @Api(tags = "成员请求接口")
 @RestController
 @RequestMapping("/game/v1.0/gameteam/manager")
@@ -21,14 +23,14 @@ public class MemberRequestController {
 
     @ApiOperation(value = "发送成员请求")
     @RequestMapping(value = "/sendMemberRequest", method = RequestMethod.POST)
-    public R sendMemberRequest(@RequestBody MemberRequestDTO memberRequestDTO) {
-        if (memberRequestDTO.getFromId() == memberRequestDTO.getToId()){
+    public R sendMemberRequest(@Validated @RequestBody MemberRequestDTO memberRequestDTO) {
+        if (Objects.equals(memberRequestDTO.getFromId(), memberRequestDTO.getToId())){
             return R.error(CodeEnum.IS_REQUEST_INVITATION_OWN.getCode(), "不能邀请自己加入战队");
         }
         return R.result(memberRequestService.sendMemberRequest(memberRequestDTO));
     }
 
-    @ApiOperation(value = "获取成员请求列表")
+    @ApiOperation(value = "获取联盟战队请求列表")
     @RequestMapping(value = "/getMemberRequests", method = RequestMethod.GET)
     public R getMemberRequests
             (

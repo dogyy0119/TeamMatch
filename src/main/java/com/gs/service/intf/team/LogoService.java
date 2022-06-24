@@ -13,7 +13,7 @@ public interface LogoService {
      * @param memberId memberId
      * @return Logo实体
      */
-    LogoVo uploadImage(MultipartFile file, Long memberId);
+    LogoVo uploadImage(MultipartFile file, Long memberId, Integer type);
 
     /**
      * 根据logoId获取Logo实体

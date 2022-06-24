@@ -36,7 +36,7 @@ public class MemberRequestServiceLmpl implements MemberRequestService {
     @Override
     public CodeEnum sendMemberRequest(MemberRequestDTO memberRequestDTO) {
 
-        if (memberRequestRepository.existsByTeamIdAndToIdAndType(memberRequestDTO.getTeamId(), memberRequestDTO.getToId(), memberRequestDTO.getType())) {
+        if (memberRequestRepository.existsByTeamIdAndToIdAndTypeAndStatus(memberRequestDTO.getTeamId(), memberRequestDTO.getToId(), memberRequestDTO.getType(), 1)) {
             return CodeEnum.IS_EXIST;
         }
 

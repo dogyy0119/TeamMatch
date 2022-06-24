@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TeamRequestRepository extends JpaRepository<TeamRequest, Long>, JpaSpecificationExecutor<TeamRequest> {
 
-    boolean existsByTeamIdAndFromIdAndType(Long teamId, Long fromId, Integer type);
+    boolean existsByTeamIdAndFromIdAndTypeAndStatus(Long teamId, Long fromId, Integer type, Integer status);
     List<TeamRequest> findTeamRequestsByTeamId(Long teamId);
 
     TeamRequest findTeamRequestById(Long id);

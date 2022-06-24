@@ -50,7 +50,7 @@ public class TeamRequestServiceLmpl implements TeamRequestService {
     @Override
     public CodeEnum sendTeamRequest(TeamRequestDTO teamRequestDTO) {
 
-        if (teamRequestRepository.existsByTeamIdAndFromIdAndType(teamRequestDTO.getTeamId(), teamRequestDTO.getFromId(), teamRequestDTO.getType())) {
+        if (teamRequestRepository.existsByTeamIdAndFromIdAndTypeAndStatus(teamRequestDTO.getTeamId(), teamRequestDTO.getFromId(), teamRequestDTO.getType(), 1)) {
             return CodeEnum.IS_EXIST;
         }
 

@@ -1,4 +1,4 @@
-package com.gs.controller;
+package com.gs.controller.team;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -16,7 +16,6 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint("/game/v1.0/gameteam/manager/{teamId}/{userId}")
 @Component
 @Slf4j
-public class WebSocketServer {
+public class TeamMessageServer {
 
     private MessageService messageService;
     private MemberService memberService;
@@ -45,7 +44,7 @@ public class WebSocketServer {
     /**
      * 将每个客户端对应的MyWebSocket对象按照team进行分组
      */
-    private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, WebSocketServer>> webTeamSocketMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, TeamMessageServer>> webTeamSocketMap = new ConcurrentHashMap<>();
 
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -73,7 +72,7 @@ public class WebSocketServer {
         this.teamId = teamId;
 
         if (webTeamSocketMap.containsKey(teamId)) {
-            ConcurrentHashMap<Long, WebSocketServer> memberSocketMap = webTeamSocketMap.get(teamId);
+            ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(teamId);
             if (null == memberSocketMap) {
                 memberSocketMap = new ConcurrentHashMap<>();
                 memberSocketMap.put(userId, this);
@@ -87,7 +86,7 @@ public class WebSocketServer {
                 webTeamSocketMap.put(teamId, memberSocketMap);
             }
         } else {
-            ConcurrentHashMap<Long, WebSocketServer> memberSocketMap = new ConcurrentHashMap<>();
+            ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = new ConcurrentHashMap<>();
             memberSocketMap.put(userId, this);
             webTeamSocketMap.put(teamId, memberSocketMap);
         }
@@ -115,7 +114,7 @@ public class WebSocketServer {
     @OnClose
     public void onClose() {
         if (webTeamSocketMap.containsKey(teamId)) {
-            ConcurrentHashMap<Long, WebSocketServer> memberSocketMap = webTeamSocketMap.get(teamId);
+            ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(teamId);
             if (memberSocketMap.containsKey(userId)) {
                 memberSocketMap.remove(userId);
                 if (memberSocketMap.isEmpty()) {
@@ -191,11 +190,11 @@ public class WebSocketServer {
                                 log.error("请求参数有问题，参数中没有填写toId参数");
                             }
 
-                            ConcurrentHashMap<Long, WebSocketServer> memberSocketMap = webTeamSocketMap.get(teamId);
+                            ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(teamId);
 
                             if (memberSocketMap.containsKey(toUserId)) {
 
-                                WebSocketServer webSocketServer = memberSocketMap.get(toUserId);
+                                TeamMessageServer teamMessageServer = memberSocketMap.get(toUserId);
 
                                 //将message存在在数据库中
                                 MessageDto messageDto = JSON.parseObject(message, MessageDto.class);
@@ -205,7 +204,7 @@ public class WebSocketServer {
                                     return;
                                 }
 
-                                webSocketServer.sendMessage(messageVo);
+                                teamMessageServer.sendMessage(messageVo);
                             } else {
                                 log.error("请求的userId:" + userId + "不在该服务器上");
                             }
@@ -254,8 +253,8 @@ public class WebSocketServer {
     }
 
     private void sendBroadcastMessage(MessageVo message) throws IOException {
-        ConcurrentHashMap<Long, WebSocketServer> memberSocketMap = webTeamSocketMap.get(teamId);
-        for (WebSocketServer entry : memberSocketMap.values()) {
+        ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(teamId);
+        for (TeamMessageServer entry : memberSocketMap.values()) {
             if (!Objects.equals(entry.userId, this.userId)) {
                 entry.sendMessage(message);
             }

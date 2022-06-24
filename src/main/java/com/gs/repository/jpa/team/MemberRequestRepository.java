@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MemberRequestRepository extends JpaRepository<MemberRequest, Long>, JpaSpecificationExecutor<MemberRequest> {
 
-    boolean existsByTeamIdAndToIdAndType(Long teamId, Long toId, Integer type);
+    boolean existsByTeamIdAndToIdAndTypeAndStatus(Long teamId, Long toId, Integer type, Integer status);
 
     Page<MemberRequest> findAllByToId(Long toId, Pageable pageable);
 

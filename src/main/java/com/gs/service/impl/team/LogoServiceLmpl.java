@@ -37,7 +37,7 @@ public class LogoServiceLmpl implements LogoService {
      * @return Logo实体
      */
     @Override
-    public LogoVo uploadImage(MultipartFile file, Long memberId){
+    public LogoVo uploadImage(MultipartFile file, Long memberId, Integer type){
 
         String savePath = logoPath + "/" + memberId;
         File savePathFile = new File(savePath);
@@ -67,6 +67,7 @@ public class LogoServiceLmpl implements LogoService {
         String url = "/" + memberId + "/" + filename;
         logo.setUrl(url);
         logo.setSize(file.getSize());
+        logo.setType(type);
         logo.setCreateTime(new Date());
 
         logo = logoRepository.save(logo);

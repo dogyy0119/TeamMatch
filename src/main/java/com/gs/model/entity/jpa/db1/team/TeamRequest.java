@@ -37,7 +37,7 @@ public class TeamRequest {
     private Long fromId;
 
     /**
-     * 1、申请加入战队；
+     * 1、申请加入战队
      */
     @Column(name = "type")
     private Integer type;

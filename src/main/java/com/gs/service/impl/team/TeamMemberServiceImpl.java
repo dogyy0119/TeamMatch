@@ -1,10 +1,15 @@
 package com.gs.service.impl.team;
 
 
+import com.gs.constant.enums.MemberJobEnum;
 import com.gs.convert.team.TeamToVoConvert;
+import com.gs.model.entity.jpa.db1.team.Member;
+import com.gs.model.entity.jpa.db1.team.Team;
 import com.gs.model.entity.jpa.db1.team.TeamMember;
 import com.gs.model.vo.team.TeamVo;
+import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.repository.jpa.team.TeamMemberRepository;
+import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.team.TeamMemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,31 @@ public class TeamMemberServiceImpl implements TeamMemberService {
     private TeamMemberRepository teamMemberRepository;
 
     private TeamToVoConvert teamToVoConvert;
+
+    private MemberRepository memberRepository;
+
+    private TeamRepository teamRepository;
+
+    @Override
+    public Boolean isMemberInTeam(Long memberId, Long teamId){
+        Member member = memberRepository.findMemberById(memberId);
+        Team team = teamRepository.findTeamById(teamId);
+        TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
+        if (teamMember == null){
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Integer getMemberJobInTeam(Long memberId, Long teamId){
+        Member member = memberRepository.getById(memberId);
+        Team team = teamRepository.getById(teamId);
+        TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
+
+        return teamMember.getJob();
+    }
     /**
      * 根据Member Id分页查询所有的战队
      *

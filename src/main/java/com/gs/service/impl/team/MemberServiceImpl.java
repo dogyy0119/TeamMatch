@@ -49,8 +49,8 @@ public class MemberServiceImpl implements MemberService {
      * @return member
      */
     @Override
-    public Member getMemberById(Long memberId) {
-        return memberRepository.findMemberById(memberId);
+    public MemberVo getMemberById(Long memberId) {
+        return memberToVoConvert.toVo(memberRepository.findMemberById(memberId));
     }
 
     /**

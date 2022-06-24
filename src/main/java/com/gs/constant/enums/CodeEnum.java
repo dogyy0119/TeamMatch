@@ -107,6 +107,53 @@ public enum CodeEnum {
      * 自己不能邀请自己
      */
     IS_REQUEST_INVITATION_OWN("10022", "自己不能邀请自己"),
+
+    /**
+     * 该玩家已经创建过联盟
+     */
+    IS_ALREADY_CREATE_LEAGUE("10023", "该玩家已经创建过联盟"),
+    /**
+     * 只有队长和副队长有权限查看联盟
+     */
+    IS_TEAM_LEAGUE_PERMISSION("10024", "只有队长和副队长有权限查看联盟"),
+
+    /**
+     * 联盟不存在
+     */
+    IS_LEAGUE_NOT_EXIST("10025", "联盟不存在"),
+
+    /**
+     * 只有联盟创建者有权限
+     */
+    IS_LEAGUE_PERMISSION_ERROR("10026", "只有联盟创建者有权限"),
+
+    /**
+     * 战队已经在联盟里
+     */
+    IS_TEAM_ALLEARY_IN_LEAGUE("10027", "战队已经在联盟里"),
+    /**
+     * 战队不在联盟里
+     */
+    IS_TEAM_NOT_IN_LEAGUE("10028", "战队不在联盟里"),
+    /**
+     * 联盟请求不存在
+     */
+    IS_LEAGUE_REQUEST_NOT_EXIST("10029", "联盟请求不存在"),
+
+    /**
+     * 联盟战队请求不存在
+     */
+    IS_LEAGUE_TEAM_REQUEST_NOT_EXIST("10030", "联盟战队请求不存在"),
+
+    /**
+     * 联盟战队请求错误
+     */
+    IS_LEAGUE_TEAM_REQUEST_ERROR("10031", "联盟战队请求错误"),
+
+    /**
+     * 不存在该联盟快递信息
+     */
+    IS_LEAGUE_TASK_NOT_EXIST("10032", "不存在该联盟快递信息"),
     /**
      * 系统异常
      */
