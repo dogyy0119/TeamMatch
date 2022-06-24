@@ -150,11 +150,11 @@
 		</dependency>
 		<!-- jpa dependency / -->
 		<!-- mybatis dependency -->
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>3.4.2</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.baomidou</groupId>-->
+<!--			<artifactId>mybatis-plus-boot-starter</artifactId>-->
+<!--			<version>3.4.2</version>-->
+<!--		</dependency>-->
 		<!-- mybatis dependency / -->
 
 		<dependency>
@@ -188,6 +188,18 @@
 			<artifactId>spring-cloud-starter-consul-discovery</artifactId>
 			<version>3.0.4</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>org.nocheater</groupId>-->
+<!--			<artifactId>pay-center-api</artifactId>-->
+<!--			<version>0.0.1-SNAPSHOT</version>-->
+<!--			<scope>compile</scope>-->
+<!--		</dependency>-->
 
 	</dependencies>
 

@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Api(tags = "自定义比赛申请接口")
 @RestController
-@RequestMapping("/game/v1.0/matches/DefMatchOrder")
+@RequestMapping("/game/v1.0/app/matches/DefMatchOrder")
 @AllArgsConstructor
 public class DefMatchOrderController {
 

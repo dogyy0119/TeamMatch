@@ -15,7 +15,7 @@ import cn.hutool.json.JSONObject;
 
 @Api(tags = "获取PUBG比赛数据接口")
 @RestController
-@RequestMapping("/game/v1.0/matches/PUBG/Manager")
+@RequestMapping("/game/v1.0/app/matches/PUBG/Manager")
 @AllArgsConstructor
 public class PUBGMatchesController {
 

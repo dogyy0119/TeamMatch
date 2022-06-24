@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Api(tags = "成员请求接口")
 @RestController
-@RequestMapping("/game/v1.0/gameteam/manager")
+@RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
 public class MemberRequestController {

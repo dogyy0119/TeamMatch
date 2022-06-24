@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "队务相关接口")
 @RestController
-@RequestMapping("/game/v1.0/gameteam/manager")
+@RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
 public class TeamTaskController {

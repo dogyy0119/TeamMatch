@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Api(tags = "创建自定义比赛数据接口")
 @RestController
-@RequestMapping("/game/v1.0/matches/DefMatch")
+@RequestMapping("/game/v1.0/app/matches/DefMatch")
 @AllArgsConstructor
 public class DefMatchController {
 

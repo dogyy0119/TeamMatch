@@ -2,7 +2,6 @@ package com.gs.controller.team;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.gs.model.dto.team.MessageDto;
 import com.gs.model.vo.team.MessageVo;
 import com.gs.service.intf.team.MemberService;
@@ -28,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ZhangFZ
  * @date 2020/9/29 10:30
  **/
-@ServerEndpoint("/game/v1.0/gameteam/manager/{teamId}/{userId}")
+@ServerEndpoint("/game/v1.0/app/gameteam/manager/{teamId}/{userId}")
 @Component
 @Slf4j
 public class TeamMessageServer {
@@ -152,7 +151,7 @@ public class TeamMessageServer {
         log.info("战队" + teamId + "成员" + userId + ",报文:" + message);
         //可以群发消息
         //消息保存到数据库、redis
-        if (StringUtils.isNotBlank(message)) {
+        if (!message.isEmpty()) {
             try {
                 //解析发送的报文
                 JSONObject jsonObject = JSON.parseObject(message);

@@ -32,7 +32,7 @@ public class DefMatchOrder extends AbstractBaseTimeEntity implements Serializabl
     private DefMatchManage defMatchManage;
 
     /**
-     * 报名方式 个人 战队
+     * 报名方式 个人 0  战队 1
      */
     @Column(name = "mode")
     private Integer mode;

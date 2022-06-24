@@ -29,7 +29,7 @@ import java.util.Optional;
 
 @Api(tags = "战队比赛内部申请接口")
 @RestController
-@RequestMapping("/game/v1.0/matches/TeamOrder")
+@RequestMapping("/game/v1.0/app/matches/TeamOrder")
 @AllArgsConstructor
 public class TeamOrderController {
 

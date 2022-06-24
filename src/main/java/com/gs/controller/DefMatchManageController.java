@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Api(tags = "自定义比赛管理接口")
 @RestController
-@RequestMapping("/game/v1.0/matches/DefMatchManage")
+@RequestMapping("/game/v1.0/app/matches/DefMatchManage")
 @AllArgsConstructor
 public class DefMatchManageController {
 
