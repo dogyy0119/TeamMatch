@@ -151,7 +151,7 @@ public class TeamMessageServer {
         log.info("战队" + teamId + "成员" + userId + ",报文:" + message);
         //可以群发消息
         //消息保存到数据库、redis
-        if (!message.isEmpty()) {
+        if (message !=null && !message.isEmpty()) {
             try {
                 //解析发送的报文
                 JSONObject jsonObject = JSON.parseObject(message);

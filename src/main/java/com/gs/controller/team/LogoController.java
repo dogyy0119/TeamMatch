@@ -26,7 +26,7 @@ import javax.annotation.Resource;
  **/
 @Api(tags = "Logo管理接口")
 @RestController
-@RequestMapping("/game/v1.0/gameteam/manager")
+@RequestMapping("/game/v1.0/app/gameteam/manager")
 @AllArgsConstructor
 public class LogoController {
 

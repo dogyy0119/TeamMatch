@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "联盟管理接口")
 @RestController
-@RequestMapping("/game/v1.0/gameteam/manager")
+@RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
 public class LeagueController {
