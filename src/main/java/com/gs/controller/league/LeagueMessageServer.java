@@ -2,10 +2,10 @@ package com.gs.controller.league;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.gs.model.dto.team.MessageDto;
-import com.gs.model.vo.team.MessageVo;
+import com.gs.model.dto.league.LeagueMessageDto;
+import com.gs.model.vo.league.LeagueMessageVo;
+import com.gs.service.intf.league.LeagueMessageService;
 import com.gs.service.intf.team.MemberService;
-import com.gs.service.intf.team.MessageService;
 import com.gs.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,15 +27,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ZhangFZ
  * @date 2020/9/29 10:30
  **/
-@ServerEndpoint("/game/v1.0/gameteam/app/manager/league/{leagueId}/{userId}")
+@ServerEndpoint("/game/v1.0/app/gameteam/manager/league/{leagueId}/{userId}")
 @Component
 @Slf4j
 public class LeagueMessageServer {
-    private MessageService messageService;
+    private LeagueMessageService leagueMessageService;
     private MemberService memberService;
 
     public void initServiceImp() {
-        this.messageService = SpringUtil.getBean(MessageService.class);
+        this.leagueMessageService = SpringUtil.getBean(LeagueMessageService.class);
         this.memberService = SpringUtil.getBean(MemberService.class);
     }
 
@@ -155,9 +155,9 @@ public class LeagueMessageServer {
                 //解析发送的报文
                 JSONObject jsonObject = JSON.parseObject(message);
 
-                Long teamId = jsonObject.getLong("teamId");
+                Long leagueId = jsonObject.getLong("leagueId");
 
-                if (teamId != null) {
+                if (leagueId != null) {
                     int type = jsonObject.getInteger("type");
 
                     if (type != 3 && type != 4) {
@@ -165,12 +165,12 @@ public class LeagueMessageServer {
                         return;
                     }
 
-                    if (webLeagueSocketMap.containsKey(teamId)) {
+                    if (webLeagueSocketMap.containsKey(leagueId)) {
 
                         if (type == 4) {
                             //将message存在在数据库中
-                            MessageDto messageDto = JSON.parseObject(message, MessageDto.class);
-                            MessageVo messageVo = messageService.insertMessage(messageDto);
+                            LeagueMessageDto messageDto = JSON.parseObject(message, LeagueMessageDto.class);
+                            LeagueMessageVo messageVo = leagueMessageService.insertLeagueMessage(messageDto);
                             if (null == messageVo) {
                                 log.error("已经发送过该消息：" + jsonObject.toJSONString());
                                 return;
@@ -181,28 +181,28 @@ public class LeagueMessageServer {
                             Long toUserId = jsonObject.getLong("toId");
                             if (toUserId != null) {
                                 if (toUserId.equals(userId)) {
-                                    log.error("战队" + this.leagueId + "中的" + this.userId + "不能给自己发送消息");
+                                    log.error("联盟" + this.leagueId + "中的" + this.userId + "不能给自己发送消息");
                                     return;
                                 }
                             } else {
                                 log.error("请求参数有问题，参数中没有填写toId参数");
                             }
 
-                            ConcurrentHashMap<Long, LeagueMessageServer> memberSocketMap = webLeagueSocketMap.get(teamId);
+                            ConcurrentHashMap<Long, LeagueMessageServer> memberSocketMap = webLeagueSocketMap.get(leagueId);
 
                             if (memberSocketMap.containsKey(toUserId)) {
 
-                                LeagueMessageServer teamMessageServer = memberSocketMap.get(toUserId);
+                                LeagueMessageServer leagueMessageServer = memberSocketMap.get(toUserId);
 
                                 //将message存在在数据库中
-                                MessageDto messageDto = JSON.parseObject(message, MessageDto.class);
-                                MessageVo messageVo = messageService.insertMessage(messageDto);
+                                LeagueMessageDto messageDto = JSON.parseObject(message, LeagueMessageDto.class);
+                                LeagueMessageVo messageVo = leagueMessageService.insertLeagueMessage(messageDto);
                                 if (null == messageVo) {
                                     log.error("已经发送过该消息：" + jsonObject.toJSONString());
                                     return;
                                 }
 
-                                teamMessageServer.sendMessage(messageVo);
+                                leagueMessageServer.sendMessage(messageVo);
                             } else {
                                 log.error("请求的userId:" + userId + "不在该服务器上");
                             }
@@ -210,7 +210,7 @@ public class LeagueMessageServer {
 
 
                     } else {
-                        log.error("请求的teamId:" + teamId + "不在该服务器上");
+                        log.error("请求的leagueId:" + leagueId + "不在该服务器上");
                     }
                 } else {
                     log.error("请求参数有问题，参数中没有填写teamId参数");
@@ -238,7 +238,7 @@ public class LeagueMessageServer {
      * 实现服务器主动推送
      * MessageVo 自定义推送的消息实体
      */
-    private void sendMessage(MessageVo message) throws IOException {
+    private void sendMessage(LeagueMessageVo message) throws IOException {
         this.session.getBasicRemote().sendText(JSONObject.toJSONString(message));
     }
 
@@ -246,11 +246,11 @@ public class LeagueMessageServer {
      * 实现服务器主动推送
      * MessageVo 自定义推送的消息实体List
      */
-    private void sendMessage(List<MessageVo> message) throws IOException {
+    private void sendMessage(List<LeagueMessageVo> message) throws IOException {
         this.session.getBasicRemote().sendText(JSONObject.toJSONString(message));
     }
 
-    private void sendBroadcastMessage(MessageVo message) throws IOException {
+    private void sendBroadcastMessage(LeagueMessageVo message) throws IOException {
         ConcurrentHashMap<Long, LeagueMessageServer> memberSocketMap = webLeagueSocketMap.get(leagueId);
         for (LeagueMessageServer entry : memberSocketMap.values()) {
             if (!Objects.equals(entry.userId, this.userId)) {
