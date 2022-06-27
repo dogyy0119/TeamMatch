@@ -5,6 +5,7 @@ import com.gs.model.dto.vo.PUBGMatchesVO;
 import com.gs.model.entity.jpa.db1.game.PUBGMatches;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PUBGMatchesService {
 
@@ -35,7 +36,7 @@ public interface PUBGMatchesService {
      * @param defMatchId
      * @param defMatchIndex
      */
-    public void getPUBGMatches(String pubgMatchesId, Long defMatchId, Integer defMatchIndex);
+    public void getPUBGMatches(String pubgMatchesId, Long defMatchId, Integer defMatchIndex, Map<Integer,Integer> rank, Integer killScore);
 
     /**
      *

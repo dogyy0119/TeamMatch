@@ -6,6 +6,7 @@ import com.gs.model.entity.jpa.db1.team.Member;
 import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.service.intf.def.DefMatchService;
 import com.gs.service.intf.game.PUBGMatchesService;
+import com.gs.utils.ScoreUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -97,7 +98,7 @@ public class ScheduledTask {
                     for (String id : matchIds) {
                         ids.add( id );
                         List<PUBGMatches> pubgMatchesList = pubgMatchesService.findPUBGMatchesByDefMatchId(defMatchId);
-                        pubgMatchesService.getPUBGMatches(id ,defMatchDTO.getId(),pubgMatchesList.size()+1);
+                        pubgMatchesService.getPUBGMatches(id ,defMatchDTO.getId(),pubgMatchesList.size()+1, ScoreUtils.perseRank(defMatchDTO.getGameRankItems()), ScoreUtils.perseKill(defMatchDTO.getGameKillItems()));
                         if(pubgMatchesList.size()+1 == defMatchDTO.getGameNum()) {
                             prepareMap.remove(defMatchId);
                             matchIdMap.remove(matchIdMap);
