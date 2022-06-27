@@ -37,6 +37,12 @@ public class PUBGPlayer extends PUBGPlayerBase implements Serializable , Compara
     private String kills;
 
     /**
+     * 击杀数得分
+     */
+    @Column(name = "playerScore")
+    private Integer playerScore = 0;
+
+    /**
      *  伤害
      */
     @Column(name = "damageDealt")
