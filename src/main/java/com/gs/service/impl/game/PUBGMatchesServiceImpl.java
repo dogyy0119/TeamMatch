@@ -314,7 +314,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     }
 
     @Override
-    public void getPUBGMatches(String pubgMatchesId, Long defMatchId, Integer defMatchIndex) {
+    public void getPUBGMatches(String pubgMatchesId, Long defMatchId, Integer defMatchIndex, Map<Integer,Integer> rank, Integer killScore) {
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Authorization", pubgConfig.getHead_token());
         headerMap.put("Accept", pubgConfig.getHead_formate());
@@ -377,6 +377,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                     pubgPlayer.setAssists(stats.get("assists").toString());
                     pubgPlayer.setTimeSurvived(stats.get("timeSurvived").toString());
                     pubgPlayer.setKills(stats.get("kills").toString());
+                    pubgPlayer.setPlayerScore(Integer.parseInt(pubgPlayer.getKills()) * killScore );
                     pubgPlayer.setPubgPlayerName(stats.get("name").toString());
                     pubgPlayer.setPubgPlayerId(stats.get("playerId").toString());
 
@@ -419,6 +420,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             PUBGTeam pubgTeam = new PUBGTeam();
             pubgTeam.setPubgTeamId(pubgteam);
             pubgTeam.setIndex(teamIndexMap.get(pubgteam));
+            pubgTeam.setTeamScore( rank.get(pubgTeam.getIndex()) );
             List<PUBGPlayer> pubgPlayerList = new ArrayList<>();
 
             Map<String, PUBGPlayer> playerMaps = teamMap.get(pubgteam);
@@ -429,6 +431,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
                 PUBGPlayer pubgPlayer = pubgPlayerMap.get(player);
                 pubgPlayerList.add(pubgPlayer);
+                pubgTeam.setTeamScore(pubgTeam.getTeamScore() + pubgPlayer.getPlayerScore());
             }
             pubgTeam.setTeamMembers(pubgPlayerList);
             pubgTeamList.add(pubgTeam);

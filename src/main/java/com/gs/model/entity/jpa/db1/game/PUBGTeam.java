@@ -37,6 +37,12 @@ public class PUBGTeam implements Serializable , Comparable<PUBGTeam>{
     private Integer index;
 
     /**
+     * 队伍得分
+     */
+    @Column(name = "teamScore")
+    private Integer teamScore = 0;
+
+    /**
      * Pubg 比赛 Id
      */
     @JsonIgnore
