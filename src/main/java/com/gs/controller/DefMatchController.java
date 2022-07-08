@@ -27,6 +27,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/game/v1.0/app/matches/DefMatch")
 @AllArgsConstructor
+@CrossOrigin
 public class DefMatchController {
 
     @Autowired
@@ -92,7 +93,7 @@ public class DefMatchController {
             @RequestParam Integer pageSize ){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchService.findMatchesByMember(memberId, pageable);
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
@@ -112,7 +113,7 @@ public class DefMatchController {
             @RequestParam Integer pageSize ) {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchService.findMatchesByDate(date, pageable);
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
@@ -131,7 +132,7 @@ public class DefMatchController {
             @RequestParam Integer pageSize ){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchService.findMatchesByMatchType( matchType, pageable);
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
@@ -151,7 +152,7 @@ public class DefMatchController {
             @RequestParam Integer pageSize ){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchService.findMatchesByGameMode( gameMode, pageable);
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();

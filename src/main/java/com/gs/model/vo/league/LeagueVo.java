@@ -35,7 +35,7 @@ public class LeagueVo implements Serializable {
     /**
      * 联盟的最大战队数量
      */
-    private Integer maxMemberNum;
+    private Integer maxTeamNum;
 
     /**
      * 联盟的创建时间

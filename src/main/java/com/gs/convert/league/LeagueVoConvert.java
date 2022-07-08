@@ -40,7 +40,7 @@ public class LeagueVoConvert {
         leagueVo.setId(entity.getId());
         leagueVo.setName(entity.getName());
         leagueVo.setCreateMemberId(entity.getCreateMemberId());
-        leagueVo.setMaxMemberNum(entity.getMaxMemberNum());
+        leagueVo.setMaxTeamNum(entity.getMaxTeamNum());
         leagueVo.setLogoUrl(entity.getLogoUrl());
         leagueVo.setDescriptionInfo(entity.getDescriptionInfo());
         List<LeagueTeam> leagueTeamList = entity.getLeagueTeams();

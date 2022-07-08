@@ -154,7 +154,7 @@ public class DefMatchServiceImpl implements DefMatchService {
     @Override
     public List<DefMatchDTO> getManageMatchesPage(Long memberId, Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
         Page<DefMatch> ordersPage = defMatchRepository.findAll(new Specification<DefMatch>() {
             public Predicate toPredicate(Root<DefMatch> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -188,7 +188,7 @@ public class DefMatchServiceImpl implements DefMatchService {
     public List<DefMatchDTO> getMatchesByTime(Date littleTime, Date bigTime) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(0, 10, sort);
+        PageRequest pageable = PageRequest.of(0, 10, sort);
 
         Page<DefMatch> ordersPage = defMatchRepository.findAll(new Specification<DefMatch>() {
 
@@ -226,7 +226,7 @@ public class DefMatchServiceImpl implements DefMatchService {
                                            Integer pageNum,
                                            Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> ordersPage = defMatchRepository.findAll(new Specification<DefMatch>() {
             public Predicate toPredicate(Root<DefMatch> root,

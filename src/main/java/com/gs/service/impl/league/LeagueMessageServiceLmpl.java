@@ -54,7 +54,7 @@ public class LeagueMessageServiceLmpl implements LeagueMessageService {
     public List<LeagueMessageVo> getLeagueGroupChatMsgs(Long leagueId, Integer pageNum, Integer pageSize){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<LeagueMessage> messagePage = leagueMessageRepository.findAll(new Specification<LeagueMessage>() {
 
@@ -114,7 +114,7 @@ public class LeagueMessageServiceLmpl implements LeagueMessageService {
     public List<LeagueMessageVo> getLeaguePrivateChatMsgs(Long leagueId, Long fromId, Long toId, Integer pageNum, Integer pageSize){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<LeagueMessage> messagePage = leagueMessageRepository.findAll(new Specification<LeagueMessage>() {
 

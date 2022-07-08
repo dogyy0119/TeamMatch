@@ -1,7 +1,6 @@
 package com.gs.model.entity.jpa.db1.league;
 
-import com.gs.model.entity.jpa.db1.team.Team;
-import com.gs.model.entity.jpa.db1.team.TeamMember;
+import com.gs.model.entity.jpa.db1.match.league.LMWhole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,8 +41,8 @@ public class League {
     /**
      * 联盟的最大战队数量
      */
-    @Column(name = "maxMemberNum", nullable = false)
-    private Integer maxMemberNum;
+    @Column(name = "maxTeamNum", nullable = false)
+    private Integer maxTeamNum;
 
     /**
      * 联盟的创建时间
@@ -63,6 +62,13 @@ public class League {
      */
     @Column(name = "descriptionInfo")
     private String descriptionInfo;
+
+    /**
+     * 联盟比赛ID，一对于关联联盟比赛的主键id
+     */
+    @OneToOne(targetEntity = LMWhole.class, cascade = {CascadeType.MERGE})
+    @JoinColumn(name = "leagueMatchId")
+    private LMWhole leagueMatch;
 
     /**
      * 联盟战队列表

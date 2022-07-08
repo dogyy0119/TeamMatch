@@ -67,7 +67,7 @@ public class TeamRequestServiceLmpl implements TeamRequestService {
         }
 
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<TeamRequest> teamRequestPage = teamRequestRepository.findAll(new Specification<TeamRequest>() {
 

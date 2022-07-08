@@ -59,7 +59,7 @@ public class LeagueTaskServiceLmpl implements LeagueTaskService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<LeagueTask> taskPage = leagueTaskRepository.findAllByLeagueId(leagueId, pageable);
 

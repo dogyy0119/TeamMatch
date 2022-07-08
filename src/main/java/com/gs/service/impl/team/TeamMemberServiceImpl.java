@@ -76,7 +76,7 @@ public class TeamMemberServiceImpl implements TeamMemberService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<TeamMember> teamMemberPage = teamMemberRepository.findAll(new Specification<TeamMember>() {
 

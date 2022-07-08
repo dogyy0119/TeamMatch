@@ -46,6 +46,10 @@ public class LeagueRequestServiceLmpl implements LeagueRequestService {
     LeagueRepository leagueRepository;
 
     @Override
+    public LeagueRequestVo getLeagueRequest(Long leagueRequestId){
+        return leagueRequestVoConvert.toVo(leagueRequestRepository.findLeagueRequestById(leagueRequestId));
+    }
+    @Override
     public Boolean existsById(Long leagueRequestId){
         return leagueRequestRepository.existsById(leagueRequestId);
     }
@@ -64,7 +68,7 @@ public class LeagueRequestServiceLmpl implements LeagueRequestService {
     @Override
     public List<LeagueRequestVo> getLeagueRequestLst(Long leagueId, Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<LeagueRequest> leagueRequestPage = leagueRequestRepository.findAll(new Specification<LeagueRequest>() {
 

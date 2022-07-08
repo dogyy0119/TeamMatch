@@ -55,20 +55,20 @@ public class ScheduledTask {
     @Scheduled(cron = "0 */1 * * * ?")
     public void gamePrepare(){
 
-        List<DefMatchDTO> defMatchDTOS = defMatchService.getMatchesByTime(GameBefore(30),new Date());
-        for(DefMatchDTO defMatchDTO: defMatchDTOS) {
-            if(prepareMap.get(defMatchDTO.getId()) == null) {
-                prepareMap.put(defMatchDTO.getId(), defMatchDTO);
-                logger.info("添加 defMatch id", defMatchDTO.getId() );
-
-                Long memberId = defMatchDTO.getMemberId();
-                Member member = memberRepository.findMemberById(memberId);
-                String pubgName = member.getPubgName();
-
-                List<String> matchIds = pubgMatchesService.getPlayerMatches(pubgName);
-                matchIdMap.put(defMatchDTO.getId(), matchIds);
-            }
-        }
+//        List<DefMatchDTO> defMatchDTOS = defMatchService.getMatchesByTime(GameBefore(30),new Date());
+//        for(DefMatchDTO defMatchDTO: defMatchDTOS) {
+//            if(prepareMap.get(defMatchDTO.getId()) == null) {
+//                prepareMap.put(defMatchDTO.getId(), defMatchDTO);
+//                logger.info("添加 defMatch id", defMatchDTO.getId() );
+//
+//                Long memberId = defMatchDTO.getMemberId();
+//                Member member = memberRepository.findMemberById(memberId);
+//                String pubgName = member.getPubgName();
+//
+//                List<String> matchIds = pubgMatchesService.getPlayerMatches(pubgName);
+//                matchIdMap.put(defMatchDTO.getId(), matchIds);
+//            }
+//        }
 
         logger.info("使用cron  线程名称：{}",Thread.currentThread().getName()  );
     }

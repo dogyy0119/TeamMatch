@@ -28,6 +28,7 @@ import java.util.Objects;
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@CrossOrigin
 public class LeagueRequestController {
 
     private final LeagueRequestService leagueRequestService;

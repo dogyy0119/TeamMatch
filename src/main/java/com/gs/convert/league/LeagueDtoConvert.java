@@ -27,7 +27,7 @@ public class LeagueDtoConvert {
             league.setName(dto.getName());
             league.setCreateMemberId(dto.getCreateMemberId());
             league.setCreateTime(new Date());
-            league.setMaxMemberNum(100);
+            league.setMaxTeamNum(dto.getMaxTeamNum());
             league.setLogoUrl(dto.getLogoUrl());
             league.setDescriptionInfo(dto.getDescriptionInfo());
 

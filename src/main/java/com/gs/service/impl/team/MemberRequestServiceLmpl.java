@@ -34,6 +34,10 @@ public class MemberRequestServiceLmpl implements MemberRequestService {
     TeamRepository teamRepository;
 
     @Override
+    public MemberRequestVo getMemberRequest(Long id){
+        return memberRequestVoConvert.toVo(memberRequestRepository.findMemberRequestById(id));
+    }
+    @Override
     public CodeEnum sendMemberRequest(MemberRequestDTO memberRequestDTO) {
 
         if (memberRequestRepository.existsByTeamIdAndToIdAndTypeAndStatus(memberRequestDTO.getTeamId(), memberRequestDTO.getToId(), memberRequestDTO.getType(), 1)) {
@@ -47,7 +51,7 @@ public class MemberRequestServiceLmpl implements MemberRequestService {
     @Override
     public List<MemberRequestVo> getMemberRequestLst(Long memberId, Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<MemberRequest> memberRequestPage = memberRequestRepository.findAll(new Specification<MemberRequest>() {
 

@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface MemberRequestService {
 
+    MemberRequestVo getMemberRequest(Long id);
     CodeEnum sendMemberRequest(MemberRequestDTO teamRequest);
 
     List<MemberRequestVo> getMemberRequestLst(Long memberId, Integer pageNum, Integer pageSize);

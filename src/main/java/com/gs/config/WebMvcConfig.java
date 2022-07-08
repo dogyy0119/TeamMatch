@@ -19,7 +19,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         String location = "file:" +logoPath + "/";
-        registry.addResourceHandler("/game/v1.0/gameteam/manager/*/**").addResourceLocations(location);
+        registry.addResourceHandler("/game/v1.0/app/gameteam/manager/*/**").addResourceLocations(location);
 
         registry.addResourceHandler("swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");

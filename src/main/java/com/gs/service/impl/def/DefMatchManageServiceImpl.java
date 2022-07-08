@@ -123,7 +123,7 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
         System.out.println( "defMatchManage:" + defMatchManage.getId() );
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatchOrder> ordersPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
 

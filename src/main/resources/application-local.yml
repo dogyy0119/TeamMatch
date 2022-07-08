@@ -10,10 +10,10 @@ spring:
 #      password: 123456
 #      driver-class-name: com.mysql.cj.jdbc.Driver
 
-      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=testdb3
+      url: jdbc:sqlserver://47.100.104.163:1433;DatabaseName=testdb
       jdbc-url: ${spring.datasource.db1.url}
       username: sa
-      password: 123456
+      password: QAZwsx1234
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
     # db2: # 数据源2
@@ -78,4 +78,4 @@ pubg:
 
 #logo的存放地址
 fileaddress:
-  logoPath: D:\logo
+  logoPath: c:\image

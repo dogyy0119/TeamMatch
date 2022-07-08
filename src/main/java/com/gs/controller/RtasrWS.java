@@ -4,6 +4,7 @@ package com.gs.controller;
  * websocket服务端
  */
 import com.alibaba.fastjson.JSON;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.*;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ServerEndpoint("/ist")
 @RestController
+@CrossOrigin
 public class RtasrWS {
     private static final AtomicInteger segId = new AtomicInteger(1);
 

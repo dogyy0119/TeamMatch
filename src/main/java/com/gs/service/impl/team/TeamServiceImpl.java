@@ -142,7 +142,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<TeamVo> getTeamPage(Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<Team> teamPage = teamRepository.findAll(pageable);
 
@@ -358,7 +358,7 @@ public class TeamServiceImpl implements TeamService {
 
         TeamMemberDTO teamMemberDTO = new TeamMemberDTO();
         teamMemberDTO.setTeamId(memberRequest.getTeamId());
-        teamMemberDTO.setMemberId(memberRequest.getId());
+        teamMemberDTO.setMemberId(memberRequest.getToId());
         Long manageMemberId = memberRequest.getFromId();
 
         return addMember(manageMemberId, teamMemberDTO);
@@ -955,7 +955,7 @@ public class TeamServiceImpl implements TeamService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<Team> teamPage = teamRepository.findAll(new Specification<Team>() {
 

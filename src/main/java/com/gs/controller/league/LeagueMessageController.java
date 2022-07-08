@@ -7,16 +7,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "消息管理接口")
 @RestController
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@CrossOrigin
 public class LeagueMessageController {
 
     private final LeagueMessageService messageService;

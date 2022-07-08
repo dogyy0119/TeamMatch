@@ -68,7 +68,7 @@ public class LeagueTeamRequestServiceLmpl implements LeagueTeamRequestService {
 
 
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<LeagueTeamRequest> leagueTeamRequestPage = leagueTeamRequestRepository.findAll(new Specification<LeagueTeamRequest>() {
             public Predicate toPredicate(Root<LeagueTeamRequest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

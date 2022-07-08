@@ -4,6 +4,10 @@ import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.league.LeagueCreateDTO;
 import com.gs.model.dto.league.LeagueTeamDTO;
 import com.gs.model.dto.league.LeagueUpdateInfoDTO;
+import com.gs.model.entity.jpa.db1.league.LeagueRequest;
+import com.gs.model.vo.league.LeagueRequestVo;
+import com.gs.model.vo.team.MemberRequestVo;
+import com.gs.service.intf.league.LeagueRequestService;
 import com.gs.service.intf.league.LeagueService;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
@@ -23,9 +27,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@CrossOrigin
 public class LeagueController {
 
     private final LeagueService leagueService;
+
+    private final LeagueRequestService leagueRequestService;
 
     @ApiOperation(value = "创建联盟")
     @RequestMapping(value = "/createLeague", method = RequestMethod.POST)
@@ -58,7 +65,17 @@ public class LeagueController {
             @RequestParam Long managerId,
             @RequestParam Long messageId,
             @RequestParam Integer flg) {
-        return R.result(leagueService.doJoinLeagueRequest(managerId, messageId, flg));
+        CodeEnum result = leagueService.doJoinLeagueRequest(managerId, messageId, flg);
+        if (flg == 0){
+            return R.result(result);
+        }else{
+            if (result == CodeEnum.IS_SUCCESS){
+                LeagueRequestVo leagueRequestVo = leagueRequestService.getLeagueRequest(messageId);
+                return R.success(leagueService.getLeague(leagueRequestVo.getLeagueId()));
+            }else{
+                return R.result(result);
+            }
+        }
     }
 
     @ApiOperation(value = "处理添加战队的请求")

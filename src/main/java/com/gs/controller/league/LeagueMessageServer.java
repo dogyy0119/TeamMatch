@@ -9,6 +9,7 @@ import com.gs.service.intf.team.MemberService;
 import com.gs.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint("/game/v1.0/app/gameteam/manager/league/{leagueId}/{userId}")
 @Component
 @Slf4j
+@CrossOrigin
 public class LeagueMessageServer {
     private LeagueMessageService leagueMessageService;
     private MemberService memberService;

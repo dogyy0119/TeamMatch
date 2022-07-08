@@ -68,7 +68,7 @@ public class MemberServiceImpl implements MemberService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<Member> memberPage = memberRepository.findAll(new Specification<Member>() {
 

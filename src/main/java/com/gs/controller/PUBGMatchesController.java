@@ -17,6 +17,7 @@ import cn.hutool.json.JSONObject;
 @RestController
 @RequestMapping("/game/v1.0/app/matches/PUBG/Manager")
 @AllArgsConstructor
+@CrossOrigin
 public class PUBGMatchesController {
 
     @Autowired

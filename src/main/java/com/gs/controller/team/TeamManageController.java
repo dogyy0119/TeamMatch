@@ -1,13 +1,12 @@
 package com.gs.controller.team;
 
 import com.gs.constant.enums.CodeEnum;
+import com.gs.model.dto.team.MemberRequestDTO;
 import com.gs.model.dto.team.TeamCreateDTO;
 import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
-import com.gs.service.intf.team.LogoService;
-import com.gs.service.intf.team.MemberService;
-import com.gs.service.intf.team.TeamMemberService;
-import com.gs.service.intf.team.TeamService;
+import com.gs.model.vo.team.MemberRequestVo;
+import com.gs.service.intf.team.*;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +27,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @AllArgsConstructor
+@CrossOrigin
 public class TeamManageController {
 
     @Resource
@@ -41,6 +41,9 @@ public class TeamManageController {
 
     @Resource
     LogoService logoService;
+
+    @Resource
+    MemberRequestService memberRequestService;
 
 
     /**
@@ -103,7 +106,18 @@ public class TeamManageController {
     public R doMemberRequest(
             @RequestParam Long messageId,
             @RequestParam Integer flg) {
-        return R.result(teamService.doMemberRequest(messageId, flg));
+
+        CodeEnum result = teamService.doMemberRequest(messageId, flg);
+        if (flg == 0){
+            return R.result(result);
+        }else{
+            if (result == CodeEnum.IS_SUCCESS){
+                MemberRequestVo memberRequestVo = memberRequestService.getMemberRequest(messageId);
+                return R.success(teamService.getTeamByTeamId(memberRequestVo.getTeamId()));
+            }else{
+                return R.result(result);
+            }
+        }
     }
 
     @ApiOperation(value = "删除队员")

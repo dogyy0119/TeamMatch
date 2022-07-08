@@ -116,7 +116,7 @@ public class LeagueServiceLmpl implements LeagueService {
     @Override
     public List<LeagueVo> getLeagues(Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<League> leaguePage = leagueRepository.findAll(pageable);
 
@@ -150,7 +150,7 @@ public class LeagueServiceLmpl implements LeagueService {
         //添加战队
         League league = leagueRepository.findLeagueById(leagueId);
         //判断战队的人数是否已经达到上线
-        if (league.getMaxMemberNum() <= league.getLeagueTeams().size()) {
+        if (league.getMaxTeamNum() <= league.getLeagueTeams().size()) {
             return CodeEnum.IS_BEYOND_LIMIT_ERROR;
         }
 
@@ -255,7 +255,7 @@ public class LeagueServiceLmpl implements LeagueService {
         //添加战队
         League league = leagueRepository.findLeagueById(leagueId);
         //判断战队的人数是否已经达到上线
-        if (league.getMaxMemberNum() <= league.getLeagueTeams().size()) {
+        if (league.getMaxTeamNum() <= league.getLeagueTeams().size()) {
             return CodeEnum.IS_BEYOND_LIMIT_ERROR;
         }
 
@@ -517,7 +517,7 @@ public class LeagueServiceLmpl implements LeagueService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<League> leaguePage = leagueRepository.findAll(new Specification<League>() {
 

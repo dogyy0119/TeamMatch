@@ -45,7 +45,7 @@ public class TeamTaskServiceLmpl implements TeamTaskService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<TeamTask> taskPage = teamTaskRepository.findAllByTeamId(teamId, pageable);
 

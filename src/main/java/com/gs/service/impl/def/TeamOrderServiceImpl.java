@@ -76,7 +76,7 @@ public class TeamOrderServiceImpl implements TeamOrderService {
         if( defMatchOrder == null) return null;
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<TeamOrder> ordersPage = teamOrderRepository.findAll(new Specification<TeamOrder>() {
 
@@ -114,7 +114,7 @@ public class TeamOrderServiceImpl implements TeamOrderService {
         if( defMatchOrder == null) return null;
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<TeamOrder> ordersPage = teamOrderRepository.findAll(new Specification<TeamOrder>() {
 

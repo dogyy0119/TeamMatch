@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface LeagueRequestService {
 
+    LeagueRequestVo getLeagueRequest(Long leagueRequestId);
     Boolean existsById(Long leagueRequestId);
     CodeEnum sendLeagueRequest(LeagueRequestDTO leagueRequestDTO);
 

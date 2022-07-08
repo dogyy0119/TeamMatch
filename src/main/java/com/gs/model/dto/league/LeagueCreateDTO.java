@@ -28,6 +28,11 @@ public class    LeagueCreateDTO implements Serializable {
     @IsMemberExist
     private Long createMemberId;
 
+    /**
+     * 含有战队的最大数量
+     */
+    private Integer maxTeamNum;
+
      /**
      * 战队Logo
      */

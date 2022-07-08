@@ -8,9 +8,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.his</groupId>
-	<artifactId>gamecenter</artifactId>
+	<artifactId>teammatch</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>gamecenter</name>
+	<name>teammatch</name>
 	<description/>
 	<properties>
 		<java.version>1.8</java.version>
@@ -189,11 +189,6 @@
 			<version>3.0.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
 <!--		<dependency>-->
 <!--			<groupId>org.nocheater</groupId>-->
 <!--			<artifactId>pay-center-api</artifactId>-->
@@ -204,13 +199,14 @@
 	</dependencies>
 
 	<build>
-		<finalName>healthy</finalName>
+		<finalName>team-match</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.5.5</version>
 				<configuration>
+					<includeSystemScope>true</includeSystemScope>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
@@ -219,6 +215,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 

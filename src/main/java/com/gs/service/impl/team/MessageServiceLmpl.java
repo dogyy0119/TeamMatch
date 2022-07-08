@@ -46,7 +46,7 @@ public class MessageServiceLmpl implements MessageService {
     public List<MessageVo> getGroupChatMsgs(String teamId, Integer pageNum, Integer pageSize){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<Message> messagePage = messageRepository.findAll(new Specification<Message>() {
 
@@ -109,7 +109,7 @@ public class MessageServiceLmpl implements MessageService {
     public List<MessageVo> getPrivateChatMsgs(String teamId, Long fromId, Long toId, Integer pageNum, Integer pageSize){
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<Message> messagePage = messageRepository.findAll(new Specification<Message>() {
 

@@ -165,7 +165,7 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatch);
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatchOrder> ordersPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
 
@@ -229,7 +229,7 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         }
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatchOrder> ordersPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
 
@@ -266,7 +266,7 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
     @Override
     public List<DefMatchOrderDTO> getMatchOrdersPageByMatchId(Long memberId, Long matchId, Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatchOrder> ordersPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
 
@@ -300,7 +300,7 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
     @Override
     public List<DefMatchOrderDTO> getMatchOrdersPageByMatchIdAndStatus(Long memberId, Long matchId, Integer status, Integer pageNum, Integer pageSize) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatchOrder> ordersPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
 

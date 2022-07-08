@@ -640,7 +640,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         }
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
         Page<PUBGPlayer> ordersPage = pubgPlayerRepository.findAll(new Specification<PUBGPlayer>() {
 
             public Predicate toPredicate(Root<PUBGPlayer> root,
@@ -696,7 +696,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchRepository.findAll(new Specification<DefMatch>() {
 
@@ -744,7 +744,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchRepository.findAll(new Specification<DefMatch>() {
 
@@ -791,7 +791,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             Integer pageSize) {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
         Page<DefMatchOrder> defMatchOrderPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
 
             public Predicate toPredicate(Root<DefMatchOrder> root,
