@@ -27,7 +27,6 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("api")
 @AllArgsConstructor
-@CrossOrigin
 public class LoginController {
 
     private final UserService userService;

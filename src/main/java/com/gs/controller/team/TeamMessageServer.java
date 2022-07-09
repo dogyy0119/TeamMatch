@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint("/game/v1.0/app/gameteam/manager/{teamId}/{userId}")
 @Component
 @Slf4j
-@CrossOrigin
 public class TeamMessageServer {
 
     private MessageService messageService;

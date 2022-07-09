@@ -4,7 +4,7 @@ spring:
   datasource:
     db1: # 数据源1
       # mysql数据源配置例
-      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=testdb3
+      url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=testdb3
       jdbc-url: ${spring.datasource.db1.url}
       username: sa
       password: 123456

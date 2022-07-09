@@ -10,10 +10,10 @@ spring:
 #      password: 123456
 #      driver-class-name: com.mysql.cj.jdbc.Driver
 
-      url: jdbc:sqlserver://47.100.104.163:1433;DatabaseName=testdb
+      url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=gameyx
       jdbc-url: ${spring.datasource.db1.url}
       username: sa
-      password: QAZwsx1234
+      password: game123@
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
     # db2: # 数据源2

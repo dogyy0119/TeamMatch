@@ -27,7 +27,6 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @AllArgsConstructor
-@CrossOrigin
 public class TeamManageController {
 
     @Resource

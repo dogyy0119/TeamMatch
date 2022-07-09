@@ -19,7 +19,6 @@ import lombok.AllArgsConstructor;
 @RequestMapping("api/user")
 @Validated
 @AllArgsConstructor
-@CrossOrigin
 public class UserController {
 
     private final UserService userService;
