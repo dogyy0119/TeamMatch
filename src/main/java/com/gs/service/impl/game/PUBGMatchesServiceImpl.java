@@ -526,6 +526,8 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         Page<PUBGPlayer> ordersPage = getPUBGPlayerPage(memberId, pageNum, pageSize);
         List<PUBGPlayer> pubgPlayerList = new ArrayList<>();
 
+        if(ordersPage == null || ordersPage.getSize() == 0) return null;
+
         for (PUBGPlayer player : ordersPage) {
             pubgPlayerList.add(player);
         }
@@ -638,6 +640,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
     private Page<PUBGPlayer> getPUBGPlayerPage(Long memberId, Integer pageNum, Integer pageSize) {
         String PUBGPlayerName = memberRepository.findMemberById(memberId).getPubgName();
+        System.out.println( "PUBGPlayerName:" + PUBGPlayerName);
         if (PUBGPlayerName == null || PUBGPlayerName.equals("")) {
             return null;
         }
