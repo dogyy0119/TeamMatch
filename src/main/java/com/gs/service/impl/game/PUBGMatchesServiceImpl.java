@@ -21,6 +21,7 @@ import com.gs.repository.jpa.game.PUBGPlayerRepository;
 import com.gs.repository.jpa.game.PUBGSeasonRepository;
 import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.repository.jpa.team.TeamRepository;
+import com.gs.scheduled.ScheduledTask;
 import com.gs.service.intf.def.DefMatchService;
 import com.gs.service.intf.game.PUBGMatchesService;
 import com.gs.utils.HttpUtils;
@@ -546,7 +547,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                     DefMatchDTO defMatchDTO = defMatchService.findById(pubgMatches.getDefMatchId());
                     PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
                     pubgMatchesVO.setDefMatchName(defMatchDTO.getName());
-                    pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime());
+                    pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime().toString());
                     pubgMatchesVO.setDefMatchId(defMatchDTO.getId());
                     pubgMatchesVO.setIndex(pubgTeam.getIndex());
 
@@ -578,7 +579,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 DefMatchDTO defMatchDTO = defMatchService.findById(pubgMatches.getDefMatchId());
                 PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
                 pubgMatchesVO.setDefMatchName(defMatchDTO.getName());
-                pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime());
+                pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime().toString());
                 pubgMatchesVO.setDefMatchId(defMatchDTO.getId());
                 pubgMatchesVO.setIndex(pubgTeam.getIndex());
 
@@ -636,6 +637,176 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     public List<PUBGMatches> findPUBGMatchesByDefMatchId(Long defMatchId) {
         List<PUBGMatches> pubgMatchesList = pubgMatchesRepository.findPUBGMatchesByDefMatchId(defMatchId);
         return pubgMatchesList;
+    }
+
+    @Override
+    public List<PUBGMatchesVO> getRunningPUBGMatchesByCreatId(Long memberId) {
+        List<Long> longList = ScheduledTask.getMatchIdOfGameRunning();
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageable = PageRequest.of(0, 100, sort);
+
+        Page<DefMatch> defMatchPage = defMatchRepository.findAll(new Specification<DefMatch>() {
+            public Predicate toPredicate(Root<DefMatch> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<Long> memberIdPath = root.join("member").get("id");
+                Path<Date> gameStartTimePath = root.get("gameStartTime");
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.lessThanOrEqualTo( gameStartTimePath, new Date()));
+                Predicate p1 = cb.equal(memberIdPath, memberId);
+
+                predicates.add(p1);
+
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+        }, pageable);
+
+        List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
+
+        for (DefMatch entry : defMatchPage) {
+            for(Long key : longList) {
+                if(key == entry.getId()) {
+                    String timeList = entry.getTimeList();
+                    Map<Integer, String> timeMap = new HashMap<>();
+                    JSONArray timejsonArray = new JSONArray(timeList);
+                    if (timejsonArray.size() > 0) {
+                        for (int i = 0; i < timejsonArray.size(); i++) {
+                            // 遍历 jsonarray 数组，把每一个对象转成 json 对象
+                            JSONObject job = timejsonArray.getJSONObject(i);
+
+                            JSONArray array = job.getJSONArray("timeDate");
+                            timeMap.put(Integer.parseInt(job.get("mactchID").toString()),job.get("timeDate").toString());
+                        }
+                    }
+
+                    for(Integer i = 1; i <= entry.getGameNum(); i++) {
+                        PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
+                        pubgMatchesVO.setDefMatchName(entry.getName());
+                        pubgMatchesVO.setGameTime(timeMap.get(i));
+                        pubgMatchesVO.setDefMatchId(entry.getId());
+                        pubgMatchesVO.setIndex(i);
+                        pubgMatchesVO.setIsLike(0);
+                        pubgMatchesVOList.add(pubgMatchesVO);
+                    }
+
+                    return  pubgMatchesVOList;
+                }
+            }
+        }
+
+        return pubgMatchesVOList;
+    }
+
+    @Override
+    public List<PUBGMatchesVO> getRunningPUBGMatchesByOrderId(Long memberId, Long teamId) {
+        List<Long> longList = ScheduledTask.getMatchIdOfGameRunning();
+        List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
+
+        // 处理个人比赛
+        List<DefMatchOrder> defMatchOrders = defMatchOrderRepository.findDefMatchOrderByModeAndOrderId( 0, memberId);
+
+        for (DefMatchOrder defMatchOrder : defMatchOrders) {
+            // 个人比赛报名成功了
+            Member member = memberRepository.findMemberById(memberId);
+            PersonOrder personOrder = personOrderRepository.findPersonOrderByDefMatchOrderAndMember(defMatchOrder, member);
+            if(personOrder != null ){
+                if(defMatchOrder.getStatus() != 1) {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+
+            for (Long key : longList) {
+                if(defMatchOrder.getDefMatchManage().getDefMatch().getId() == key) {
+                    DefMatch defMatch = defMatchOrder.getDefMatchManage().getDefMatch();
+                    String timeList = defMatch.getTimeList();
+                    Map<Integer, String> timeMap = new HashMap<>();
+                    JSONArray timejsonArray = new JSONArray(timeList);
+                    if (timejsonArray.size() > 0) {
+                        for (int i = 0; i < timejsonArray.size(); i++) {
+                            // 遍历 jsonarray 数组，把每一个对象转成 json 对象
+                            JSONObject job = timejsonArray.getJSONObject(i);
+
+                            JSONArray array = job.getJSONArray("timeDate");
+                            timeMap.put(Integer.parseInt(job.get("mactchID").toString()),job.get("timeDate").toString());
+                        }
+                    }
+
+                    for(Integer i = 1; i <= defMatch.getGameNum(); i++) {
+                        PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
+                        pubgMatchesVO.setDefMatchName(defMatch.getName());
+                        pubgMatchesVO.setGameTime(timeMap.get(i));
+                        pubgMatchesVO.setDefMatchId(defMatch.getId());
+                        pubgMatchesVO.setIndex(i);
+                        pubgMatchesVO.setIsLike(0);
+                        pubgMatchesVOList.add(pubgMatchesVO);
+                    }
+
+                    return  pubgMatchesVOList;
+                }
+            }
+
+        }
+
+        // 处理战队比赛
+        List<DefMatchOrder> defMatchOrderList = defMatchOrderRepository.findDefMatchOrderByModeAndOrderId( 1, teamId);
+        for (DefMatchOrder defMatchOrder : defMatchOrderList) {
+
+            // 报名未通过
+            if(defMatchOrder.getStatus() != 1){
+                continue;
+            }
+
+            //个人在战队比赛报名成功了
+            Member member = memberRepository.findMemberById(memberId);
+            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
+            if(teamOrderList.size() == 0 ) {
+                continue;
+            }
+
+            // 个人在战队报名中未成功
+            if( teamOrderList.get(0).getStatus() != 1) {
+               continue;
+            }
+
+            for (Long key : longList) {
+                if(defMatchOrder.getDefMatchManage().getDefMatch().getId() == key) {
+                    DefMatch defMatch = defMatchOrder.getDefMatchManage().getDefMatch();
+                    String timeList = defMatch.getTimeList();
+                    Map<Integer, String> timeMap = new HashMap<>();
+                    JSONArray timejsonArray = new JSONArray(timeList);
+                    if (timejsonArray.size() > 0) {
+                        for (int i = 0; i < timejsonArray.size(); i++) {
+                            // 遍历 jsonarray 数组，把每一个对象转成 json 对象
+                            JSONObject job = timejsonArray.getJSONObject(i);
+
+                            JSONArray array = job.getJSONArray("timeDate");
+                            timeMap.put(Integer.parseInt(job.get("mactchID").toString()),job.get("timeDate").toString());
+                        }
+                    }
+
+                    for(Integer i = 1; i <= defMatch.getGameNum(); i++) {
+                        PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
+                        pubgMatchesVO.setDefMatchName(defMatch.getName());
+                        pubgMatchesVO.setGameTime(timeMap.get(i));
+                        pubgMatchesVO.setDefMatchId(defMatch.getId());
+                        pubgMatchesVO.setIndex(i);
+                        pubgMatchesVO.setIsLike(0);
+                        pubgMatchesVOList.add(pubgMatchesVO);
+                    }
+
+                    return  pubgMatchesVOList;
+                }
+            }
+
+        }
+
+        return pubgMatchesVOList;
     }
 
     private Page<PUBGPlayer> getPUBGPlayerPage(Long memberId, Integer pageNum, Integer pageSize) {
@@ -729,10 +900,23 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
 
         for (DefMatch entry : defMatchPage) {
+            String timeList = entry.getTimeList();
+            Map<Integer, String> timeMap = new HashMap<>();
+            JSONArray timejsonArray = new JSONArray(timeList);
+            if (timejsonArray.size() > 0) {
+                for (int i = 0; i < timejsonArray.size(); i++) {
+                    // 遍历 jsonarray 数组，把每一个对象转成 json 对象
+                    JSONObject job = timejsonArray.getJSONObject(i);
+
+                    JSONArray array = job.getJSONArray("timeDate");
+                    timeMap.put(Integer.parseInt(job.get("mactchID").toString()),job.get("timeDate").toString());
+                }
+            }
+
             for(Integer i = 1; i <= entry.getGameNum(); i++) {
                 PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
                 pubgMatchesVO.setDefMatchName(entry.getName());
-                pubgMatchesVO.setGameTime(entry.getGameStartTime());
+                pubgMatchesVO.setGameTime(timeMap.get(i));
                 pubgMatchesVO.setDefMatchId(entry.getId());
                 pubgMatchesVO.setIndex(i);
                 pubgMatchesVO.setIsLike(0);
@@ -780,7 +964,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             for(Integer i = 1; i <= entry.getGameNum(); i++) {
                 PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
                 pubgMatchesVO.setDefMatchName(entry.getName());
-                pubgMatchesVO.setGameTime(entry.getGameStartTime());
+                pubgMatchesVO.setGameTime(entry.getGameStartTime().toString());
                 pubgMatchesVO.setDefMatchId(entry.getId());
                 pubgMatchesVO.setIndex(i);
                 pubgMatchesVO.setIsLike(0);

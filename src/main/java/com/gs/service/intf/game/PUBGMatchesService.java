@@ -144,4 +144,18 @@ public interface PUBGMatchesService {
      * @return
      */
     List<PUBGMatches> findPUBGMatchesByDefMatchId(Long defMatchId );
+
+    /**
+     *  获取正在进行的创建者比赛列表
+     * @param memberId
+     * @return
+     */
+    List<PUBGMatchesVO> getRunningPUBGMatchesByCreatId(Long memberId);
+
+    /**
+     *  获取正在进行的参与的比赛列表
+     * @param memberId
+     * @return
+     */
+    List<PUBGMatchesVO> getRunningPUBGMatchesByOrderId(Long memberId, Long teamId);
 }
