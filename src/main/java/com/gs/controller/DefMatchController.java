@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +46,27 @@ public class DefMatchController {
     @ApiOperation(value = "创建自定义比赛")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public R addMatch(@RequestBody DefMatchDTO defMatchDTO) {
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        PageRequest pageable = PageRequest.of(0, 100, sort);
+
+        Page<DefMatch> defMatchPage = defMatchService.findMatchesByDate( defMatchDTO.getGameStartTime() ,pageable);
+        for (DefMatch entity : defMatchPage) {
+            DefMatchDTO dto = defMatchConvert.toDto(entity);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Boolean equels = dto.getGameStartTime().toString().trim().equals(defMatchDTO.getGameStartTime().toString().trim());
+
+            if( dto.getMemberId().equals(defMatchDTO.getMemberId())
+                    && dto.getName().equals(defMatchDTO.getName())
+                    && sdf.format(dto.getGameStartTime()).trim().equals(sdf.format(defMatchDTO.getGameStartTime()).trim())
+            ) {
+                System.out.println("DefMatch:" + entity.getId());
+                return R.error(" 请勿重复创建！");
+            }
+        }
+
+
         DefMatchDTO dto = defMatchService.create( defMatchDTO );
         if (dto != null) {
             DefMatchManageDTO defMatchManageDTO = new DefMatchManageDTO();
