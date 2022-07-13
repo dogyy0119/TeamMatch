@@ -28,7 +28,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/game/v1.0/app/matches/DefMatch")
 @AllArgsConstructor
-@CrossOrigin
 public class DefMatchController {
 
     @Autowired

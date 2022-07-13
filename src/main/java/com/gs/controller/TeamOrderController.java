@@ -31,7 +31,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/game/v1.0/app/matches/TeamOrder")
 @AllArgsConstructor
-@CrossOrigin
 public class TeamOrderController {
 
     @Autowired

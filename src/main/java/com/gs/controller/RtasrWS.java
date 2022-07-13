@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ServerEndpoint("/ist")
 @RestController
-@CrossOrigin
 public class RtasrWS {
     private static final AtomicInteger segId = new AtomicInteger(1);
 

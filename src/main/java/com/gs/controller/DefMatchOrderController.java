@@ -26,7 +26,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/game/v1.0/app/matches/DefMatchOrder")
 @AllArgsConstructor
-@CrossOrigin
 public class DefMatchOrderController {
 
     @Autowired
