@@ -117,8 +117,6 @@ public class PUBGMatchesController {
         return R.success( pubgMatchesService.getPUBGMatchesSortByMatchType(memberId,teamId,matchType,pageNum,pageSize) );
     }
 
-
-
     @ApiOperation(value = "查询PUBGName和MatchType比赛")
     @RequestMapping(value = "/getPUBGMatchesByPUBGPlayerNameAndMatchType", method = RequestMethod.GET)
     public R getPUBGMatchesByPUBGPlayerNameAndMatchType(
@@ -139,6 +137,21 @@ public class PUBGMatchesController {
             @RequestParam Integer pageSize) {
 
         return R.success( pubgMatchesService.findPUBGMatchesByPUBGPlayerIdAndMatchType(PUBGPlayerId,matchType,pageNum,pageSize));
+    }
+
+    @ApiOperation(value = "创建比赛的管理者查询比赛进行中的数据")
+    @RequestMapping(value = "/getRunningPUBGMatchesByCreatId", method = RequestMethod.GET)
+    public R getRunningPUBGMatchesByCreatId(
+            @RequestParam Long memberId ) {
+        return R.success( pubgMatchesService.getRunningPUBGMatchesByCreatId(memberId) );
+    }
+
+    @ApiOperation(value = "查询参与比赛进行中的数据")
+    @RequestMapping(value = "/getRunningPUBGMatchesByOrderId", method = RequestMethod.GET)
+    public R getRunningPUBGMatchesByOrderId(
+            @RequestParam Long memberId,
+            @RequestParam Long teamId) {
+        return R.success( pubgMatchesService.getRunningPUBGMatchesByOrderId(memberId, teamId) );
     }
 
 }

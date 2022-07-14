@@ -15,6 +15,9 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<swagger2>2.2.2</swagger2>
+		<package.user.name>txy</package.user.name>
+		<package.business.name>test</package.business.name>
+		<package.version.buildid>1</package.version.buildid>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -198,21 +201,48 @@
 
 	</dependencies>
 
+<!--	<build>-->
+<!--		<finalName>team-match</finalName>-->
+<!--		<plugins>-->
+<!--			<plugin>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--				<version>2.5.5</version>-->
+<!--				<configuration>-->
+<!--					<includeSystemScope>true</includeSystemScope>-->
+<!--					<excludes>-->
+<!--						<exclude>-->
+<!--							<groupId>org.projectlombok</groupId>-->
+<!--							<artifactId>lombok</artifactId>-->
+<!--						</exclude>-->
+<!--					</excludes>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+<!--		</plugins>-->
+<!--	</build>-->
+
 	<build>
-		<finalName>team-match</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+<!--		<finalName>base-service-gamematch.${version}.${package.business.name}.${package.user.name}.${maven.build.timestamp}.${package.version.buildid}</finalName>-->
+		<finalName>base-service-gamematch.${version}.${package.business.name}.${package.user.name}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.5.5</version>
+			</plugin>
+			<!-- 工程编码插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<includeSystemScope>true</includeSystemScope>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 

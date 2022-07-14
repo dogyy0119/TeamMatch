@@ -22,7 +22,7 @@ public class PUBGMatchesVO {
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date gameTime;
+    private String gameTime;
 
     private Long defMatchId;
 

@@ -4,7 +4,12 @@ spring:
   datasource:
     db1: # 数据源1
       # mysql数据源配置例
-      url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=testdb3
+
+#      url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=testdb3
+
+      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=test
+#      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=devdatabase
+
       jdbc-url: ${spring.datasource.db1.url}
       username: sa
       password: 123456
@@ -43,7 +48,29 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true  #日志中显示sql语句
 
+pubg:
+  seasons: https://api.pubg.com/shards/steam/seasons
+
+  url:
+    matches: https://api.pubg.com/shards/steam/players?filter[playerNames]=
+    season: https://api.pubg.com/shards/steam/seasons/$season/gameMode/$Game_mode/players?filter[playerIds]=$player_Ids
+    games: https://api.pubg.com/shards/steam/matches/
+  token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5MGFlNzYwMC1iMmE5LTAxM2EtNDY0YS0yYjVjODA1ZjgyMjMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjUyMTk4OTk5LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6ImdhbWUtY2VudGVyIn0.ggmiM-6whtPKNi2yWMc-yY1b_Plgkf3WOGKRebRjxlY
+  head-token: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5MGFlNzYwMC1iMmE5LTAxM2EtNDY0YS0yYjVjODA1ZjgyMjMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjUyMTk4OTk5LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6ImdhbWUtY2VudGVyIn0.ggmiM-6whtPKNi2yWMc-yY1b_Plgkf3WOGKRebRjxlY"
+  head-formate: "application/vnd.api+json"
+  game-type: normal-squad-fpp
+
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        heartbeat:
+          enabled: true
+        service-name: ${spring.application.name}
+        instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
+
 #logo的存放地址
 fileaddress:
-  logoPath: D:\logo
+  logoPath: c:\image
 
