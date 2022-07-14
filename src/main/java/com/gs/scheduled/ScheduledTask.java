@@ -44,14 +44,14 @@ public class ScheduledTask {
     private static Date GameBefore(Integer minites){
         long time = minites*60*1000;//30分钟
         Date now = new Date();
-        Date beforeDate = new Date(now.getTime() + time);//minites分钟之前的时间
+        Date beforeDate = new Date(now.getTime() - time);//minites分钟之前的时间
         return beforeDate;
     }
 
     private static Date GameAfter(Integer minites){
         long time = minites*60*1000;//30分钟
         Date now = new Date();
-        Date afterDate = new Date(now.getTime() - time);//minites分钟之后的时间
+        Date afterDate = new Date(now.getTime() + time);//minites分钟之后的时间
         return afterDate;
     }
 
@@ -76,7 +76,7 @@ public class ScheduledTask {
     @Async
     public void gamePrepare(){
 
-        List<DefMatchDTO> defMatchDTOS = defMatchService.getMatchesByTime(GameBefore(30),new Date());
+        List<DefMatchDTO> defMatchDTOS = defMatchService.getMatchesByTime(new Date(), GameAfter(30));
         try {
             lock.lock();
             for(DefMatchDTO defMatchDTO: defMatchDTOS) {
@@ -88,21 +88,32 @@ public class ScheduledTask {
                     Member member = memberRepository.findMemberById(memberId);
                     String pubgName = member.getPubgName();
 
+                    logger.info("member: {}" , member.getId());
+
+                    logger.info("pubgName: {}" , pubgName);
+
                     List<String> matchIds = pubgMatchesService.getPlayerMatches(pubgName);
+
+                    logger.info("matchIds size: {}" , matchIds.size());
+
+                    for(String matchid : matchIds) {
+                        logger.info("matchid ： {}", matchid);
+                    }
+
                     matchIdMap.put(defMatchDTO.getId(), matchIds);
                 }
             }
         } finally {
             lock.unlock();
         }
-        logger.info("使用cron  线程名称：{}",Thread.currentThread().getName()  );
+        logger.info("使用cron  线程名称：{}",Thread.currentThread().getName()  + new Date() );
     }
 
 
     /**
      * 在 start Time之后。获取 PUBG 比赛。
      */
-    @Scheduled(cron = "0 */15 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     @Async
     public void gameData() {
         Iterator<Map.Entry<Long, DefMatchDTO>> iterator = prepareMap.entrySet().iterator();
@@ -113,23 +124,37 @@ public class ScheduledTask {
                 Long defMatchId = entry.getKey();
                 DefMatchDTO defMatchDTO = entry.getValue();
                 Date date = defMatchDTO.getGameStartTime();
-                if (date.after( GameAfter(30))) {
+
+                ScoreUtils.perseRank(defMatchDTO.getGameRankItems());
+                logger.info("date ： {}", date.toString());
+
+                if (date.before( GameBefore(1))) {
                     List<String> ids = matchIdMap.get(defMatchId);
                     Long memberId = defMatchDTO.getMemberId();
                     Member member = memberRepository.findMemberById(memberId);
                     String pubgName = member.getPubgName();
                     List<String> matchIds = pubgMatchesService.getPlayerMatches(pubgName);
 
-                    matchIds.removeAll(ids);
+                    for(String matchid : matchIds) {
+                        logger.info("2  matchid ： {}", matchid);
+                    }
+
+//                    matchIds.removeAll(ids);
+
+                    logger.info("2  matchIds.size() ： {}", matchIds.size());
                     if ( matchIds.size() > 0 ) {
                         for (String id : matchIds) {
                             ids.add( id );
+                            logger.info("id ： {}", id);
                             List<PUBGMatches> pubgMatchesList = pubgMatchesService.findPUBGMatchesByDefMatchId(defMatchId);
+                            logger.info("pubgMatchesList.size ： {}", pubgMatchesList.size() );
+                            logger.info("defMatchDTO.getId() ： {}", defMatchDTO.getId());
                             pubgMatchesService.getPUBGMatches(id ,defMatchDTO.getId(),pubgMatchesList.size()+1, ScoreUtils.perseRank(defMatchDTO.getGameRankItems()), ScoreUtils.perseKill(defMatchDTO.getGameKillItems()));
                             if(pubgMatchesList.size()+1 == defMatchDTO.getGameNum()) {
                                 prepareMap.remove(defMatchId);
                                 matchIdMap.remove(matchIdMap);
                             }
+                            break;
                         }
                         matchIdMap.put(defMatchId, ids);
                     }
@@ -139,5 +164,6 @@ public class ScheduledTask {
         } finally {
             lock.unlock();
         }
+        logger.info("222222 使用cron  线程名称：{}",Thread.currentThread().getName()  + new Date() );
     }
 }

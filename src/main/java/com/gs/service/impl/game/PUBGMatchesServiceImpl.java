@@ -25,6 +25,7 @@ import com.gs.scheduled.ScheduledTask;
 import com.gs.service.intf.def.DefMatchService;
 import com.gs.service.intf.game.PUBGMatchesService;
 import com.gs.utils.HttpUtils;
+import org.bouncycastle.math.ec.ScaleYNegateXPointMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
@@ -323,6 +324,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
         PUBGMatches matches = pubgMatchesRepository.findPUBGMatchesByPubgMatchesId(pubgMatchesId);
         if (matches != null) {
+            System.out.println( "match already exist !!!" );
             return;
         }
 
@@ -421,7 +423,11 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             PUBGTeam pubgTeam = new PUBGTeam();
             pubgTeam.setPubgTeamId(pubgteam);
             pubgTeam.setIndex(teamIndexMap.get(pubgteam));
-            pubgTeam.setTeamScore( rank.get(pubgTeam.getIndex()) );
+            if( rank.get(pubgTeam.getIndex())== null) {
+                pubgTeam.setTeamScore(0);
+            } else {
+                pubgTeam.setTeamScore(rank.get(pubgTeam.getIndex()));
+            }
             List<PUBGPlayer> pubgPlayerList = new ArrayList<>();
 
             Map<String, PUBGPlayer> playerMaps = teamMap.get(pubgteam);
@@ -431,8 +437,17 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 String player = entryPlayer.getKey();
 
                 PUBGPlayer pubgPlayer = pubgPlayerMap.get(player);
-                pubgPlayerList.add(pubgPlayer);
+
+                System.out.println("pubgTeam.getPubgTeamId() :" + pubgTeam.getPubgTeamId());
+                System.out.println("pubgTeam.getPubgMatchesId() :" + pubgTeam.getPubgMatchesId());
+                System.out.println("pubgTeam.getTeamName() :" + pubgTeam.getTeamName());
+                System.out.println("pubgTeam.getTeamScore() :" + pubgTeam.getTeamScore());
+                System.out.println("pubgPlayer.getPlayerScore() :" + pubgPlayer.getPlayerScore());
+
                 pubgTeam.setTeamScore(pubgTeam.getTeamScore() + pubgPlayer.getPlayerScore());
+
+                pubgPlayerList.add(pubgPlayer);
+
             }
             pubgTeam.setTeamMembers(pubgPlayerList);
             pubgTeamList.add(pubgTeam);

@@ -8,7 +8,7 @@ spring:
 #      jdbc-url: ${spring.datasource.db1.url}
 #      username: root
 #      password: 123456
-#      driver-class-name: com.mysql.cj.jdbc.Driver
+#      driver-class-name: com.mysql.cj.jdbc.Drive
 
       url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=gameyx
       jdbc-url: ${spring.datasource.db1.url}
