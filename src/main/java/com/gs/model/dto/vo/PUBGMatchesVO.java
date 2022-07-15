@@ -28,5 +28,7 @@ public class PUBGMatchesVO {
 
     private Integer index;
 
+    private Integer status=0;
+
     private Integer isLike;
 }

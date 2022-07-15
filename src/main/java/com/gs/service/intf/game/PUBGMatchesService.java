@@ -4,6 +4,7 @@ import com.gs.model.dto.game.PUBGMatchesDTO;
 import com.gs.model.dto.vo.PUBGMatchesVO;
 import com.gs.model.entity.jpa.db1.game.PUBGMatches;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -150,12 +151,21 @@ public interface PUBGMatchesService {
      * @param memberId
      * @return
      */
-    List<PUBGMatchesVO> getRunningPUBGMatchesByCreatId(Long memberId);
+    List<PUBGMatchesVO> getRunningPUBGMatchesByCreatId(Long memberId) throws ParseException;
 
     /**
      *  获取正在进行的参与的比赛列表
      * @param memberId
      * @return
      */
-    List<PUBGMatchesVO> getRunningPUBGMatchesByOrderId(Long memberId, Long teamId);
+    List<PUBGMatchesVO> getRunningPUBGMatchesByOrderId(Long memberId, Long teamId) throws ParseException;
+
+    /**
+     *  获取战队成就
+     * @param memberId
+     * @param teamId
+     * @return
+     */
+    List<PUBGMatchesVO> getAchievementByTeamId(Long memberId, Long teamId);
+
 }

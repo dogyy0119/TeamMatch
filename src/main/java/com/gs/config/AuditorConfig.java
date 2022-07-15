@@ -13,16 +13,16 @@ import java.util.Optional;
  * @description
  * @createTime 2019/3/9
  **/
-@Configuration
-public class AuditorConfig implements AuditorAware<String> {
-    @Override
-    public Optional<String> getCurrentAuditor() {
-        Object principalOrAnonymous = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principalOrAnonymous.getClass().equals(String.class))
-        {
-            return null;
-        }else {
-            return Optional.ofNullable(((UserDetails)principalOrAnonymous).getUsername());
-        }
-    }
-}
+//@Configuration
+//public class AuditorConfig implements AuditorAware<String> {
+//    @Override
+//    public Optional<String> getCurrentAuditor() {
+//        Object principalOrAnonymous = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (principalOrAnonymous.getClass().equals(String.class))
+//        {
+//            return null;
+//        }else {
+//            return Optional.ofNullable(((UserDetails)principalOrAnonymous).getUsername());
+//        }
+//    }
+//}

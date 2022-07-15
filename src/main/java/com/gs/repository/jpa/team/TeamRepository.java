@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long>, JpaSpecificationExecutor<Team> {
     boolean existsByCreateMemberId(Long createMemberId);
+
     Team findTeamById(Long id);
 
     Boolean existsTeamById(Long id);

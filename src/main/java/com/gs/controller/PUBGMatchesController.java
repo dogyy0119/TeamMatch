@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import cn.hutool.json.JSONObject;
 
+import java.text.ParseException;
+
 @Api(tags = "获取PUBG比赛数据接口")
 @RestController
 @RequestMapping("/game/v1.0/app/matches/PUBG/Manager")
@@ -142,7 +144,7 @@ public class PUBGMatchesController {
     @ApiOperation(value = "创建比赛的管理者查询比赛进行中的数据")
     @RequestMapping(value = "/getRunningPUBGMatchesByCreatId", method = RequestMethod.GET)
     public R getRunningPUBGMatchesByCreatId(
-            @RequestParam Long memberId ) {
+            @RequestParam Long memberId ) throws ParseException {
         return R.success( pubgMatchesService.getRunningPUBGMatchesByCreatId(memberId) );
     }
 
@@ -150,8 +152,16 @@ public class PUBGMatchesController {
     @RequestMapping(value = "/getRunningPUBGMatchesByOrderId", method = RequestMethod.GET)
     public R getRunningPUBGMatchesByOrderId(
             @RequestParam Long memberId,
-            @RequestParam Long teamId) {
+            @RequestParam Long teamId) throws ParseException {
         return R.success( pubgMatchesService.getRunningPUBGMatchesByOrderId(memberId, teamId) );
+    }
+
+    @ApiOperation(value = "查询参与比赛进行中的数据")
+    @RequestMapping(value = "/getAchievementByTeamId", method = RequestMethod.GET)
+    public R getAchievementByTeamId(
+            @RequestParam Long memberId,
+            @RequestParam Long teamId) {
+        return R.success( pubgMatchesService.getAchievementByTeamId(memberId, teamId) );
     }
 
 }

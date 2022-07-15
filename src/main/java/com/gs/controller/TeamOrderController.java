@@ -195,6 +195,26 @@ public class TeamOrderController {
     }
 
     @ApiOperation(value = "查询指定预约比赛队内报名")
+    @RequestMapping(value = "/getMatchesPageByDefMatchIdAndTeamId", method = RequestMethod.GET)
+    public R getMatchesPageByDefMatchIdAndTeamId(
+            @RequestParam Long defMatchId,
+            @RequestParam Long teamId,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
+
+        DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchId);
+        if(defMatch == null) return R.error("can't find defMatch by defMatchId");
+
+        DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatch);
+        if(defMatchManage == null) return R.error("can't find defMatchManage by defMatchId");
+
+        DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage,teamId );
+        if(defMatchManage == null) return R.error("can't find defMatchOrder by defMatchId and teamId");
+
+        return R.success(teamOrderService.findTeamOrderByDefMatchOrderId(defMatchOrder.getId(), pageNum, pageSize));
+    }
+
+    @ApiOperation(value = "查询指定预约比赛队内报名")
     @RequestMapping(value = "/getMatchesPageByDefMatchOrderId", method = RequestMethod.GET)
     public R getMatchOrdersPageByDefMatchId(
             @RequestParam Long defMatchOrderId,

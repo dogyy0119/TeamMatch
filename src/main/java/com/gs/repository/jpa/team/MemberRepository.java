@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecificationExecutor<Member> {
     Member findMemberById(Long id);
 
+    Member findMemberByPubgId(String pubgId);
+
     boolean existsById(Long id);
 
     boolean existsMemberEntityById(long id);
