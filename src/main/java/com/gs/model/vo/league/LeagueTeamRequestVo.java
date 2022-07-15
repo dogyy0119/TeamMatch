@@ -40,15 +40,21 @@ public class LeagueTeamRequestVo {
      * 发送者Name
      */
     private String fromName;
+
+    private String fromAvatar;
     /**
      * 接收者
      */
     private Long toTeamId;
 
+
+
     /**
      * 接收者Name
      */
     private String toTeamName;
+
+    private String toTeamAvatar;
     /**
      * 1、邀请人加入战队；2、申请加入战队
      */

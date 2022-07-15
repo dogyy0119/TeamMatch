@@ -56,10 +56,12 @@ public class LeagueTeamRequestVoConvert {
             leagueTeamRequestVo.setCreateTime(sdf.format(entity.getCreateTime()));
             if (null != entity.getToTeamId() && this.teamRepository.existsById(entity.getToTeamId())) {
                 leagueTeamRequestVo.setToTeamName(this.teamRepository.findTeamById(entity.getToTeamId()).getName());
+                leagueTeamRequestVo.setToTeamAvatar(this.teamRepository.findTeamById(entity.getToTeamId()).getLogoUrl());
             }
 
             if (null != entity.getFromId() && this.memberRepository.existsById(entity.getFromId())) {
                 leagueTeamRequestVo.setFromName(this.memberRepository.findMemberById(entity.getFromId()).getName());
+                leagueTeamRequestVo.setFromAvatar(this.memberRepository.findMemberById(entity.getFromId()).getAvatar());
             }
 
             if (null != entity.getLeagueId() && this.leagueRepository.existsById(entity.getLeagueId())) {
