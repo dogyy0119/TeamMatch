@@ -5,6 +5,7 @@ import com.gs.convert.TeamOrderConvert;
 import com.gs.model.dto.def.DefMatchManageDTO;
 import com.gs.model.dto.def.DefMatchOrderDTO;
 import com.gs.model.dto.def.TeamOrderDTO;
+import com.gs.model.dto.vo.TeamOrderNewVO;
 import com.gs.model.dto.vo.TeamOrderVO;
 import com.gs.model.entity.jpa.db1.def.*;
 
@@ -24,6 +25,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,6 +123,7 @@ public class TeamOrderController {
 
             TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
             if (teamMember == null) return R.error("memberId or teamId 有误！");
+
             if(teamMember.getJob() == 3) return R.error("操作者不是队长或副队长，没有权限！");
 
             DefMatch defMatch = defMatchRepository.findDefMatchById(teamOrderVO.getMatchId());
@@ -165,7 +168,16 @@ public class TeamOrderController {
             return R.error("请检查参数！");
         }
         TeamOrderDTO teamOrderDTO = teamOrderService.findById(id);
-        return R.success(teamOrderDTO);
+        if (teamOrderDTO != null) {
+            TeamOrderNewVO teamOrderNewVO = new TeamOrderNewVO(teamOrderDTO);
+            Member member = memberRepository.findMemberById(teamOrderDTO.getMemberId());
+            teamOrderNewVO.setName(member.getName());
+            teamOrderNewVO.setAvatar(member.getAvatar());
+
+            return R.success(teamOrderNewVO);
+        }
+
+        return R.success(null);
     }
 
     @ApiOperation(value = "删除战队比赛内部申请")
@@ -191,7 +203,20 @@ public class TeamOrderController {
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {
 
-        return R.success(teamOrderService.findTeamOrderByDefMatchOrderIdAndStatus(defMatchOrderId, status, pageNum, pageSize));
+        List<TeamOrderDTO> teamOrderDTOList = teamOrderService.findTeamOrderByDefMatchOrderIdAndStatus(defMatchOrderId, status, pageNum, pageSize);
+
+        if(teamOrderDTOList == null) return R.success(null);
+
+        List<TeamOrderNewVO> teamOrderNewVOS = new ArrayList<>();
+        for(TeamOrderDTO teamOrderDTO: teamOrderDTOList) {
+            TeamOrderNewVO teamOrderNewVO = new TeamOrderNewVO(teamOrderDTO);
+            Member member = memberRepository.findMemberById(teamOrderDTO.getMemberId());
+            teamOrderNewVO.setName(member.getName());
+            teamOrderNewVO.setAvatar(member.getAvatar());
+            teamOrderNewVOS.add(teamOrderNewVO);
+        }
+
+        return R.success(teamOrderNewVOS);
     }
 
     @ApiOperation(value = "查询指定预约比赛队内报名")
@@ -211,7 +236,20 @@ public class TeamOrderController {
         DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage,teamId );
         if(defMatchManage == null) return R.error("can't find defMatchOrder by defMatchId and teamId");
 
-        return R.success(teamOrderService.findTeamOrderByDefMatchOrderId(defMatchOrder.getId(), pageNum, pageSize));
+        List<TeamOrderDTO> teamOrderDTOList = teamOrderService.findTeamOrderByDefMatchOrderId(defMatchOrder.getId(), pageNum, pageSize);
+
+        if(teamOrderDTOList == null) return R.success(null);
+
+        List<TeamOrderNewVO> teamOrderNewVOS = new ArrayList<>();
+        for(TeamOrderDTO teamOrderDTO: teamOrderDTOList) {
+            TeamOrderNewVO teamOrderNewVO = new TeamOrderNewVO(teamOrderDTO);
+            Member member = memberRepository.findMemberById(teamOrderDTO.getMemberId());
+            teamOrderNewVO.setName(member.getName());
+            teamOrderNewVO.setAvatar(member.getAvatar());
+            teamOrderNewVOS.add(teamOrderNewVO);
+        }
+
+        return R.success(teamOrderNewVOS);
     }
 
     @ApiOperation(value = "查询指定预约比赛队内报名")
