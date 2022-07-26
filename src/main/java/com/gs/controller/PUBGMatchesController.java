@@ -30,8 +30,12 @@ public class PUBGMatchesController {
     @ApiOperation(value = "创建比赛")
     @PostMapping
     public R add(@RequestParam String pubgMatchesId, @RequestParam  Long defMatchId) {
-        pubgMatchesService.create(pubgMatchesId, defMatchId);
-        return R.success();
+        PUBGMatchesDTO pubgMatchesDTO = pubgMatchesService.create(pubgMatchesId, defMatchId);
+        if(pubgMatchesDTO != null ) {
+            return R.success();
+        } else {
+            return R.error("创建失败");
+        }
     }
 
     @ApiOperation(value = "删除比赛")

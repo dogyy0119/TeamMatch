@@ -33,6 +33,12 @@ public class DefMatchManageController {
     @ApiOperation(value = "创建自定义管理")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public R addManage(@RequestBody DefMatchManageDTO defMatchManageDTO) {
+
+        DefMatchManageDTO dto1 = defMatchManageService.findByMatchId(defMatchManageDTO.getMatchId());
+        if(dto1 != null) {
+            return R.error("请勿重复创建");
+        }
+
         DefMatchManageDTO dto = defMatchManageService.create( defMatchManageDTO );
         return R.success(dto);
     }

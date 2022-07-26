@@ -4,22 +4,26 @@ spring:
   datasource:
     db1: # 数据源1
       # mysql数据源配置例
-#      url: jdbc:mysql://172.27.238.31:3306/test1?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
-#      jdbc-url: ${spring.datasource.db1.url}
-#      username: root
-#      password: 123456
-#      driver-class-name: com.mysql.cj.jdbc.Driver
 
-      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=TestDB
+      #      url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=testdb3
+
+      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=gameyx
+      #      url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=devdatabase
+
       jdbc-url: ${spring.datasource.db1.url}
-      #驱动名称
-      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-      #用户名
       username: sa
-      #密码
-      password: Asdfgh123
+      password: www123456@
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
-    # db2: # 数据源2
+      #    db1: # 数据源1
+      #      # mysql数据源配置例
+      #      url: jdbc:mysql://localhost:3306/test1?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
+      #      jdbc-url: ${spring.datasource.db1.url}
+      #      username: root
+      #      password: 123456
+      #      driver-class-name: com.mysql.cj.jdbc.Driver
+
+      # db2: # 数据源2
       # orcale数据源配置例
       # driver-class-name: oracle.jdbc.driver.OracleDriver
       # url: jdbc:oracle:thin:@localhost:1521:dbServerName
@@ -42,14 +46,31 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true  #日志中显示sql语句
+    show-sql: false  #日志中显示sql语句
 
-#  cloud:
-#    consul:
-#      host: 172.27.238.8
-#      port: 8500
-#      discovery:
-#        heartbeat:
-#          enabled: true
-#        service-name: ${spring.application.name}
-#        instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
+pubg:
+  seasons: https://api.pubg.com/shards/steam/seasons
+
+  url:
+    matches: https://api.pubg.com/shards/steam/players?filter[playerNames]=
+    season: https://api.pubg.com/shards/steam/seasons/$season/gameMode/$Game_mode/players?filter[playerIds]=$player_Ids
+    games: https://api.pubg.com/shards/steam/matches/
+  token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5MGFlNzYwMC1iMmE5LTAxM2EtNDY0YS0yYjVjODA1ZjgyMjMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjUyMTk4OTk5LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6ImdhbWUtY2VudGVyIn0.ggmiM-6whtPKNi2yWMc-yY1b_Plgkf3WOGKRebRjxlY
+  head-token: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5MGFlNzYwMC1iMmE5LTAxM2EtNDY0YS0yYjVjODA1ZjgyMjMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjUyMTk4OTk5LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6ImdhbWUtY2VudGVyIn0.ggmiM-6whtPKNi2yWMc-yY1b_Plgkf3WOGKRebRjxlY"
+  head-formate: "application/vnd.api+json"
+  game-type: normal-squad-fpp
+
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        heartbeat:
+          enabled: true
+        service-name: ${spring.application.name}
+        instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
+
+#logo的存放地址
+fileaddress:
+  logoPath: c:\image
+

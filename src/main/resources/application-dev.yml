@@ -46,7 +46,7 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true  #日志中显示sql语句
+    show-sql: false  #日志中显示sql语句
 
 pubg:
   seasons: https://api.pubg.com/shards/steam/seasons

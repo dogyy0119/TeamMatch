@@ -72,7 +72,7 @@ public class ScheduledTask {
     /**
      * 提前30分钟 通知比赛
      */
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "0 */2 * * * ?")
     @Async
     public void gamePrepare(){
 
@@ -113,7 +113,7 @@ public class ScheduledTask {
     /**
      * 在 start Time之后。获取 PUBG 比赛。
      */
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "0 */10 * * * ?")
     @Async
     public void gameData() {
         Iterator<Map.Entry<Long, DefMatchDTO>> iterator = prepareMap.entrySet().iterator();
@@ -128,7 +128,7 @@ public class ScheduledTask {
                 ScoreUtils.perseRank(defMatchDTO.getGameRankItems());
                 logger.info("date ： {}", date.toString());
 
-                if (date.before( GameBefore(1))) {
+                if (date.before( GameBefore(30))) {
                     List<String> ids = matchIdMap.get(defMatchId);
                     Long memberId = defMatchDTO.getMemberId();
                     Member member = memberRepository.findMemberById(memberId);
@@ -139,7 +139,7 @@ public class ScheduledTask {
                         logger.info("2  matchid ： {}", matchid);
                     }
 
-//                    matchIds.removeAll(ids);
+                    matchIds.removeAll(ids);
 
                     logger.info("2  matchIds.size() ： {}", matchIds.size());
                     if ( matchIds.size() > 0 ) {
@@ -154,7 +154,7 @@ public class ScheduledTask {
                                 prepareMap.remove(defMatchId);
                                 matchIdMap.remove(matchIdMap);
                             }
-                            break;
+//                            break;
                         }
                         matchIdMap.put(defMatchId, ids);
                     }
