@@ -91,4 +91,9 @@ public interface DefMatchOrderService {
             Integer pageNum,
             Integer pageSize);
 
+    List<DefMatchOrderDTO>  getMatchOrdersSuccessPageByMatchId(
+            Long matchId,
+            Integer pageNum,
+            Integer pageSize);
+
 }

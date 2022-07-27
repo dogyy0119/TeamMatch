@@ -1,18 +1,24 @@
 package com.gs.controller;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.gs.convert.DefMatchManageConvert;
 import com.gs.model.dto.def.DefMatchManageDTO;
 import com.gs.model.dto.def.DefMatchOrderDTO;
+import com.gs.model.dto.vo.OrderMatch;
+import com.gs.model.entity.jpa.db1.def.DefMatch;
 import com.gs.model.entity.jpa.db1.def.DefMatchOrder;
 import com.gs.model.entity.jpa.db1.team.Member;
 import com.gs.model.entity.jpa.db1.team.Team;
 import com.gs.model.entity.jpa.db1.team.TeamMember;
 import com.gs.repository.jpa.def.DefMatchOrderRepository;
+import com.gs.repository.jpa.def.DefMatchRepository;
 import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.repository.jpa.team.TeamMemberRepository;
 import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.def.DefMatchManageService;
 import com.gs.service.intf.def.DefMatchOrderService;
+import com.gs.utils.HttpUtils;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +26,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @Api(tags = "自定义比赛申请接口")
 @RestController
@@ -48,6 +54,9 @@ public class DefMatchOrderController {
 
     @Autowired
     private TeamMemberRepository teamMemberRepository;
+
+    @Autowired
+    private DefMatchRepository defMatchRepository;
 
     @ApiOperation(value = "创建自定义管理")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -136,8 +145,6 @@ public class DefMatchOrderController {
             return R.error("主键 id 有误");
         }
 
-
-
         try {
             DefMatchManageDTO defMatchManageDTO = defMatchManageService.findByMatchId(defMatchOrderDTO.getMatchId());
             DefMatchOrderDTO defMatchOrderDTO1 = defMatchOrderService.findByMatchIdAndOrderId(defMatchManageDTO.getMatchId(), defMatchOrderDTO.getOrderId());
@@ -153,6 +160,21 @@ public class DefMatchOrderController {
                 defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() + 1);
                 System.out.println(" update(defMatchManageDTO)");
                 defMatchManageService.update(defMatchManageDTO);
+
+                // 构建cost 请求
+                DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchManageDTO.getMatchId());
+                Map<String, String> requestMap = new HashMap<>();
+                requestMap.put("fee", defMatch.getGameBill().toString());
+                requestMap.put("memberId", memberId.toString());
+
+                if (defMatchOrderDTO.getMode() == 1) {
+                    requestMap.put("teamId", defMatchOrderDTO.getOrderId().toString());
+                } else {
+                    requestMap.put("teamId", "0");
+                }
+                JSONObject json = new JSONObject(requestMap);
+                HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/createCost",json.toString(), null);
+
             }
 
             if (defMatchOrderDTO.getStatus() == -1) {
@@ -161,6 +183,21 @@ public class DefMatchOrderController {
                     System.out.println(" update(defMatchManageDTO) = -1");
                     defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() - 1);
                     defMatchManageService.update(defMatchManageDTO);
+
+                    // 构建cost 请求
+                    DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchManageDTO.getMatchId());
+                    Map<String, String> requestMap = new HashMap<>();
+                    requestMap.put("fee", defMatch.getGameBill().toString());
+                    requestMap.put("memberId", memberId.toString());
+
+                    if (defMatchOrderDTO.getMode() == 1) {
+                        requestMap.put("teamId", defMatchOrderDTO.getOrderId().toString());
+                    } else {
+                        requestMap.put("teamId", "0");
+                    }
+                    JSONObject json = new JSONObject(requestMap);
+                    HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/createCost",json.toString(), null);
+
                 }
             }
 
@@ -234,5 +271,51 @@ public class DefMatchOrderController {
             @RequestParam Integer pageSize) {
 
         return R.success( defMatchOrderService.getMatchOrdersPageByMatchIdAndStatus( memberId, matchId, status, pageNum, pageSize));
+    }
+
+    @ApiOperation(value = "查询指定状态指定比赛预约申请")
+    @RequestMapping(value = "/getMatchOrdersSuccessPageByMatchId", method = RequestMethod.GET)
+    public R getMatchOrdersSuccessPageByMatchId(
+            @RequestParam Long matchId,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
+
+        DefMatch defMatch = defMatchRepository.findDefMatchById(matchId);
+
+        if(defMatch == null) {
+             return R.error( "请检查 MatchId");
+        }
+
+        List<DefMatchOrderDTO> defMatchOrderDTOS = defMatchOrderService.getMatchOrdersSuccessPageByMatchId(  matchId,  pageNum, pageSize);
+
+        if ( defMatchOrderDTOS.size() == 0 ) {
+            return R.success();
+        }
+
+//        Map<String,String> gameList = new HashMap<>();
+        List<OrderMatch> gameList = new ArrayList<>();
+        for ( DefMatchOrderDTO defMatchOrderDTO : defMatchOrderDTOS ) {
+           if ( defMatchOrderDTO.getMode() == 0 ) {
+               Member member = memberRepository.findMemberById( defMatchOrderDTO.getOrderId() );
+               if ( member != null ) {
+
+                   OrderMatch orderMatch = new OrderMatch();
+                   orderMatch.setName(member.getName());
+                   gameList.add(orderMatch);
+               }
+           } else {
+               Team team = teamRepository.findTeamById( defMatchOrderDTO.getOrderId() );
+               if ( team != null ) {
+//                   gameList.put("name",team.getName());
+                   OrderMatch orderMatch = new OrderMatch();
+                   orderMatch.setName(team.getName());
+                   gameList.add(orderMatch);
+               }
+           }
+        }
+
+        JSONArray jsonArray = new JSONArray(gameList);
+
+        return R.success( jsonArray );
     }
 }

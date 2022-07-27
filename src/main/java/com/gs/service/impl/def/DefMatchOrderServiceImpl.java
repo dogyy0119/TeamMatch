@@ -333,4 +333,38 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         return defMatchOrderDTOS;
     }
 
+    @Override
+    public List<DefMatchOrderDTO> getMatchOrdersSuccessPageByMatchId(Long matchId, Integer pageNum, Integer pageSize) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
+
+        Page<DefMatchOrder> ordersPage = defMatchOrderRepository.findAll(new Specification<DefMatchOrder>() {
+
+            public Predicate toPredicate(Root<DefMatchOrder> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<Long> matchIdPath = root.join("defMatchManage").join("defMatch").get("id");
+                Path<Integer> statusPath = root.get("status");
+
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+
+                predicates.add(cb.equal( matchIdPath, matchId));
+                predicates.add(cb.equal( statusPath, 1));
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        }, pageable);
+
+        List<DefMatchOrderDTO> defMatchOrderDTOS = new ArrayList<>();
+
+        for (DefMatchOrder entry : ordersPage) {
+            defMatchOrderDTOS.add( defMatchOrderConvert.toDto(entry) );
+        }
+
+        return defMatchOrderDTOS;
+    }
+
 }

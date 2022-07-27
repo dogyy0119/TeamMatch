@@ -575,40 +575,43 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
             PUBGMatchesDTO pubgMatchesDTO = pubgMatchesConvert.toDto(pubgMatches);
             System.out.println("PUBGMatchesDTO PubgMatchesId:" + pubgMatchesDTO.getPubgMatchesId());
-            if (!matchType.equals("") || !matchType.equals(" ")) {
-                if (matchType.equals(pubgMatchesDTO.getType())) {
-                    DefMatchDTO defMatchDTO = defMatchService.findById(pubgMatches.getDefMatchId());
-                    PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
-                    pubgMatchesVO.setDefMatchName(defMatchDTO.getName());
-                    pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime().toString());
-                    pubgMatchesVO.setDefMatchId(defMatchDTO.getId());
-                    pubgMatchesVO.setIndex(pubgTeam.getIndex());
+//            System.out.println("matchType : " + matchType);
+//            System.out.println("pubgMatchesDTO.getType() : " + pubgMatchesDTO.getType());
 
-                    DefMatchDTO defMatch = defMatchService.findById(defMatchDTO.getId());
-                    Member member = memberRepository.findMemberById(memberId);
-                    DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatchConvert.toEntity(defMatch));
-                    if (defMatch.getGameMode() == 0) {
-                        DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, member.getId());
-                        PersonOrder personOrder = personOrderRepository.findPersonOrderByDefMatchOrderAndMember(defMatchOrder, member);
-                        if (personOrder != null) pubgMatchesVO.setIsLike(personOrder.getIsLike());
-                    } else {
-                        DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
-                        if (defMatchOrder == null) return null;
-                        System.out.println("defMatchManage：" + defMatchManage.getId());
-                        System.out.println("teamId：" + teamId);
-                        System.out.println("defMatchOrder.getOrderId() :" + defMatchOrder.getOrderId());
-
-                        Team team = teamRepository.findTeamById(defMatchOrder.getOrderId());
-                        if (team != null) {
-                            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
-                            if (teamOrderList.size() > 0)
-                                pubgMatchesVO.setIsLike(teamOrderList.get(0).getIsLike());
-                        }
-                    }
-                    pubgMatchesVOS.add(pubgMatchesVO);
-
-                }
-            } else {
+//            if (!matchType.equals("") || !matchType.equals(" ")) {
+//                if (matchType.equals(pubgMatchesDTO.getType())) {
+//                    DefMatchDTO defMatchDTO = defMatchService.findById(pubgMatches.getDefMatchId());
+//                    PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
+//                    pubgMatchesVO.setDefMatchName(defMatchDTO.getName());
+//                    pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime().toString());
+//                    pubgMatchesVO.setDefMatchId(defMatchDTO.getId());
+//                    pubgMatchesVO.setIndex(pubgTeam.getIndex());
+//
+//                    DefMatchDTO defMatch = defMatchService.findById(defMatchDTO.getId());
+//                    Member member = memberRepository.findMemberById(memberId);
+//                    DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatchConvert.toEntity(defMatch));
+//                if (defMatch.getGameMode() == 0) {
+//                        DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, member.getId());
+//                        PersonOrder personOrder = personOrderRepository.findPersonOrderByDefMatchOrderAndMember(defMatchOrder, member);
+//                        if (personOrder != null) pubgMatchesVO.setIsLike(personOrder.getIsLike());
+//                    } else {
+//                        DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
+//                        if (defMatchOrder == null) return null;
+//                        System.out.println("defMatchManage：" + defMatchManage.getId());
+//                        System.out.println("teamId：" + teamId);
+//                        System.out.println("defMatchOrder.getOrderId() :" + defMatchOrder.getOrderId());
+//
+//                        Team team = teamRepository.findTeamById(defMatchOrder.getOrderId());
+//                        if (team != null) {
+//                            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
+//                            if (teamOrderList.size() > 0)
+//                                pubgMatchesVO.setIsLike(teamOrderList.get(0).getIsLike());
+//                        }
+//                    }
+//                    pubgMatchesVOS.add(pubgMatchesVO);
+//
+//                }
+//            } else {
                 DefMatchDTO defMatchDTO = defMatchService.findById(pubgMatches.getDefMatchId());
                 PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
                 pubgMatchesVO.setDefMatchName(defMatchDTO.getName());
@@ -636,7 +639,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 pubgMatchesVOS.add(pubgMatchesVO);
 
                 pubgMatchesVOS.add(pubgMatchesVO);
-            }
+//            }
         }
         return pubgMatchesVOS;
     }
@@ -961,6 +964,13 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         return queryPBUGMatchAchiByTeamId(teamId,0,1000);
     }
 
+    /**
+     *  根据 member
+     * @param memberId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     private Page<PUBGPlayer> getPUBGPlayerPage(Long memberId, Integer pageNum, Integer pageSize) {
         String PUBGPlayerName = memberRepository.findMemberById(memberId).getPubgName();
         System.out.println("PUBGPlayerName:" + PUBGPlayerName);
