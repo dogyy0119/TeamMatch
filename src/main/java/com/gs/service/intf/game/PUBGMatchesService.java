@@ -1,8 +1,11 @@
 package com.gs.service.intf.game;
 
 import com.gs.model.dto.game.PUBGMatchesDTO;
+import com.gs.model.dto.vo.PUBGAchievementArrayVO;
 import com.gs.model.dto.vo.PUBGMatchesVO;
+import com.gs.model.entity.jpa.db1.game.PUBGAchievement;
 import com.gs.model.entity.jpa.db1.game.PUBGMatches;
+import com.gs.model.entity.jpa.db1.game.PUBGTeam;
 
 import java.text.ParseException;
 import java.util.List;
@@ -48,6 +51,18 @@ public interface PUBGMatchesService {
      */
     List<PUBGMatchesVO> getPUBGMatchesByMemberId(
             Long memberId,
+            Integer pageNum,
+            Integer pageSize);
+
+    /**
+     *
+     * @param memberId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    List<PUBGMatchesVO> getPUBGMatchesByMatchName(
+            String matchName,
             Integer pageNum,
             Integer pageSize);
 
@@ -168,4 +183,18 @@ public interface PUBGMatchesService {
      */
     List<PUBGMatchesVO> getAchievementByTeamId(Long memberId, Long teamId);
 
+
+    /**
+     * 查找得分最多的队务
+     * @param defMatchId
+     * @return
+     */
+    PUBGTeam findTopScoreTeamByDefMatchId(Long defMatchId);
+
+    /**
+     * 获取战队成就
+     * @param teamId
+     * @return
+     */
+    PUBGAchievementArrayVO getTeamSuccessByTeamId(Long teamId);
 }

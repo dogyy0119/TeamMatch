@@ -14,6 +14,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecif
 
     Member findMemberByPubgId(String pubgId);
 
+    Member findMemberByPubgName(String pubgName);
+
     boolean existsById(Long id);
 
     boolean existsMemberEntityById(long id);

@@ -49,6 +49,10 @@ public class DefMatchController {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         PageRequest pageable = PageRequest.of(0, 100, sort);
 
+        if (defMatchDTO.getName() == null || defMatchDTO.getName().equals("")) {
+            return R.error(" 比赛名字为空！");
+        }
+
         Page<DefMatch> defMatchPage = defMatchService.findMatchesByDate( defMatchDTO.getGameStartTime() ,pageable);
         for (DefMatch entity : defMatchPage) {
             DefMatchDTO dto = defMatchConvert.toDto(entity);
@@ -159,7 +163,10 @@ public class DefMatchController {
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
         for (DefMatch entity : defMatchPage){
             DefMatchDTO dto =  defMatchConvert.toDto(entity);
-            defMatchDTOS.add(dto);
+            // 过期的比赛不显示
+//            if(dto.getGameStartTime().before(new Date())) {
+                defMatchDTOS.add(dto);
+//            }
         }
 
         return R.success(defMatchDTOS);
@@ -204,5 +211,4 @@ public class DefMatchController {
 
         return R.success( defMatchService.getMatchByKey( key, pageNum, pageSize) );
     }
-
 }

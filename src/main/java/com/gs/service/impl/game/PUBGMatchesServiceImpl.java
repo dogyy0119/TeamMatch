@@ -7,19 +7,15 @@ import com.gs.convert.DefMatchConvert;
 import com.gs.convert.PUBGMatchesConvert;
 import com.gs.model.dto.def.DefMatchDTO;
 import com.gs.model.dto.game.PUBGMatchesDTO;
+import com.gs.model.dto.vo.PUBGAchievementArrayVO;
 import com.gs.model.dto.vo.PUBGMatchesVO;
 import com.gs.model.entity.jpa.db1.def.*;
-import com.gs.model.entity.jpa.db1.game.PUBGMatches;
-import com.gs.model.entity.jpa.db1.game.PUBGPlayer;
-import com.gs.model.entity.jpa.db1.game.PUBGSeason;
-import com.gs.model.entity.jpa.db1.game.PUBGTeam;
+import com.gs.model.entity.jpa.db1.game.*;
 import com.gs.model.entity.jpa.db1.team.Member;
 import com.gs.model.entity.jpa.db1.team.Team;
 import com.gs.model.entity.jpa.db1.team.TeamMember;
 import com.gs.repository.jpa.def.*;
-import com.gs.repository.jpa.game.PUBGMatchesRepository;
-import com.gs.repository.jpa.game.PUBGPlayerRepository;
-import com.gs.repository.jpa.game.PUBGSeasonRepository;
+import com.gs.repository.jpa.game.*;
 import com.gs.repository.jpa.team.MemberRepository;
 import com.gs.repository.jpa.team.TeamMemberRepository;
 import com.gs.repository.jpa.team.TeamRepository;
@@ -28,6 +24,7 @@ import com.gs.service.intf.def.DefMatchService;
 import com.gs.service.intf.game.PUBGMatchesService;
 import com.gs.utils.HttpUtils;
 import org.bouncycastle.math.ec.ScaleYNegateXPointMap;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
@@ -45,6 +42,8 @@ import java.util.*;
 
 @Service
 public class PUBGMatchesServiceImpl implements PUBGMatchesService {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(PUBGMatchesService.class);
 
     @Autowired
     private PUBGMatchesRepository pubgMatchesRepository;
@@ -90,6 +89,12 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
     @Autowired
     private TeamOrderRepository teamOrderRepository;
+
+    @Autowired
+    private PUBGTeamRepository pubgTeamRepository;
+
+    @Autowired
+    private PUBGAchievementRepository pubgAchievementRepository;
 
     @Override
     public PUBGMatchesDTO create(String pubgMatchesId, Long defMatchId) {
@@ -314,9 +319,23 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
                 PUBGPlayer pubgPlayer = pubgPlayerMap.get(player);
                 pubgPlayerList.add(pubgPlayer);
+
+                if ( pubgTeam.getTeamName() == null || pubgTeam.getTeamName().equals("") ) {
+                    Member member = memberRepository.findMemberByPubgName( pubgPlayer.getPubgPlayerName() );
+                    if ( member != null ) {
+                        List<TeamMember> teamMembers = teamMemberRepository.findTeamMembersByMember(member);
+                        if(teamMembers.size() == 1) {
+                            TeamMember teamMember = teamMembers.get(0);
+                            Team team = teamMember.getTeam();
+                            String name = team.getName();
+                            pubgTeam.setTeamName( name );
+                            pubgTeam.setTeamId( team.getId() );
+                        }
+                    }
+                }
             }
-            pubgTeam.setTeamMembers(pubgPlayerList);
-            pubgTeamList.add(pubgTeam);
+            pubgTeam.setTeamMembers( pubgPlayerList );
+            pubgTeamList.add( pubgTeam );
         }
         pubgMatches.setTeamMembers(pubgTeamList);
         pubgMatchesRepository.save(pubgMatches);
@@ -556,7 +575,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
      */
     @Override
     public List<PUBGMatchesVO> getPUBGMatchesSortByMatchType(Long memberId, Long teamId, String matchType, Integer pageNum, Integer pageSize) {
-
         Page<PUBGPlayer> ordersPage = getPUBGPlayerPage(memberId, pageNum, pageSize);
         List<PUBGPlayer> pubgPlayerList = new ArrayList<>();
 
@@ -568,6 +586,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
         if (pubgPlayerList.size() == 0) return null;
 
+        logger.info( "getPUBGMatchesSortByMatchType: pubgPlayerList.size :" + pubgPlayerList.size());
         List<PUBGMatchesVO> pubgMatchesVOS = new ArrayList<>();
         for (PUBGPlayer pubgPlayer : pubgPlayerList) {
             PUBGTeam pubgTeam = pubgPlayer.getPubgTeam();
@@ -615,9 +634,23 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 DefMatchDTO defMatchDTO = defMatchService.findById(pubgMatches.getDefMatchId());
                 PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
                 pubgMatchesVO.setDefMatchName(defMatchDTO.getName());
-                pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime().toString());
+                //
+//                pubgMatchesVO.setGameTime(defMatchDTO.getGameStartTime().toString());
                 pubgMatchesVO.setDefMatchId(defMatchDTO.getId());
                 pubgMatchesVO.setIndex(pubgTeam.getIndex());
+
+//                Map<Integer, String> timeMap = new HashMap<>();
+                JSONArray timejsonArray = new JSONArray(defMatchDTO.getTimeList());
+                if (timejsonArray.size() > 0) {
+                    for (int i = 0; i < timejsonArray.size(); i++) {
+                        // 遍历 jsonarray 数组，把每一个对象转成 json 对象
+                        JSONObject job = timejsonArray.getJSONObject(i);
+
+                        JSONArray array = job.getJSONArray("timeDate");
+//                        timeMap.put(Integer.parseInt(job.get("mactchID").toString()), array.get(pubgTeam.getIndex()).toString());
+                        pubgMatchesVO.setGameTime(array.get(pubgTeam.getPubgMatchesId().getDefMatchIndex()-1).toString());
+                    }
+                }
 
                 DefMatchDTO defMatch = defMatchService.findById(defMatchDTO.getId());
                 Member member = memberRepository.findMemberById(memberId);
@@ -635,9 +668,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                         if (teamOrderList.size() > 0) pubgMatchesVO.setIsLike(teamOrderList.get(0).getIsLike());
                     }
                 }
-
-                pubgMatchesVOS.add(pubgMatchesVO);
-
                 pubgMatchesVOS.add(pubgMatchesVO);
 //            }
         }
@@ -646,11 +676,8 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
     @Override
     public List<PUBGMatchesDTO> findPUBGMatchesByPUBGPlayerNameAndMatchType(String PUBGPlayerName, String matchType, Integer pageNum, Integer pageSize) {
-
         List<PUBGPlayer> pubgPlayerList = pubgPlayerRepository.findAllPUBGPlayerByPubgPlayerName(PUBGPlayerName);
-
         if (pubgPlayerList.size() == 0) return null;
-
         return getMatchesByPlayers(pubgPlayerList, matchType, pageNum, pageSize);
     }
 
@@ -964,6 +991,67 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         return queryPBUGMatchAchiByTeamId(teamId,0,1000);
     }
 
+    @Override
+    public PUBGTeam findTopScoreTeamByDefMatchId(Long defMatchId) {
+        List<PUBGMatches> pubgMatchesList = pubgMatchesRepository.findPUBGMatchesByDefMatchId(defMatchId);
+
+        for (PUBGMatches pubgMatches: pubgMatchesList) {
+//            String pubgTeamId = pubgTeamRepository.findPUBGTeamScoreMost(pubgMatches.getPubgMatchesId());
+            PUBGTeam pubgTeam= pubgTeamRepository.findPUBGTeamByIndexAndAndPubgMatchesId(1,pubgMatches.getPubgMatchesId());
+//            if( pubgTeamId==null || pubgTeamId.equals("")) {
+//                logger.info( "findTopScoreTeamByDefMatchId pubgTeamId is null " );
+//                continue;
+//            }
+//            PUBGTeam pubgTeam = pubgTeamRepository.findPUBGTeamByPAndPubgTeamId(pubgTeamId);
+            if( pubgTeam == null ) {
+                logger.info( "findTopScoreTeamByDefMatchId pubgTeam is null " );
+                continue;
+            }
+
+            DefMatch defMatch = defMatchRepository.findDefMatchById(pubgTeam.getPubgMatchesId().getDefMatchId());
+            if( defMatch == null ) {
+                logger.info( "findTopScoreTeamByDefMatchId defMatch is null " );
+                continue;
+            }
+
+            List<PUBGAchievement> pubgAchievements = pubgAchievementRepository.findPUBGAchievementByTeamId(pubgTeam.getTeamId());
+            if ( pubgAchievements.size() == 0 ) {
+                PUBGAchievement pubgAchievement = new PUBGAchievement();
+                pubgAchievement.setDefMatchId(pubgTeam.getPubgMatchesId().getDefMatchId());
+                pubgAchievement.setTeamId(pubgTeam.getTeamId());
+                pubgAchievement.setName(defMatch.getName() + " ：第"+pubgTeam.getPubgMatchesId().getDefMatchIndex() + "场");
+                pubgAchievement.setGameIndex(1);
+                pubgAchievement.setGameLogo(defMatch.getGameLogo());
+                pubgAchievement.setMatchType(defMatch.getMatchType());
+                pubgAchievementRepository.save(pubgAchievement);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public PUBGAchievementArrayVO getTeamSuccessByTeamId(Long teamId) {
+
+        PUBGAchievementArrayVO pubgAchievementArrayVO = new PUBGAchievementArrayVO();
+        List<PUBGAchievement> FPPArray = new ArrayList<>();
+        List<PUBGAchievement> TPPArray = new ArrayList<>();
+        List<PUBGAchievement> pubgAchievements = pubgAchievementRepository.findPUBGAchievementByTeamId(teamId);
+        logger.info("pubgAchievement size:" + pubgAchievements.size());
+
+        for(PUBGAchievement pubgAchievement : pubgAchievements) {
+            if ( pubgAchievement.getMatchType().equals("TPP") ) {
+                TPPArray.add(pubgAchievement);
+            } else if ( pubgAchievement.getMatchType().equals("FPP") ) {
+                FPPArray.add(pubgAchievement);
+            }
+        }
+
+        pubgAchievementArrayVO.setFpparray(FPPArray);
+        pubgAchievementArrayVO.setTPParray(TPPArray);
+
+        return pubgAchievementArrayVO;
+    }
+
     /**
      *  根据 member
      * @param memberId
@@ -1072,7 +1160,67 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                     JSONObject job = timejsonArray.getJSONObject(i);
 
                     JSONArray array = job.getJSONArray("timeDate");
-                    timeMap.put(Integer.parseInt(job.get("mactchID").toString()), job.get("timeDate").toString());
+                    timeMap.put(Integer.parseInt(job.get("mactchID").toString()), array.get(0).toString());
+
+//                    timeMap.put(Integer.parseInt(job.get("mactchID").toString()), job.get("timeDate").toString());
+                }
+            }
+
+            for (Integer i = 1; i <= entry.getGameNum(); i++) {
+                PUBGMatchesVO pubgMatchesVO = new PUBGMatchesVO();
+                pubgMatchesVO.setDefMatchName(entry.getName());
+                pubgMatchesVO.setGameTime(timeMap.get(i));
+                pubgMatchesVO.setDefMatchId(entry.getId());
+                pubgMatchesVO.setIndex(i);
+                pubgMatchesVO.setIsLike(0);
+                pubgMatchesVOList.add(pubgMatchesVO);
+            }
+        }
+
+        return pubgMatchesVOList;
+    }
+
+    @Override
+    public List<PUBGMatchesVO> getPUBGMatchesByMatchName(String matchName, Integer pageNum, Integer pageSize) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
+
+        Page<DefMatch> defMatchPage = defMatchRepository.findAll(new Specification<DefMatch>() {
+
+            public Predicate toPredicate(Root<DefMatch> root,
+                                         CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path<String> matchNamePath = root.get("name");
+                Path<Date> gameStartTimePath = root.get("gameStartTime");
+                /**
+                 * 连接查询条件, 不定参数，可以连接0..N个查询条件
+                 */
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.lessThanOrEqualTo(gameStartTimePath, new Date()));
+                Predicate p1 = cb.like(matchNamePath.as(String.class), "%" + matchName + "%");
+
+                predicates.add(p1);
+
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+                return null;
+            }
+
+        }, pageable);
+
+
+        List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
+
+        for (DefMatch entry : defMatchPage) {
+            String timeList = entry.getTimeList();
+            Map<Integer, String> timeMap = new HashMap<>();
+            JSONArray timejsonArray = new JSONArray(timeList);
+            if (timejsonArray.size() > 0) {
+                for (int i = 0; i < timejsonArray.size(); i++) {
+                    // 遍历 jsonarray 数组，把每一个对象转成 json 对象
+                    JSONObject job = timejsonArray.getJSONObject(i);
+
+                    JSONArray array = job.getJSONArray("timeDate");
+                    timeMap.put(Integer.parseInt(job.get("mactchID").toString()), array.get(0).toString());
+//                    timeMap.put(Integer.parseInt(job.get("mactchID").toString()), job.get("timeDate").toString());
                 }
             }
 
@@ -1187,5 +1335,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
         return pubgMatchesVOList;
     }
+
+
 
 }

@@ -25,6 +25,12 @@ public class PUBGTeam implements Serializable , Comparable<PUBGTeam>{
     private String pubgTeamId;
 
     /**
+     * 队伍战队对应id
+     */
+    @Column(name = "teamId")
+    private Long teamId;
+
+    /**
      * 队伍战队名称对应
      */
     @Column(name = "pubgTeamName")

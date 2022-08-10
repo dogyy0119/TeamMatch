@@ -126,4 +126,19 @@ public class DefMatchDTO implements Serializable {
      */
     private String gameDesc;
 
+    /**
+     * 比赛地图
+     */
+    private String gameMap;
+
+    /**
+     * 是否使用比赛地图位置
+     */
+    private Boolean useGameMapPos;
+
+    /**
+     * 比赛地图位置
+     */
+    private String gameMapPos;
+
 }

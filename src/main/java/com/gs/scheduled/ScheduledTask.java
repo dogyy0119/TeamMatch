@@ -106,7 +106,7 @@ public class ScheduledTask {
         } finally {
             lock.unlock();
         }
-        logger.info("使用cron  线程名称：{}",Thread.currentThread().getName()  + new Date() );
+//        logger.info("使用cron  线程名称：{}",Thread.currentThread().getName()  + new Date() );
     }
 
 
@@ -125,7 +125,6 @@ public class ScheduledTask {
                 DefMatchDTO defMatchDTO = entry.getValue();
                 Date date = defMatchDTO.getGameStartTime();
 
-                ScoreUtils.perseRank(defMatchDTO.getGameRankItems());
                 logger.info("date ： {}", date.toString());
 
                 if (date.before( GameBefore(30))) {
@@ -143,20 +142,23 @@ public class ScheduledTask {
 
                     logger.info("2  matchIds.size() ： {}", matchIds.size());
                     if ( matchIds.size() > 0 ) {
-                        for (String id : matchIds) {
+                        for ( String id : matchIds ) {
                             ids.add( id );
                             logger.info("id ： {}", id);
                             List<PUBGMatches> pubgMatchesList = pubgMatchesService.findPUBGMatchesByDefMatchId(defMatchId);
                             logger.info("pubgMatchesList.size ： {}", pubgMatchesList.size() );
                             logger.info("defMatchDTO.getId() ： {}", defMatchDTO.getId());
                             pubgMatchesService.getPUBGMatches(id ,defMatchDTO.getId(),pubgMatchesList.size()+1, ScoreUtils.perseRank(defMatchDTO.getGameRankItems()), ScoreUtils.perseKill(defMatchDTO.getGameKillItems()));
-                            if(pubgMatchesList.size()+1 == defMatchDTO.getGameNum()) {
+
+                            if( pubgMatchesList.size()+1 == defMatchDTO.getGameNum() ) {
                                 prepareMap.remove(defMatchId);
-                                matchIdMap.remove(matchIdMap);
+                                matchIdMap.remove(defMatchId);
+                                pubgMatchesService.findTopScoreTeamByDefMatchId(defMatchId);
+                            } else {
+                                matchIdMap.put( defMatchId, ids );
                             }
-//                            break;
                         }
-                        matchIdMap.put(defMatchId, ids);
+
                     }
                 }
 
@@ -164,6 +166,6 @@ public class ScheduledTask {
         } finally {
             lock.unlock();
         }
-        logger.info("222222 使用cron  线程名称：{}",Thread.currentThread().getName()  + new Date() );
+//        logger.info("222222 使用cron  线程名称：{}",Thread.currentThread().getName()  + new Date() );
     }
 }

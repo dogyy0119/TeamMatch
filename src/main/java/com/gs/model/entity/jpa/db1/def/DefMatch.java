@@ -128,4 +128,22 @@ public class DefMatch extends AbstractBaseTimeEntity implements Serializable {
          */
         @Column(name = "game_desc")
         private String gameDesc;
+
+        /**
+         * 比赛地图
+         */
+        @Column(name = "game_map")
+        private String gameMap;
+
+        /**
+         * 是否使用比赛地图位置
+         */
+        @Column(name = "use_game_map_pos")
+        private Boolean useGameMapPos;
+
+        /**
+         * 比赛地图位置
+         */
+        @Column(name = "game_map_pos")
+        private String gameMapPos;
 }

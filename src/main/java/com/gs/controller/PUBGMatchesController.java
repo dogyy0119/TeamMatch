@@ -55,6 +55,18 @@ public class PUBGMatchesController {
         return R.success( pubgMatchesService.getPUBGMatchesByMemberId(memberId,pageNum,pageSize) );
     }
 
+    @ApiOperation(value = "根据名字模糊匹配match,用于查询联盟比赛")
+    @RequestMapping(value = "/getPUBGMatchesByMatchName", method = RequestMethod.GET)
+    public R getPUBGMatchesByMatchName(
+            @RequestParam String matchName,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
+
+        return R.success( pubgMatchesService.getPUBGMatchesByMatchName(matchName,pageNum,pageSize) );
+    }
+
+
+
     @ApiOperation(value = "查询比赛")
     @RequestMapping(value = "/getPUBGMatchesByKey", method = RequestMethod.GET)
     public R getPUBGMatchesByKey(
@@ -166,6 +178,14 @@ public class PUBGMatchesController {
             @RequestParam Long memberId,
             @RequestParam Long teamId) {
         return R.success( pubgMatchesService.getAchievementByTeamId(memberId, teamId) );
+    }
+
+    @ApiOperation(value = "查询战队成就")
+    @RequestMapping(value = "/getTeamSuccessByTeamId", method = RequestMethod.GET)
+    public R getTeamSuccessByTeamId(
+            @RequestParam Long memberId,
+            @RequestParam Long teamId) {
+        return R.success( pubgMatchesService.getTeamSuccessByTeamId(teamId) );
     }
 
 }
