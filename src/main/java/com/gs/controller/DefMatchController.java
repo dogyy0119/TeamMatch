@@ -124,7 +124,10 @@ public class DefMatchController {
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
         for (DefMatch entity : defMatchPage){
             DefMatchDTO dto =  defMatchConvert.toDto(entity);
-            defMatchDTOS.add(dto);
+            // 过期的比赛不显示
+            if(dto.getGameStartTime().after(new Date())) {
+                defMatchDTOS.add(dto);
+            }
         }
 
         return R.success(defMatchDTOS);
@@ -164,9 +167,9 @@ public class DefMatchController {
         for (DefMatch entity : defMatchPage){
             DefMatchDTO dto =  defMatchConvert.toDto(entity);
             // 过期的比赛不显示
-//            if(dto.getGameStartTime().before(new Date())) {
+            if(dto.getGameStartTime().after(new Date())) {
                 defMatchDTOS.add(dto);
-//            }
+            }
         }
 
         return R.success(defMatchDTOS);

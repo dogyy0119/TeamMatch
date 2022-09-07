@@ -3,6 +3,7 @@ package com.gs.controller;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.gs.convert.DefMatchManageConvert;
+import com.gs.model.dto.def.DefMatchDTO;
 import com.gs.model.dto.def.DefMatchManageDTO;
 import com.gs.model.dto.def.DefMatchOrderDTO;
 import com.gs.model.dto.vo.OrderMatch;
@@ -236,7 +237,17 @@ public class DefMatchOrderController {
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {
 
-        return R.success(defMatchOrderService.getMatchPage( 0, memberId, status, pageNum, pageSize ) );
+        List<DefMatchDTO> defMatchDTOList = defMatchOrderService.getMatchPage( 0, memberId, status, pageNum, pageSize );
+
+        List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
+        for (DefMatchDTO entity : defMatchDTOList){
+            // 过期的比赛不显示
+            if(entity.getGameStartTime().after(new Date())) {
+                defMatchDTOS.add(entity);
+            }
+        }
+
+        return R.success( defMatchDTOS );
     }
 
     @ApiOperation(value = "分页查询指定战队ID预约比赛")
@@ -246,8 +257,17 @@ public class DefMatchOrderController {
             @RequestParam Integer status,
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {
+        List<DefMatchDTO> defMatchDTOList = defMatchOrderService.getMatchPage( 1, teamId, status, pageNum, pageSize );
 
-        return R.success(defMatchOrderService.getMatchPage( 1, teamId, status, pageNum, pageSize ) );
+        List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
+        for (DefMatchDTO entity : defMatchDTOList){
+            // 过期的比赛不显示
+            if(entity.getGameStartTime().after(new Date())) {
+                defMatchDTOS.add(entity);
+            }
+        }
+
+        return R.success( defMatchDTOS );
     }
 
     @ApiOperation(value = "查询指定比赛预约申请")
