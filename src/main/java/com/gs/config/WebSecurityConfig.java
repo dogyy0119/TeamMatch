@@ -71,12 +71,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/game/v1.0/app/gameteam/manager/*/*").permitAll()
                 .antMatchers("/game/v1.0/app/gameteam/manager/*/*/*").permitAll()
                 .antMatchers("/logo/*").permitAll()
+                .antMatchers("/websocket/game/v1.0/app/gameteam/manager/*").permitAll()
                 .antMatchers("/game/v1.0/app/matches/DefMatchOrder/**").permitAll()
                 .antMatchers("/game/v1.0/app/matches/DefMatch/**").permitAll()
                 .antMatchers("/game/v1.0/app/matches/DefMatchManage/**").permitAll()
                 .antMatchers("/ist/**").permitAll()
                 .antMatchers("/game/v1.0/app/matches/PUBG/Manager/**").permitAll()
                 .antMatchers("/game/v1.0/app/matches/TeamOrder/**").permitAll()
+                .antMatchers("/game/v1.0/app/matches/PUBGStatistics/**").permitAll()
                 .antMatchers("/actuator/*").permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().

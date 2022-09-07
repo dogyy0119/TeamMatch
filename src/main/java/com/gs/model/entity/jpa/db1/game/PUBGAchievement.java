@@ -1,6 +1,5 @@
 package com.gs.model.entity.jpa.db1.game;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

@@ -11,6 +11,9 @@ public class PUBGConfig {
     @Value("${pubg.seasons}")
     private String seasons;
 
+    @Value("${pubg.token-pull}")
+    private String token_pull;
+
     @Value("${pubg.token}")
     private String token;
 

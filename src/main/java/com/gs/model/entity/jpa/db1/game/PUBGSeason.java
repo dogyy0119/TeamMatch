@@ -26,4 +26,10 @@ public class PUBGSeason {
      */
     @Column(name = "pubg_season_name")
     private String name;
+
+    /**
+     * 当前赛季
+     */
+    @Column(name = "is_Current_Season")
+    private Boolean isCurrentSeason;
 }

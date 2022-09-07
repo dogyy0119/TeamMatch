@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * 用户Dao层
  */
@@ -19,4 +21,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecif
     boolean existsById(Long id);
 
     boolean existsMemberEntityById(long id);
+
+    List<Member> findAllByPubgIdContaining(String key);
 }
