@@ -99,11 +99,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     @Override
     public PUBGMatchesDTO create(String pubgMatchesId, Long defMatchId) {
 
-//        getSeasons();
-//        perseMatchData("");
         perseGameData(pubgMatchesId, defMatchId);
-        //PUBGMatches pubgMatches = pubgMatchesRepository.save(pubgMatchesConvert.toEntity(dto));
-        //return pubgMatchesConvert.toDto( pubgMatches );
         return null;
     }
 
@@ -121,10 +117,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 // 遍历 jsonarray 数组，把每一个对象转成 json 对象
                 JSONObject job = array.getJSONObject(i);
 
-                System.out.println("type: " + job.get("type").toString());
-                System.out.println("id: " + job.get("id").toString());
                 if (job.get("type").toString().equals("season")) {
-
                     PUBGSeason pubgSeason = pubgSeasonRepository.findPUBGSeasonByName(job.get("id").toString());
                     if (pubgSeason == null) {
                         pubgSeason = new PUBGSeason();
@@ -139,17 +132,20 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
     @Override
     public List<String> getPlayerMatches(String name) {
+        if(name == null || name.equals("")) {
+            logger.info("getPlayerMatches name null");
+        }
 
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Authorization", pubgConfig.getHead_token());
         headerMap.put("Accept", pubgConfig.getHead_formate());
 
-//        String name = "MDayln";
-//        String name = "Roronoa--Zoro-_-";
         String result = HttpUtils.doGet(pubgConfig.getUrl_matches() + name, headerMap);
 
-        if (result == null || result.equals("")) return null;
-        //       System.out.println("result: " + result);
+        if (result == null || result.equals("")) {
+            logger.info("getPlayerMatches result null");
+            return null;
+        }
 
         List<String> matchIds = new ArrayList<>();
 
@@ -170,9 +166,9 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 if (dataArray.size() > 0) {
                     for (int j = 0; j < dataArray.size(); j++) {
                         JSONObject match = dataArray.getJSONObject(j);
-
-                        System.out.println("match type: " + match.get("type").toString());
-                        System.out.println("match id: " + match.get("id").toString());
+//
+//                        System.out.println("match type: " + match.get("type").toString());
+//                        System.out.println("match id: " + match.get("id").toString());
 
                         matchIds.add(match.get("id").toString());
 
@@ -194,20 +190,24 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     }
 
     public void perseGameData(String pubgMatchesId, Long defMatchId) {
+        if(pubgMatchesId == null || pubgMatchesId.equals("")) {
+            logger.info("perseGameData pubgMatchesId null");
+        }
+
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("Authorization", pubgConfig.getHead_token());
         headerMap.put("Accept", pubgConfig.getHead_formate());
 
         PUBGMatches matches = pubgMatchesRepository.findPUBGMatchesByPubgMatchesId(pubgMatchesId);
         if (matches != null) {
-            System.out.println(" matches 已经存在！");
+            logger.info("perseGameData matches 已经存在！");
             return;
         }
 
         String result = HttpUtils.doGet(pubgConfig.getUrl_games() + pubgMatchesId, headerMap);
 
         if (result == null || result.equals("")) {
-            System.out.println("result is null ");
+            logger.info("perseGameData result null");
             return;
         }
 
@@ -223,7 +223,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
         JSONObject attributes = data.getJSONObject("attributes");
 
-        System.out.println("gameMode: " + attributes.get("gameMode").toString());
+//        System.out.println("gameMode: " + attributes.get("gameMode").toString());
 //            entry.setType( attributes.get("gameMode").toString() );
         pubgMatches.setType(attributes.get("gameMode").toString());
 
@@ -245,7 +245,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 teamMap.put(job.get("id").toString(), new HashMap<>());
             }
         }
-        System.out.println("-------------------------------");
+//        System.out.println("-------------------------------");
 
         JSONArray included = json.getJSONArray("included");
         if (included.size() > 0) {
@@ -348,30 +348,28 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         headerMap.put("Authorization", pubgConfig.getHead_token());
         headerMap.put("Accept", pubgConfig.getHead_formate());
 
-
         PUBGMatches matches = pubgMatchesRepository.findPUBGMatchesByPubgMatchesId(pubgMatchesId);
         if (matches != null) {
-            System.out.println("match already exist !!!");
+            logger.info("getPUBGMatches match already exist !!!");
             return;
         }
 
         String result = HttpUtils.doGet(pubgConfig.getUrl_games() + pubgMatchesId, headerMap);
         if (result == null || result.equals("")) {
+            logger.info("getPUBGMatches result null !!!");
             return;
         }
 
         JSONObject json = new JSONObject(result);
         JSONObject data = json.getJSONObject("data");
-
         PUBGMatches pubgMatches = new PUBGMatches();
         pubgMatches.setPubgMatchesId(pubgMatchesId);
         pubgMatches.setDefMatchId(defMatchId);
         pubgMatches.setData(result);
         pubgMatches.setDefMatchIndex(defMatchIndex);
-
         JSONObject attributes = data.getJSONObject("attributes");
 
-        System.out.println("gameMode: " + attributes.get("gameMode").toString());
+//        System.out.println("gameMode: " + attributes.get("gameMode").toString());
         pubgMatches.setType(attributes.get("gameMode").toString());
 
         JSONObject relationships = data.getJSONObject("relationships");
@@ -416,7 +414,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 } else if (type.equals("roster")) { // 处理队伍数据
                     JSONObject roster_attributes = team.getJSONObject("attributes");
                     JSONObject stats = roster_attributes.getJSONObject("stats");
-                    System.out.println("roster + id:" + id + "; teamId: " + stats.get("teamId").toString());
+//                    System.out.println("roster + id:" + id + "; teamId: " + stats.get("teamId").toString());
 
                     Integer index = Integer.parseInt(stats.get("rank").toString());
                     teamIndexMap.put(id, index);
@@ -430,8 +428,8 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                             // 遍历 jsonarray 数组，把每一个对象转成 json 对象
                             JSONObject job = participants_data.getJSONObject(j);
 
-                            System.out.println(job.get("type").toString());
-                            System.out.println(job.get("id").toString());
+//                            System.out.println(job.get("type").toString());
+//                            System.out.println(job.get("id").toString());
                             PUBGPlayer pubgPlayer = new PUBGPlayer();
                             pubgPlayerMap1.put(job.get("id").toString(), pubgPlayer);
                         }
@@ -465,11 +463,11 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
                 PUBGPlayer pubgPlayer = pubgPlayerMap.get(player);
 
-                System.out.println("pubgTeam.getPubgTeamId() :" + pubgTeam.getPubgTeamId());
-                System.out.println("pubgTeam.getPubgMatchesId() :" + pubgTeam.getPubgMatchesId());
-                System.out.println("pubgTeam.getTeamName() :" + pubgTeam.getTeamName());
-                System.out.println("pubgTeam.getTeamScore() :" + pubgTeam.getTeamScore());
-                System.out.println("pubgPlayer.getPlayerScore() :" + pubgPlayer.getPlayerScore());
+//                System.out.println("pubgTeam.getPubgTeamId() :" + pubgTeam.getPubgTeamId());
+//                System.out.println("pubgTeam.getPubgMatchesId() :" + pubgTeam.getPubgMatchesId());
+//                System.out.println("pubgTeam.getTeamName() :" + pubgTeam.getTeamName());
+//                System.out.println("pubgTeam.getTeamScore() :" + pubgTeam.getTeamScore());
+//                System.out.println("pubgPlayer.getPlayerScore() :" + pubgPlayer.getPlayerScore());
 
                 // 根据 account 查找 设置teamId
                 String account = pubgPlayer.getPubgPlayerId();
@@ -516,33 +514,33 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         PUBGMatches pubgMatches = pubgMatchesRepository.findPUBGMatchesByDefMatchIdAndDefMatchIndex(defMatchId, index);
         System.out.println("pubgMatchesDTO   :" + pubgMatchesDTO.getType());
         if (pubgMatches == null) {
-            System.out.println(" pubgMatches is null");
+            logger.info("updatePUBGMatchesByDefMatchId pubgMatches null");
             return;
         }
 
         PUBGMatches pubgMatches1 = pubgMatchesConvert.toEntity(pubgMatchesDTO);
         if (pubgMatches1 == null) {
-            System.out.println(" pubgMatches1 is null");
+            logger.info("updatePUBGMatchesByDefMatchId pubgMatches1 null");
             return;
         }
 
         if (!pubgMatches1.getPubgMatchesId().equals(pubgMatches.getPubgMatchesId()) ||
                 !pubgMatches1.getDefMatchId().equals(pubgMatches.getDefMatchId()) ||
                 !pubgMatches1.getDefMatchIndex().equals(pubgMatches.getDefMatchIndex())) {
-            System.out.println(pubgMatches1.getPubgMatchesId());
-            System.out.println(pubgMatches.getPubgMatchesId());
-            System.out.println(pubgMatches1.getDefMatchId());
-            System.out.println(pubgMatches.getDefMatchId());
-            System.out.println(pubgMatches1.getDefMatchIndex());
-            System.out.println(pubgMatches.getDefMatchIndex());
+//            System.out.println(pubgMatches1.getPubgMatchesId());
+//            System.out.println(pubgMatches.getPubgMatchesId());
+//            System.out.println(pubgMatches1.getDefMatchId());
+//            System.out.println(pubgMatches.getDefMatchId());
+//            System.out.println(pubgMatches1.getDefMatchIndex());
+//            System.out.println(pubgMatches.getDefMatchIndex());
 
+            logger.info("updatePUBGMatchesByDefMatchId pubgMatches is not same pubgMatches1");
 
-            System.out.println(" pubgMatches is not same pubgMatches1");
             return;
         }
         pubgMatches1.setData(pubgMatches.getData());
-        System.out.println("pubgMatchesDTO:" + pubgMatchesDTO.getType());
-        System.out.println("pubgMatches1:" + pubgMatches1.getType());
+//        System.out.println("pubgMatchesDTO:" + pubgMatchesDTO.getType());
+//        System.out.println("pubgMatches1:" + pubgMatches1.getType());
         pubgMatchesRepository.save(pubgMatches1);
         return;
     }
@@ -557,8 +555,12 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             pubgPlayerList.add(player);
         }
 
-        System.out.println("pubgPlayerList size:" + pubgPlayerList.size());
-        if (pubgPlayerList.size() == 0) return null;
+        logger.info("pubgPlayerList size: {}" + pubgPlayerList.size());
+
+        if (pubgPlayerList.size() == 0) {
+            logger.info("pubgPlayerList size: 0" );
+            return null;
+        }
 
         return getMatchesByPlayers(pubgPlayerList, matchType, pageNum, pageSize);
     }
@@ -710,9 +712,9 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             return null;
         }
 
-        for (Long matchid : longList) {
-            System.out.println("matchId: " + matchid);
-        }
+//        for (Long matchid : longList) {
+//            System.out.println("matchId: " + matchid);
+//        }
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageable = PageRequest.of(0, 100, sort);
@@ -763,20 +765,20 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                             Date dateEnd = simpleDateFormat.parse(endTime);
                             Date dateNow = new Date();
                             if( dateNow.after(dateEnd) ) {
-                                System.out.println( "dateStart:" + dateStart.toString() );
-                                System.out.println( "dateEnd:" + dateEnd.toString() );
-                                System.out.println( "dateNow:" + dateNow.toString() );
-                                System.out.println( "status = 0");
+//                                System.out.println( "dateStart:" + dateStart.toString() );
+//                                System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                System.out.println( "dateNow:" + dateNow.toString() );
+//                                System.out.println( "status = 0");
                                 status = 2;
                             } else if (dateNow.before(dateStart)) {
-                                System.out.println( "dateStart:" + dateStart.toString() );
-                                System.out.println( "dateEnd:" + dateEnd.toString() );
-                                System.out.println( "dateNow:" + dateNow.toString() );
+//                                System.out.println( "dateStart:" + dateStart.toString() );
+//                                System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                System.out.println( "dateNow:" + dateNow.toString() );
                                 status = 0;
                             } else {
-                                System.out.println( "dateStart:" + dateStart.toString() );
-                                System.out.println( "dateEnd:" + dateEnd.toString() );
-                                System.out.println( "dateNow:" + dateNow.toString() );
+//                                System.out.println( "dateStart:" + dateStart.toString() );
+//                                System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                System.out.println( "dateNow:" + dateNow.toString() );
                                 status = 1;
                             }
                         }
@@ -807,20 +809,21 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
 
         if (longList.size() == 0) {
+            System.out.println("getRunningPUBGMatchesByOrderId longList.size() == 0");
             return null;
         }
 
-        for (Long matchId : longList) {
-            System.out.println("getRunningPUBGMatchesByOrderId match Id:" + matchId);
-        }
+//        for (Long matchId : longList) {
+//            System.out.println("getRunningPUBGMatchesByOrderId match Id:" + matchId);
+//        }
 
         List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
         // 处理个人比赛
         List<DefMatchOrder> defMatchOrders = defMatchOrderRepository.findDefMatchOrderByModeAndOrderId(0, memberId);
         if (defMatchOrders != null) {
-            for (DefMatchOrder defMatchOrder : defMatchOrders) {
-                System.out.println("个人比赛 defMatchOrders Id:" + defMatchOrder.getOrderId());
-            }
+//            for (DefMatchOrder defMatchOrder : defMatchOrders) {
+//                System.out.println("个人比赛 defMatchOrders Id:" + defMatchOrder.getOrderId());
+//            }
 
             for (DefMatchOrder defMatchOrder : defMatchOrders) {
                 // 个人比赛报名成功了
@@ -856,20 +859,20 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                                 Date dateEnd = simpleDateFormat.parse(endTime);
                                 Date dateNow = new Date();
                                 if( dateNow.after(dateEnd) ) {
-                                    System.out.println( "dateStart:" + dateStart.toString() );
-                                    System.out.println( "dateEnd:" + dateEnd.toString() );
-                                    System.out.println( "dateNow:" + dateNow.toString() );
+//                                    System.out.println( "dateStart:" + dateStart.toString() );
+//                                    System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                    System.out.println( "dateNow:" + dateNow.toString() );
                                     System.out.println( "status = 0");
                                     status = 2;
                                 } else if (dateNow.before(dateStart)) {
-                                    System.out.println( "dateStart:" + dateStart.toString() );
-                                    System.out.println( "dateEnd:" + dateEnd.toString() );
-                                    System.out.println( "dateNow:" + dateNow.toString() );
+//                                    System.out.println( "dateStart:" + dateStart.toString() );
+//                                    System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                    System.out.println( "dateNow:" + dateNow.toString() );
                                     status = 0;
                                 } else {
-                                    System.out.println( "dateStart:" + dateStart.toString() );
-                                    System.out.println( "dateEnd:" + dateEnd.toString() );
-                                    System.out.println( "dateNow:" + dateNow.toString() );
+//                                    System.out.println( "dateStart:" + dateStart.toString() );
+//                                    System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                    System.out.println( "dateNow:" + dateNow.toString() );
                                     status = 1;
                                 }
                             }
@@ -895,13 +898,13 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         // 处理战队比赛
         List<DefMatchOrder> defMatchOrderList = defMatchOrderRepository.findDefMatchOrderByModeAndOrderId(1, teamId);
         if (defMatchOrderList != null) {
-            for (DefMatchOrder defMatchOrder : defMatchOrderList) {
-                System.out.println("战队比赛 defMatchOrders Id:" + defMatchOrder.getOrderId());
-            }
+//            for (DefMatchOrder defMatchOrder : defMatchOrderList) {
+//                System.out.println("战队比赛 defMatchOrders Id:" + defMatchOrder.getOrderId());
+//            }
 
             for (DefMatchOrder defMatchOrder : defMatchOrderList) {
-                System.out.println("defMatchOrders Id:" + defMatchOrder.getOrderId());
-                System.out.println("defMatchOrders getStatus:" + defMatchOrder.getStatus());
+//                System.out.println("defMatchOrders Id:" + defMatchOrder.getOrderId());
+//                System.out.println("defMatchOrders getStatus:" + defMatchOrder.getStatus());
                 // 报名未通过
                 if (defMatchOrder.getStatus() != 1) {
                     continue;
@@ -910,13 +913,13 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 //个人在战队比赛报名成功了
                 Member member = memberRepository.findMemberById(memberId);
                 List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
-                System.out.println("teamOrderList.size():" + teamOrderList.size());
+//                System.out.println("teamOrderList.size():" + teamOrderList.size());
                 if (teamOrderList.size() == 0) {
                     continue;
                 }
 
 
-                System.out.println("teamOrderList.get(0).getStatus():" + teamOrderList.get(0).getStatus());
+//                System.out.println("teamOrderList.get(0).getStatus():" + teamOrderList.get(0).getStatus());
                 // 个人在战队报名中未成功
                 if (teamOrderList.get(0).getStatus() != 1) {
                     continue;
@@ -924,7 +927,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
                 for (Long key : longList) {
 
-                    System.out.println("key:" + key + "；  defMatchOrder.getDefMatchManage().getDefMatch().getId()" + defMatchOrder.getDefMatchManage().getDefMatch().getId());
+//                    System.out.println("key:" + key + "；  defMatchOrder.getDefMatchManage().getDefMatch().getId()" + defMatchOrder.getDefMatchManage().getDefMatch().getId());
                     if (defMatchOrder.getDefMatchManage().getDefMatch().getId().equals(key)) {
                         DefMatch defMatch = defMatchOrder.getDefMatchManage().getDefMatch();
                         String timeList = defMatch.getTimeList();
@@ -946,20 +949,20 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                                 Date dateEnd = simpleDateFormat.parse(endTime);
                                 Date dateNow = new Date();
                                 if( dateNow.after(dateEnd) ) {
-                                    System.out.println( "dateStart:" + dateStart.toString() );
-                                    System.out.println( "dateEnd:" + dateEnd.toString() );
-                                    System.out.println( "dateNow:" + dateNow.toString() );
-                                    System.out.println( "status = 0");
+//                                    System.out.println( "dateStart:" + dateStart.toString() );
+//                                    System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                    System.out.println( "dateNow:" + dateNow.toString() );
+//                                    System.out.println( "status = 0");
                                     status = 2;
                                 } else if (dateNow.before(dateStart)) {
-                                    System.out.println( "dateStart:" + dateStart.toString() );
-                                    System.out.println( "dateEnd:" + dateEnd.toString() );
-                                    System.out.println( "dateNow:" + dateNow.toString() );
+//                                    System.out.println( "dateStart:" + dateStart.toString() );
+//                                    System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                    System.out.println( "dateNow:" + dateNow.toString() );
                                     status = 0;
                                 } else {
-                                    System.out.println( "dateStart:" + dateStart.toString() );
-                                    System.out.println( "dateEnd:" + dateEnd.toString() );
-                                    System.out.println( "dateNow:" + dateNow.toString() );
+//                                    System.out.println( "dateStart:" + dateStart.toString() );
+//                                    System.out.println( "dateEnd:" + dateEnd.toString() );
+//                                    System.out.println( "dateNow:" + dateNow.toString() );
                                     status = 1;
                                 }
                             }
@@ -1031,7 +1034,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
     @Override
     public PUBGAchievementArrayVO getTeamSuccessByTeamId(Long teamId) {
-
         PUBGAchievementArrayVO pubgAchievementArrayVO = new PUBGAchievementArrayVO();
         List<PUBGAchievement> FPPArray = new ArrayList<>();
         List<PUBGAchievement> TPPArray = new ArrayList<>();
@@ -1061,7 +1063,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
      */
     private Page<PUBGPlayer> getPUBGPlayerPage(Long memberId, Integer pageNum, Integer pageSize) {
         String PUBGPlayerName = memberRepository.findMemberById(memberId).getPubgName();
-        System.out.println("PUBGPlayerName:" + PUBGPlayerName);
+//        System.out.println("PUBGPlayerName:" + PUBGPlayerName);
         if (PUBGPlayerName == null || PUBGPlayerName.equals("")) {
             return null;
         }
@@ -1096,7 +1098,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             PUBGMatches pubgMatches = pubgTeam.getPubgMatchesId();
 
             PUBGMatchesDTO pubgMatchesDTO = pubgMatchesConvert.toDto(pubgMatches);
-            System.out.println("PUBGMatchesDTO PubgMatchesId:" + pubgMatchesDTO.getPubgMatchesId());
+//            System.out.println("PUBGMatchesDTO PubgMatchesId:" + pubgMatchesDTO.getPubgMatchesId());
             if (!matchType.equals("") || !matchType.equals(" ")) {
                 if (matchType.equals(pubgMatchesDTO.getType())) {
                     pubgMatchesList.add(pubgMatchesDTO);
@@ -1127,7 +1129,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchRepository.findAll(new Specification<DefMatch>() {
-
             public Predicate toPredicate(Root<DefMatch> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<Long> memberIdPath = root.join("member").get("id");
@@ -1146,7 +1147,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             }
 
         }, pageable);
-
 
         List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
 
@@ -1186,7 +1186,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<DefMatch> defMatchPage = defMatchRepository.findAll(new Specification<DefMatch>() {
-
             public Predicate toPredicate(Root<DefMatch> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
                 Path<String> matchNamePath = root.get("name");
@@ -1205,7 +1204,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             }
 
         }, pageable);
-
 
         List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
 
@@ -1267,7 +1265,6 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             }
 
         }, pageable);
-
 
         List<PUBGMatchesVO> pubgMatchesVOList = new ArrayList<>();
 
@@ -1335,7 +1332,4 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
         return pubgMatchesVOList;
     }
-
-
-
 }
