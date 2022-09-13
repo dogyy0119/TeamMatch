@@ -58,7 +58,7 @@ public class DefMatchController {
             DefMatchDTO dto = defMatchConvert.toDto(entity);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Boolean equels = dto.getGameStartTime().toString().trim().equals(defMatchDTO.getGameStartTime().toString().trim());
+//            Boolean equels = dto.getGameStartTime().toString().trim().equals(defMatchDTO.getGameStartTime().toString().trim());
 
             if( dto.getMemberId().equals(defMatchDTO.getMemberId())
                     && dto.getName().equals(defMatchDTO.getName())

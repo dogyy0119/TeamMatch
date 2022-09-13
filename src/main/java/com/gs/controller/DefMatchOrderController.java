@@ -93,7 +93,7 @@ public class DefMatchOrderController {
 
 //            System.out.println(" teamMember:" + teamMember.getTeamMemberId() );
 //            System.out.println(" teamMember:" + teamMember.getTeam().getTeamId() );
-            System.out.println(" teamMember:" + teamMember.getJob() );
+//            System.out.println(" teamMember:" + teamMember.getJob() );
 
             if( teamMember.getJob()  == 3 ) {
                 return R.error("MemberId 不是队长或者副队长 ！");
@@ -113,15 +113,15 @@ public class DefMatchOrderController {
             defMatchOrderDTO.setStatus(0);
         }
 
-        System.out.println("defMatchOrderDTO id:" + defMatchOrderDTO.getId());
-        System.out.println("defMatchOrderDTO getOrderId:" + defMatchOrderDTO.getOrderId());
+//        System.out.println("defMatchOrderDTO id:" + defMatchOrderDTO.getId());
+//        System.out.println("defMatchOrderDTO getOrderId:" + defMatchOrderDTO.getOrderId());
 
 
         DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManageConvert.toEntity(defMatchManageDTO), defMatchOrderDTO.getOrderId());
 
         if(defMatchOrder != null)  {
-            System.out.println("defMatchOrder id:" + defMatchOrder.getId());
-            System.out.println("defMatchOrder getOrderId:" + defMatchOrder.getOrderId());
+//            System.out.println("defMatchOrder id:" + defMatchOrder.getId());
+//            System.out.println("defMatchOrder getOrderId:" + defMatchOrder.getOrderId());
             return R.error("该比赛已经申请过了");
         }
 
@@ -135,11 +135,11 @@ public class DefMatchOrderController {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public R updateMatchOrder(@RequestParam Long memberId, @RequestBody DefMatchOrderDTO defMatchOrderDTO) {
 
-        System.out.println( defMatchOrderDTO.getId() );
-        System.out.println( defMatchOrderDTO.getMatchId() );
-        System.out.println( defMatchOrderDTO.getOrderId() );
-        System.out.println( defMatchOrderDTO.getStatus() );
-        System.out.println( defMatchOrderDTO.getMode() );
+//        System.out.println( defMatchOrderDTO.getId() );
+//        System.out.println( defMatchOrderDTO.getMatchId() );
+//        System.out.println( defMatchOrderDTO.getOrderId() );
+//        System.out.println( defMatchOrderDTO.getStatus() );
+//        System.out.println( defMatchOrderDTO.getMode() );
 
         Optional<DefMatchOrder> defMatchOrder = defMatchOrderRepository.findById(defMatchOrderDTO.getId());
         if( !defMatchOrder.isPresent() ) {
@@ -150,16 +150,16 @@ public class DefMatchOrderController {
             DefMatchManageDTO defMatchManageDTO = defMatchManageService.findByMatchId(defMatchOrderDTO.getMatchId());
             DefMatchOrderDTO defMatchOrderDTO1 = defMatchOrderService.findByMatchIdAndOrderId(defMatchManageDTO.getMatchId(), defMatchOrderDTO.getOrderId());
 
-            System.out.println(" defMatchOrderDTO " + defMatchOrderDTO.getStatus());
-            System.out.println(" defMatchOrderDTO1 " + defMatchOrderDTO1.getId());
-            System.out.println(" defMatchOrderDTO1 " + defMatchOrderDTO1.getStatus());
-            System.out.println(" defMatchManageDTO " + defMatchManageDTO.getCurOrder());
+//            System.out.println(" defMatchOrderDTO " + defMatchOrderDTO.getStatus());
+//            System.out.println(" defMatchOrderDTO1 " + defMatchOrderDTO1.getId());
+//            System.out.println(" defMatchOrderDTO1 " + defMatchOrderDTO1.getStatus());
+//            System.out.println(" defMatchManageDTO " + defMatchManageDTO.getCurOrder());
             // 申请加入比赛通过
             if (defMatchOrderDTO.getStatus() == 1
                     && defMatchOrderDTO1.getStatus() != 1
                     && defMatchManageDTO.getAllOrder() > defMatchManageDTO.getCurOrder()) {
                 defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() + 1);
-                System.out.println(" update(defMatchManageDTO)");
+//                System.out.println(" update(defMatchManageDTO)");
                 defMatchManageService.update(defMatchManageDTO);
 
                 // 构建cost 请求
@@ -181,7 +181,7 @@ public class DefMatchOrderController {
             if (defMatchOrderDTO.getStatus() == -1) {
                 if (defMatchOrderDTO1.getStatus() == 1) {
 
-                    System.out.println(" update(defMatchManageDTO) = -1");
+//                    System.out.println(" update(defMatchManageDTO) = -1");
                     defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() - 1);
                     defMatchManageService.update(defMatchManageDTO);
 
@@ -253,10 +253,15 @@ public class DefMatchOrderController {
     @ApiOperation(value = "分页查询指定战队ID预约比赛")
     @RequestMapping(value = "/getMatchesPageByTeamId", method = RequestMethod.GET)
     public R getMatchOrdersPageByTeamId(
-            @RequestParam Long teamId,
+            @RequestParam(value = "teamId",required = false) Long teamId,
             @RequestParam Integer status,
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {
+
+        if(teamId == null){
+            return R.error("还没加入战队");
+        }
+
         List<DefMatchDTO> defMatchDTOList = defMatchOrderService.getMatchPage( 1, teamId, status, pageNum, pageSize );
 
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();

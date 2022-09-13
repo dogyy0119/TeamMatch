@@ -209,7 +209,7 @@ public class DefMatchServiceImpl implements DefMatchService {
 
         List<DefMatchDTO> defMatchSList = new ArrayList<>();
         for (DefMatch entry : ordersPage) {
-            System.out.println("entry:" + entry.getGameStartTime() );
+//            System.out.println("entry:" + entry.getGameStartTime() );
             defMatchSList.add( defMatchConvert.toDto(entry)  );
         }
         return defMatchSList;

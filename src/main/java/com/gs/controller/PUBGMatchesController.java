@@ -98,12 +98,12 @@ public class PUBGMatchesController {
         JSONObject pubgMatchesDTOJson = requestJson.getJSONObject("pubgMatchesDTO");
         String token = requestJson.get("token").toString();
 
-        System.out.println("tokenJson:" + token);
+//        System.out.println("tokenJson:" + token);
 
         PUBGMatchesDTO pubgMatchesDTO = JSONUtil.toBean(pubgMatchesDTOJson, PUBGMatchesDTO.class);
 
-        System.out.println("memberId:" + memberId + "defMatchId:" + defMatchId + "index:" + index);
-        System.out.println("pubgMatchesDTO:" + pubgMatchesDTO.getPubgMatchesId());
+//        System.out.println("memberId:" + memberId + "defMatchId:" + defMatchId + "index:" + index);
+//        System.out.println("pubgMatchesDTO:" + pubgMatchesDTO.getPubgMatchesId());
 
         if(defMatch.getMember().getId() != memberId) return R.error("memberId 不是比赛创建者，无权利修改比赛");
 

@@ -94,11 +94,11 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
             personOrder.setMember(member);
             personOrder.setIsLike(0);
             PersonOrder personOrder1 =  personOrderRepository.save(personOrder);
-            if( personOrder1 != null ) {
-                System.out.println("x defMatchOrder" + personOrder1.getId());
-            } else {
-                System.out.println("save defMatchOrder" + personOrder1.getId());
-            }
+//            if( personOrder1 != null ) {
+//                System.out.println("x defMatchOrder" + personOrder1.getId());
+//            } else {
+//                System.out.println("save defMatchOrder" + personOrder1.getId());
+//            }
         }
         return defMatchOrderConvert.toDto(defMatchOrder);
     }
@@ -110,7 +110,7 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         DefMatch defMatch = defMatchOptional.get();
         if (defMatch == null) return false;
 
-        System.out.println( "DefMatch id:" + defMatch.getId());
+//        System.out.println( "DefMatch id:" + defMatch.getId());
 //        DefMatchManage defMatchManage = defMatchManageRepository.findDefMatchManageByDefMatch(defMatch);
 
         Optional<DefMatchOrder> defMatchOrderOptional = defMatchOrderRepository.findById(dto.getId());
@@ -136,7 +136,7 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
 //            costManagerRemoteService.createCost(costDto);
 //        }
 
-        System.out.println( "dto.getStatus():" + dto.getStatus());
+//        System.out.println( "dto.getStatus():" + dto.getStatus());
         entity.setStatus(dto.getStatus());
 
 
@@ -174,8 +174,8 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
                 Path<Long> manageId = root.get("defMatchManage").get("id");
                 Path<Integer> status = root.get("status");
 
-                System.out.println( "manage id:" + manageId );
-                System.out.println( "status:" + status );
+//                System.out.println( "manage id:" + manageId );
+//                System.out.println( "status:" + status );
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
@@ -195,14 +195,14 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
 
         List<DefMatchOrderDTO> defMatchOrderDTOSList = new ArrayList<>();
 
-        System.out.println( "ordersPage list size :" + ordersPage.getTotalPages() );
+//        System.out.println( "ordersPage list size :" + ordersPage.getTotalPages() );
 
         for (DefMatchOrder entry : ordersPage) {
-            System.out.println( "DefMatchOrder  :" + entry.getOrderId() );
+//            System.out.println( "DefMatchOrder  :" + entry.getOrderId() );
             defMatchOrderDTOSList.add(defMatchOrderConvert.toDto(entry));
         }
 
-        System.out.println( "defMatchOrderDTOSList list size :" + defMatchOrderDTOSList.size() );
+//        System.out.println( "defMatchOrderDTOSList list size :" + defMatchOrderDTOSList.size() );
 
         return defMatchOrderDTOSList;
     }
@@ -254,7 +254,7 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         List<DefMatchDTO> defMatchDTOSList = new ArrayList<>();
 
         for (DefMatchOrder entry : ordersPage) {
-            System.out.println( "DefMatchOrder  :" + entry.getOrderId() );
+//            System.out.println( "DefMatchOrder  :" + entry.getOrderId() );
             DefMatch defMatch =  entry.getDefMatchManage().getDefMatch();
 
             defMatchDTOSList.add( defMatchConvert.toDto(defMatch) );

@@ -96,8 +96,8 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
         defMatchManage.setState(dto.getState());
         defMatchManage.setCurOrder(dto.getCurOrder());
 
-        System.out.println( " dto :" + dto.getId());
-        System.out.println( " dto getCurOrder :" + dto.getCurOrder());
+//        System.out.println( " dto :" + dto.getId());
+//        System.out.println( " dto getCurOrder :" + dto.getCurOrder());
         defMatchManageRepository.save(defMatchManage);
         return true;
     }
@@ -120,7 +120,7 @@ public class DefMatchManageServiceImpl implements DefMatchManageService {
             return  null;
         }
 
-        System.out.println( "defMatchManage:" + defMatchManage.getId() );
+//        System.out.println( "defMatchManage:" + defMatchManage.getId() );
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);

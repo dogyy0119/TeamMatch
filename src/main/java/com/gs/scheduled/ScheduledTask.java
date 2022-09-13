@@ -78,7 +78,7 @@ public class ScheduledTask {
     }
 
     /**
-     * 每天定时 12点开始
+     * 每天定时 4点开始
      */
     @Scheduled(cron = "0 0 4 * * ?")
     @Async
