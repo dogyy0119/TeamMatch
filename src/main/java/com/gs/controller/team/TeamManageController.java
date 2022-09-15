@@ -88,8 +88,16 @@ public class TeamManageController {
 
     @ApiOperation(value = "获取战队")
     @RequestMapping(value = "/getTeamByTeamId", method = RequestMethod.GET)
-    public R getTeamByTeamId(@RequestParam Long teamId) {
-        return R.success(teamService.getTeamByTeamId(teamId));
+    public R getTeamByTeamId(@RequestParam String teamId) {
+
+        try {
+            Long myTeamId = Long.getLong(teamId);
+            if (myTeamId == null)
+                return R.success();
+            return R.success(teamService.getTeamByTeamId(myTeamId));
+        }catch (Exception e) {
+            return R.success("undefinded");
+        }
     }
 
     @ApiOperation(value = "处理战队请求")

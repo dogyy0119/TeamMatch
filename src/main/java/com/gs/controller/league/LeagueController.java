@@ -54,8 +54,16 @@ public class LeagueController {
     @ApiOperation(value = "根据Id查询指定联盟")
     @RequestMapping(value = "/getLeague", method = RequestMethod.GET)
     public R getLeague(
-            @RequestParam Long leagueId){
-        return R.success(leagueService.getLeague(leagueId));
+            @RequestParam String leagueId){
+        try {
+            Long myLeagueId = Long.getLong(leagueId);
+            if (myLeagueId == null)
+                return R.success();
+            return R.success(leagueService.getLeague(myLeagueId));
+        }catch (Exception e) {
+            return R.success("undefinded");
+        }
+
     }
 
     @ApiOperation(value = "处理加入联盟的请求")
