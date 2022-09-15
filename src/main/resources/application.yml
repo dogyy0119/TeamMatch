@@ -6,7 +6,7 @@ spring:
   application:
     name: MATCH-CENTER
   profiles:
-    active: dev
+    active: local
 server:
   port: 8081
   servlet:

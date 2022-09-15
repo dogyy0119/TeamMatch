@@ -10,11 +10,18 @@ spring:
 #      password: 123456
 #      driver-class-name: com.mysql.cj.jdbc.Drive
 
-      url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=gameyx
+      url: jdbc:sqlserver://101.132.148.174:1433;DatabaseName=gameyx
+
       jdbc-url: ${spring.datasource.db1.url}
       username: sa
-      password: game123@
+      password: www123456@
       driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+#      url: jdbc:sqlserver://23.224.230.222:1433;DatabaseName=gameyx
+#      jdbc-url: ${spring.datasource.db1.url}
+#      username: sa
+#      password: game123@
+#      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
     # db2: # 数据源2
       # orcale数据源配置例
