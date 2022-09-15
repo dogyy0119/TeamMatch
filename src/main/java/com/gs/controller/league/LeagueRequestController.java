@@ -63,10 +63,12 @@ public class LeagueRequestController {
     public R getLeagueRequests
             (
                     @RequestParam Long manageMemberId,
-                    @RequestParam Long leagueId,
+                    @RequestParam(value = "leagueId",required = false) Long leagueId,
                     @RequestParam Integer pageNum,
                     @RequestParam Integer pageSize
             ) {
+        if(leagueId==null)
+            return R.success();
 
         if (!memberService.existsById(manageMemberId)){
             return R.result(CodeEnum.IS_MEMBER_NOT_EXIST);

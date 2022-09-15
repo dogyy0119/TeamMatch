@@ -27,9 +27,13 @@ public class LeagueTaskController {
 
     @ApiOperation(value = "查询联盟快递列表")
     @RequestMapping(value = "/queryLeagueTasks", method = RequestMethod.GET)
-    public R queryLeagueTasks(@RequestParam Long leagueId,
+    public R queryLeagueTasks(@RequestParam(value = "leagueId",required = false) Long leagueId,
                        @RequestParam Integer pageNum,
                        @RequestParam Integer pageSize) {
+        if(leagueId == null) {
+            return R.success();
+        }
+
         if (!leagueService.existById(leagueId)){
             return R.result(CodeEnum.IS_LEAGUE_NOT_EXIST);
         }
