@@ -21,6 +21,7 @@ import com.gs.repository.jpa.team.TeamRequestRepository;
 import com.gs.service.intf.league.LeagueRequestService;
 import com.gs.service.intf.team.TeamRequestService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class LeagueRequestServiceLmpl implements LeagueRequestService {
 
     LeagueRequestRepository leagueRequestRepository;
@@ -57,6 +59,8 @@ public class LeagueRequestServiceLmpl implements LeagueRequestService {
     public CodeEnum sendLeagueRequest(LeagueRequestDTO leagueRequestDTO) {
 
         if (leagueRequestRepository.existsByLeagueIdAndFromTeamIdAndTypeAndStatus(leagueRequestDTO.getLeagueId(), leagueRequestDTO.getFromTeamId(), leagueRequestDTO.getType(), 1)) {
+
+            log.error("sendLeagueRequest：" + "数据已存在");
             return CodeEnum.IS_EXIST;
         }
 
@@ -106,11 +110,15 @@ public class LeagueRequestServiceLmpl implements LeagueRequestService {
 
         League league = leagueRepository.findLeagueById(leagueRequest.getLeagueId());
         if (null == league){
+            log.error("deleteTeamRequest：" + "联盟不存在");
+
             return CodeEnum.IS_LEAGUE_NOT_EXIST;
         }
 
         if (!league.getCreateMemberId().equals(manageMemberId))
         {
+            log.error("deleteTeamRequest：" + "只有联盟创建者有权限");
+
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
@@ -125,11 +133,14 @@ public class LeagueRequestServiceLmpl implements LeagueRequestService {
 
         League league = leagueRepository.findLeagueById(leagueId);
         if (null == league){
+            log.error("deleteAllTeamRequest：" + "联盟不存在");
             return CodeEnum.IS_LEAGUE_NOT_EXIST;
         }
 
         if (!league.getCreateMemberId().equals(manageMemberId))
         {
+            log.error("deleteAllTeamRequest：" + "只有联盟创建者有权限");
+
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
@@ -168,11 +179,13 @@ public class LeagueRequestServiceLmpl implements LeagueRequestService {
 
         League league = leagueRepository.findLeagueById(leagueId);
         if (null == league){
+            log.error("deleteAllDoneTeamRequest：" + "联盟不存在");
             return CodeEnum.IS_LEAGUE_NOT_EXIST;
         }
 
         if (!league.getCreateMemberId().equals(manageMemberId))
         {
+            log.error("deleteAllDoneTeamRequest：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 

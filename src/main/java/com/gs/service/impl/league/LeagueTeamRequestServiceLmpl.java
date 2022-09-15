@@ -21,6 +21,7 @@ import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.league.LeagueTeamRequestService;
 import com.gs.service.intf.team.MemberRequestService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class LeagueTeamRequestServiceLmpl implements LeagueTeamRequestService {
 
     LeagueTeamRequestRepository leagueTeamRequestRepository;
@@ -52,10 +54,14 @@ public class LeagueTeamRequestServiceLmpl implements LeagueTeamRequestService {
 
         League league = leagueRepository.findLeagueById(leagueTeamRequestDTO.getLeagueId());
         if (!Objects.equals(league.getCreateMemberId(), leagueTeamRequestDTO.getFromId())){
+
+            log.error("sendLeagueTeamRequest：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
         if (leagueTeamRequestRepository.existsByLeagueIdAndToTeamIdAndTypeAndStatus(leagueTeamRequestDTO.getLeagueId(), leagueTeamRequestDTO.getToTeamId(), leagueTeamRequestDTO.getType(), 1)) {
+
+            log.error("sendLeagueTeamRequest：" + "战队已经在联盟里");
             return CodeEnum.IS_TEAM_ALLEARY_IN_LEAGUE;
         }
 

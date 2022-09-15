@@ -7,6 +7,7 @@ import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@Slf4j
 public class MemberRequestController {
 
     private final MemberRequestService memberRequestService;
@@ -24,7 +26,11 @@ public class MemberRequestController {
     @ApiOperation(value = "发送成员请求")
     @RequestMapping(value = "/sendMemberRequest", method = RequestMethod.POST)
     public R sendMemberRequest(@Validated @RequestBody MemberRequestDTO memberRequestDTO) {
+        log.info("sendMemberRequest：" + "memberRequestDTO = " + memberRequestDTO.toString());
+
         if (Objects.equals(memberRequestDTO.getFromId(), memberRequestDTO.getToId())){
+
+            log.error("sendMemberRequest：" + "不能邀请自己加入战队");
             return R.error(CodeEnum.IS_REQUEST_INVITATION_OWN.getCode(), "不能邀请自己加入战队");
         }
         return R.result(memberRequestService.sendMemberRequest(memberRequestDTO));
@@ -39,24 +45,30 @@ public class MemberRequestController {
                     @RequestParam Integer pageSize
             ) {
 
+        log.info("getMemberRequests：" + "memberId = " + memberId + "pageNum = " + pageNum + "pageSize = " + pageSize);
         return R.success(memberRequestService.getMemberRequestLst(memberId, pageNum, pageSize));
     }
 
     @ApiOperation(value = "删除成员请求")
     @RequestMapping(value = "/deleteMemberRequest", method = RequestMethod.GET)
     public R deleteMemberRequest(@RequestParam Long id) {
+        log.info("deleteMemberRequest：" + "id = " + id);
         return R.success(memberRequestService.deleteMemberRequest(id));
     }
 
     @ApiOperation(value = "删除全部成员请求")
     @RequestMapping(value = "/deleteAllMemberRequest", method = RequestMethod.GET)
     public R deleteAllMemberRequest(@RequestParam(value="memberId") Long memberId) {
+
+        log.info("deleteAllMemberRequest：" + "memberId = " + memberId);
         return R.success(memberRequestService.deleteAllMemberRequest(memberId));
     }
 
     @ApiOperation(value = "删除全部已读战队请求")
     @RequestMapping(value = "/deleteAllDoneMemberRequest", method = RequestMethod.GET)
     public R deleteAllDoneMemberRequest(@RequestParam(value="memberId") Long memberId) {
+        log.info("deleteAllDoneMemberRequest：" + "memberId = " + memberId);
+
         return R.success(memberRequestService.deleteAllDoneMemberRequest(memberId));
     }
 }

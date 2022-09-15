@@ -10,6 +10,7 @@ import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@Slf4j
 public class LeagueTaskController {
 
     private final LeagueTaskService leagueTaskService;
@@ -27,14 +29,19 @@ public class LeagueTaskController {
 
     @ApiOperation(value = "查询联盟快递列表")
     @RequestMapping(value = "/queryLeagueTasks", method = RequestMethod.GET)
-    public R queryLeagueTasks(@RequestParam(value = "leagueId",required = false) Long leagueId,
-                       @RequestParam Integer pageNum,
-                       @RequestParam Integer pageSize) {
-        if(leagueId == null) {
+    public R queryLeagueTasks(@RequestParam(value = "leagueId", required = false) Long leagueId,
+                              @RequestParam Integer pageNum,
+                              @RequestParam Integer pageSize) {
+        log.info("queryLeagueTasks：" + "leagueId = " + leagueId + "pageNum = " + pageNum + "pageSize = " + pageSize);
+
+        if (leagueId == null) {
+            log.error("queryLeagueTasks：" + "leagueId == null");
+
             return R.success();
         }
 
-        if (!leagueService.existById(leagueId)){
+        if (!leagueService.existById(leagueId)) {
+            log.error("queryLeagueTasks：" + "联盟不存在");
             return R.result(CodeEnum.IS_LEAGUE_NOT_EXIST);
         }
 
@@ -44,15 +51,21 @@ public class LeagueTaskController {
     @ApiOperation(value = "删除单条联盟快递信息")
     @RequestMapping(value = "/deleteOneLeagueTask", method = RequestMethod.GET)
     public R deleteOneLeagueTask(@RequestParam Long leagueId, @RequestParam Long manageMemberId, @RequestParam Long id) {
-        if (!leagueService.existById(leagueId)){
+
+        log.info("deleteOneLeagueTask：" + "leagueId = " + leagueId + "manageMemberId = " + manageMemberId + "id = " + id);
+        if (!leagueService.existById(leagueId)) {
+            log.error("deleteOneLeagueTask：" + "联盟不存在");
             return R.result(CodeEnum.IS_LEAGUE_NOT_EXIST);
         }
 
-        if (!memberService.existsById(manageMemberId)){
+        if (!memberService.existsById(manageMemberId)) {
+            log.error("deleteOneLeagueTask：" + "玩家不存在");
             return R.result(CodeEnum.IS_MEMBER_NOT_EXIST);
         }
 
-        if (!leagueTaskService.existById(id)){
+        if (!leagueTaskService.existById(id)) {
+
+            log.error("deleteOneLeagueTask：" + "任务不存在");
             return R.result(CodeEnum.IS_LEAGUE_TASK_NOT_EXIST);
         }
         return R.result(leagueTaskService.deleteOneLeagueTask(leagueId, manageMemberId, id));
@@ -62,11 +75,15 @@ public class LeagueTaskController {
     @RequestMapping(value = "/deleteLeagueTasks", method = RequestMethod.GET)
     public R deleteLeagueTasks(@RequestParam Long leagueId, @RequestParam Long manageMemberId) {
 
-        if (!leagueService.existById(leagueId)){
+        log.info("deleteOneLeagueTask：" + "leagueId = " + leagueId + "manageMemberId = " + manageMemberId);
+
+        if (!leagueService.existById(leagueId)) {
+            log.error("deleteLeagueTasks：" + "联盟不存在");
             return R.result(CodeEnum.IS_LEAGUE_NOT_EXIST);
         }
 
-        if (!memberService.existsById(manageMemberId)){
+        if (!memberService.existsById(manageMemberId)) {
+            log.error("deleteLeagueTasks：" + "玩家不存在");
             return R.result(CodeEnum.IS_MEMBER_NOT_EXIST);
         }
 

@@ -13,6 +13,7 @@ import com.gs.repository.jpa.team.*;
 import com.gs.service.intf.team.TeamService;
 import com.gs.utils.JpaUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class TeamServiceImpl implements TeamService {
 
     private TeamRepository teamRepository;
@@ -182,6 +184,8 @@ public class TeamServiceImpl implements TeamService {
         //判断待添加的队员是否已经在战队中
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         if (null != teamMember) {
+
+            log.error("joinTeam：" + "该玩家已经在该战队中");
             return CodeEnum.IS_MEMBER_ALREADY_IN_TEAM;
         }
 
@@ -189,6 +193,8 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findTeamById(teamId);
         //判断战队的人数是否已经达到上线
         if (team.getMaxMemberNum() <= team.getTeamMembers().size()) {
+            log.error("joinTeam：" + "超出战队成员数上限");
+
             return CodeEnum.IS_BEYOND_LIMIT_ERROR;
         }
 
@@ -275,17 +281,21 @@ public class TeamServiceImpl implements TeamService {
         //校验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+
+            log.error("addMember：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长和副队长有更新权限
         if (Objects.equals(MemberJobEnum.IS_TEAM_MEMBER.getJob(), manageTeamMember.getJob())) {
+            log.error("addMember：" + "只有队长和副队长有更新权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION;
         }
 
         //判断待添加的队员是否已经在战队中
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         if (null != teamMember) {
+            log.error("addMember：" + "该玩家已经在该战队中");
             return CodeEnum.IS_MEMBER_ALREADY_IN_TEAM;
         }
 
@@ -293,6 +303,7 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findTeamById(teamId);
         //判断战队的人数是否已经达到上线
         if (team.getMaxMemberNum() <= team.getTeamMembers().size()) {
+            log.error("addMember：" + "超出战队成员数上限");
             return CodeEnum.IS_BEYOND_LIMIT_ERROR;
         }
 
@@ -393,22 +404,26 @@ public class TeamServiceImpl implements TeamService {
         //校验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("deleteMember：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长和副队长有更新权限
         if (Objects.equals(MemberJobEnum.IS_TEAM_MEMBER.getJob(), manageTeamMember.getJob())) {
+            log.error("deleteMember：" + "只有队长和副队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION;
         }
 
         //判断待添加的队员是否已经在战队中
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         if (null == teamMember) {
+            log.error("deleteMember：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
 
         //判断待删除的队员是否是队长或者副队长
         if (Objects.equals(teamMember.getJob(), MemberJobEnum.IS_TEAM_LEADER.getJob())) {
+            log.error("deleteMember：" + "待删除的队员是否是队长或者副队长");
             return CodeEnum.IS_TEAM_DELETE_ERROR;
         }
 
@@ -450,11 +465,13 @@ public class TeamServiceImpl implements TeamService {
         //判断待删除的队员是否已经在战队中
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         if (null == teamMember) {
+            log.error("quitTeam：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
 
         //判断待删除的队员是否是队长或者副队长
         if (Objects.equals(teamMember.getJob(), MemberJobEnum.IS_TEAM_LEADER.getJob())) {
+            log.error("quitTeam：" + "待删除的队员是否是队长");
             return CodeEnum.IS_TEAM_DELETE_ERROR;
         }
 
@@ -526,22 +543,26 @@ public class TeamServiceImpl implements TeamService {
         //检验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("transferTeamLeader：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长可以转让队长职务
         if (MemberJobEnum.IS_TEAM_LEADER.getJob() != manageTeamMember.getJob()) {
+            log.error("transferTeamLeader：" + "只有队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION2;
         }
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         //判断战队中是否存在待转让的队员
         if (null == teamMember) {
+            log.error("transferTeamLeader：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
 
         //判断待转让的队员是否已经是某一个战队的队长
         if (isMemberAreadyLeader(teamMemberDTO.getMemberId())){
+            log.error("transferTeamLeader：" + "该队长已经是某一个战队的队长");
             return CodeEnum.IS_ALEARDY_TEAM_LEADER;
         }
         //转让队长
@@ -588,17 +609,20 @@ public class TeamServiceImpl implements TeamService {
         //检验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("setSecondTeamLeader：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长可以设置副队长职务
         if (MemberJobEnum.IS_TEAM_LEADER.getJob() != manageTeamMember.getJob()) {
+            log.error("setSecondTeamLeader：" + "只有队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION2;
         }
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         //判断战队中是否存在待转让的队员
         if (null == teamMember) {
+            log.error("setSecondTeamLeader：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
 
@@ -647,17 +671,20 @@ public class TeamServiceImpl implements TeamService {
         //检验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("releaseSecondTeamLeader：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长可以解除副队长职务
         if (MemberJobEnum.IS_TEAM_LEADER.getJob() != manageTeamMember.getJob()) {
+            log.error("releaseSecondTeamLeader：" + "只有队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION2;
         }
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         //判断战队中是否存在待解除副队长职务的队员
         if (null == teamMember) {
+            log.error("releaseSecondTeamLeader：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
 
@@ -666,6 +693,7 @@ public class TeamServiceImpl implements TeamService {
 
         for (TeamMember data : team.getTeamMembers()) {
             if (Objects.equals(data.getMember().getId(), teamMemberDTO.getMemberId()) && !Objects.equals(data.getJob(), MemberJobEnum.IS_TEAM_SECOND_LEADER.getJob())) {
+                log.error("releaseSecondTeamLeader：" + "带解除职务的队员职务不正确");
                 return CodeEnum.IS_TEAM_RELEASE_MEMBER_ERROR_JOB;
             }
         }
@@ -704,17 +732,20 @@ public class TeamServiceImpl implements TeamService {
         //校验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("changeSilentFlg：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长和副队长有更新权限
         if (Objects.equals(MemberJobEnum.IS_TEAM_MEMBER.getJob(), manageTeamMember.getJob())) {
+            log.error("changeSilentFlg：" + "只有队长和副队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION;
         }
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         //判断战队中是否存在待禁言的队员
         if (null == teamMember) {
+            log.error("changeSilentFlg：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
 
@@ -757,16 +788,19 @@ public class TeamServiceImpl implements TeamService {
             Long teamId) {
         //判断战队是否存在
         if (!teamRepository.existsById(teamId)) {
+            log.error("releaseTeam：" + "战队不存在");
             return CodeEnum.IS_TEAM_NOT_EXIST;
         }
         //检验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("releaseTeam：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长可以解散战队
         if (MemberJobEnum.IS_TEAM_LEADER.getJob() != manageTeamMember.getJob()) {
+            log.error("releaseTeam：" + "只有队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION2;
         }
 
@@ -803,11 +837,13 @@ public class TeamServiceImpl implements TeamService {
         //校验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("updateTeamInfo：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长和副队长有更新权限
         if (Objects.equals(MemberJobEnum.IS_TEAM_MEMBER.getJob(), manageTeamMember.getJob())) {
+            log.error("updateTeamInfo：" + "只有队长和副队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION;
         }
 
@@ -820,18 +856,18 @@ public class TeamServiceImpl implements TeamService {
         //创建队务
         String teamTaskContent;
 
-        if (!team.getName().equals(teamUpdateInfoDTO.getName())){
+        if (!teamUpdateInfoDTO.getName().isEmpty() && !team.getName().equals(teamUpdateInfoDTO.getName())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更改了战队名称";
             createTeamTeak(team.getId(), teamTaskContent);
         }
 
-        if (!team.getDescriptionInfo().equals(teamUpdateInfoDTO.getDescriptionInfo())){
+        if (!teamUpdateInfoDTO.getDescriptionInfo().isEmpty() && !team.getDescriptionInfo().equals(teamUpdateInfoDTO.getDescriptionInfo())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更改了战队简介";
             createTeamTeak(team.getId(), teamTaskContent);
         }
 
 
-        if (!team.getLogoUrl().equals(teamUpdateInfoDTO.getLogoUrl())){
+        if (!teamUpdateInfoDTO.getLogoUrl().isEmpty() && !team.getLogoUrl().equals(teamUpdateInfoDTO.getLogoUrl())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更新了战队logo";
             createTeamTeak(team.getId(), teamTaskContent);
         }
@@ -858,11 +894,13 @@ public class TeamServiceImpl implements TeamService {
         //校验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("updateTeamInfo：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长和副队长有更新权限
         if (Objects.equals(MemberJobEnum.IS_TEAM_MEMBER.getJob(), manageTeamMember.getJob())) {
+            log.error("updateTeamInfo：" + "只有队长和副队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION;
         }
 
@@ -923,11 +961,13 @@ public class TeamServiceImpl implements TeamService {
         //校验该管理员是否在该战队中
         TeamMember manageTeamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == manageTeamMember) {
+            log.error("updateTeamDescriptionInfo：" + "该管理员不在该战队中");
             return CodeEnum.IS_MANAGER_NOT_IN_TEAM;
         }
 
         //只有队长和副队长有更新权限
         if (Objects.equals(MemberJobEnum.IS_TEAM_MEMBER.getJob(), manageTeamMember.getJob())) {
+            log.error("updateTeamDescriptionInfo：" + "只有队长和副队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION;
         }
 

@@ -7,6 +7,7 @@ import com.gs.repository.jpa.team.LogoRepository;
 import com.gs.service.intf.team.LogoService;
 import com.gs.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

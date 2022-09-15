@@ -8,6 +8,7 @@ import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@Slf4j
 public class TeamRequestController {
 
     private final TeamRequestService teamRequestService;
@@ -24,7 +26,11 @@ public class TeamRequestController {
     @ApiOperation(value = "发送战队请求")
     @RequestMapping(value = "/sendTeamRequest", method = RequestMethod.POST)
     public R sendTeamRequest(@Validated @RequestBody TeamRequestDTO teamRequestDTO) {
+        log.info("sendTeamRequest：" + "teamRequestDTO = " + teamRequestDTO.toString());
+
         if (null != teamService.findTeamMemberByTeamIdAndMemberId(teamRequestDTO.getTeamId(), teamRequestDTO.getFromId())){
+
+            log.error("sendTeamRequest：" + "您已经在该战队");
             return R.error(CodeEnum.IS_MEMBER_ALREADY_IN_TEAM.getCode(), "您已经在该战队");
         }
         return R.result(teamRequestService.sendTeamRequest(teamRequestDTO));
@@ -39,6 +45,7 @@ public class TeamRequestController {
                     @RequestParam Integer pageNum,
                     @RequestParam Integer pageSize
             ) {
+        log.info("getTeamRequests：" + "teamId = " + teamId + "memberId = " + memberId + "pageNum = " + pageNum + "pageSize = " + pageSize);
 
         return R.success(teamRequestService.getTeamRequestLst(teamId, memberId, pageNum, pageSize));
     }
@@ -46,18 +53,24 @@ public class TeamRequestController {
     @ApiOperation(value = "删除战队请求")
     @RequestMapping(value = "/deleteTeamRequest", method = RequestMethod.GET)
     public R deleteTeamRequest(@RequestParam Long id, @RequestParam Long memberId) {
+        log.info("deleteTeamRequest：" + "id = " + id + "memberId = " + memberId);
+
         return R.success(teamRequestService.deleteTeamRequest(id, memberId));
     }
 
     @ApiOperation(value = "删除全部战队请求")
     @RequestMapping(value = "/deleteAllTeamRequest", method = RequestMethod.GET)
     public R deleteAllTeamRequest(@RequestParam(value = "teamId") Long teamId, @RequestParam Long memberId) {
+
+        log.info("deleteAllTeamRequest：" + "teamId = " + teamId + "memberId = " + memberId);
         return R.success(teamRequestService.deleteAllTeamRequest(teamId, memberId));
     }
 
     @ApiOperation(value = "删除全部已读战队请求")
     @RequestMapping(value = "/deleteAllDoneTeamRequest", method = RequestMethod.GET)
     public R deleteAllDoneTeamRequest(@RequestParam(value = "teamId") Long teamId, @RequestParam Long memberId) {
+        log.info("deleteAllDoneTeamRequest：" + "teamId = " + teamId + "memberId = " + memberId);
+
         return R.success(teamRequestService.deleteAllDoneTeamRequest(teamId, memberId));
     }
 }

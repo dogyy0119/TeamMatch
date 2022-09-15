@@ -12,6 +12,7 @@ import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @AllArgsConstructor
+@Slf4j
 public class LogoController {
 
     @Resource
@@ -50,6 +52,8 @@ public class LogoController {
             @RequestParam("type") Integer type,
             @RequestParam(name = "file") MultipartFile file) {
 
+
+        log.info("uploadLogo：" + "manageMemberId = " + manageMemberId + "type = " + type);
 //        if (!memberService.existsById(manageMemberId)) {
 //            return R.error(CodeEnum.IS_MEMBER_NOT_EXIST.getCode(), "该用户不存在");
 //        }
@@ -59,14 +63,18 @@ public class LogoController {
 //        }
 
         if (file == null) {
+            log.error("uploadLogo：" + "请选择要上传的图片");
             return R.error("请选择要上传的图片");
         }
         if (file.getSize() > 1024 * 1024 * 10) {
+            log.error("uploadLogo：" + "文件大小不能大于10M,当前文件大小：" + file.getSize());
             return R.error("文件大小不能大于10M");
         }
         //获取文件后缀
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1, file.getOriginalFilename().length());
         if (!"jpg,jpeg,gif,png".toUpperCase().contains(suffix.toUpperCase())) {
+
+            log.error("uploadLogo：" + "请选择jpg,jpeg,gif,png格式的图片");
             return R.error("请选择jpg,jpeg,gif,png格式的图片");
         }
 
@@ -77,12 +85,15 @@ public class LogoController {
     @ApiOperation(value = "获取Logo列表")
     @RequestMapping(value = "/getLogoList", method = RequestMethod.GET)
     public R getLogoListByTeam(@RequestParam(name = "memberId") Long memberId) {
+        log.info("getLogoListByTeam：" + "memberId = " + memberId);
+
         return R.success(logoService.getLogoList(memberId));
     }
 
     @ApiOperation(value = "删除logo")
     @RequestMapping(value = "/deleteLogo", method = RequestMethod.GET)
     public R deleteLogo(@RequestParam(name = "logoId") Long logoId) {
+        log.info("deleteLogo：" + "logoId = " + logoId);
         return R.success(logoService.deleteLogo(logoId));
     }
 }

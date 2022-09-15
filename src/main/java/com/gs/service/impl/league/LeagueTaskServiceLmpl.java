@@ -18,6 +18,7 @@ import com.gs.repository.jpa.team.TeamTaskRepository;
 import com.gs.service.intf.league.LeagueTaskService;
 import com.gs.service.intf.team.TeamTaskService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class LeagueTaskServiceLmpl implements LeagueTaskService {
 
     private LeagueTaskRepository leagueTaskRepository;
@@ -77,6 +79,8 @@ public class LeagueTaskServiceLmpl implements LeagueTaskService {
 
         League league = leagueRepository.findLeagueById(leagueId);
         if (null == league || !Objects.equals(league.getCreateMemberId(), manageMemberId)) {
+
+            log.error("deleteOneLeagueTask：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
@@ -91,6 +95,8 @@ public class LeagueTaskServiceLmpl implements LeagueTaskService {
 
         League league = leagueRepository.findLeagueById(leagueId);
         if (null == league || !Objects.equals(league.getCreateMemberId(), manageMemberId)) {
+
+            log.error("deleteLeagueTasks：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
