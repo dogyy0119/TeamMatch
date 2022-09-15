@@ -89,6 +89,8 @@ public class ScheduledTask {
             if (member.getId().equals(44L)) {
                 logger.info(" member id: {}", member.getId());
                 logger.info(" member getPubgId: {}", member.getPubgId());
+                if(member.getPubgId() == null || member.getPubgId().equals(""))
+                    continue;
                 List<String> pubgMatchIdList = pubgStatisticsService.GetPlayerById(member.getPubgId());
                 if (pubgMatchIdList.size() > 0) {
                     for (String matchId : pubgMatchIdList) {
