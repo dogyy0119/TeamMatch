@@ -10,6 +10,7 @@ import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.repository.jpa.team.TeamTaskRepository;
 import com.gs.service.intf.team.TeamTaskService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.util.*;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class TeamTaskServiceLmpl implements TeamTaskService {
 
     private TeamTaskRepository teamTaskRepository;
@@ -75,6 +77,7 @@ public class TeamTaskServiceLmpl implements TeamTaskService {
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == teamMember || teamMember.getJob() != MemberJobEnum.IS_TEAM_LEADER.getJob()) {
+            log.error("deleteOneTeamTask：" + "只有队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION2;
         }
 
@@ -89,6 +92,7 @@ public class TeamTaskServiceLmpl implements TeamTaskService {
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, manageMemberId);
         if (null == teamMember || teamMember.getJob() != MemberJobEnum.IS_TEAM_LEADER.getJob()) {
+            log.error("deleteOneTeamTask：" + "只有队长有权限");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION2;
         }
 

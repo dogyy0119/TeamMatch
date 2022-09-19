@@ -66,6 +66,8 @@ public class LeagueMessageServer {
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("leagueId") Long leagueId, @PathParam("userId") Long userId) {
+        log.info("onOpen：" + "leagueId = " + leagueId + "userId = " + userId);
+
         this.session = session;
         this.userId = userId;
         this.leagueId = leagueId;
@@ -112,6 +114,8 @@ public class LeagueMessageServer {
      */
     @OnClose
     public void onClose() {
+
+        log.info("onClose：" + "leagueId = " + leagueId + "userId = " + userId);
         if (webLeagueSocketMap.containsKey(leagueId)) {
             ConcurrentHashMap<Long, LeagueMessageServer> memberSocketMap = webLeagueSocketMap.get(leagueId);
             if (memberSocketMap.containsKey(userId)) {
@@ -134,10 +138,10 @@ public class LeagueMessageServer {
 //                }
 
             } else {
-                log.error("league:" + leagueId + "user:" + userId + ",关闭异常（league下不存在user的socket连接）!!!!!!");
+                log.error("onClose：" + "league:" + leagueId + "user:" + userId + ",关闭异常（league下不存在user的socket连接）!!!!!!");
             }
         } else {
-            log.error("league:" + leagueId + "user:" + userId + ",关闭异常（不存在league的socket连接）!!!!!!");
+            log.error("onClose：" + "league:" + leagueId + "user:" + userId + ",关闭异常（不存在league的socket连接）!!!!!!");
         }
     }
 
@@ -148,7 +152,7 @@ public class LeagueMessageServer {
      */
     @OnMessage
     public void onMessage(String message) {
-        log.info("战队" + leagueId + "成员" + userId + ",报文:" + message);
+        log.info("onMessage：" + "联盟" + leagueId + "成员" + userId + ",报文:" + message);
         //可以群发消息
         //消息保存到数据库、redis
         if (message!=null && !message.isEmpty()) {
@@ -162,7 +166,7 @@ public class LeagueMessageServer {
                     int type = jsonObject.getInteger("type");
 
                     if (type != 3 && type != 4) {
-                        log.error("战队" + this.leagueId + "中的" + this.userId + "消息类型不正确:" + type);
+                        log.error("onMessage：" + "联盟" + this.leagueId + "中的" + this.userId + "消息类型不正确:" + type);
                         return;
                     }
 
@@ -173,7 +177,7 @@ public class LeagueMessageServer {
                             LeagueMessageDto messageDto = JSON.parseObject(message, LeagueMessageDto.class);
                             LeagueMessageVo messageVo = leagueMessageService.insertLeagueMessage(messageDto);
                             if (null == messageVo) {
-                                log.error("已经发送过该消息：" + jsonObject.toJSONString());
+                                log.error("onMessage：" + "已经发送过该消息：" + jsonObject.toJSONString());
                                 return;
                             }
 
@@ -182,11 +186,11 @@ public class LeagueMessageServer {
                             Long toUserId = jsonObject.getLong("toId");
                             if (toUserId != null) {
                                 if (toUserId.equals(userId)) {
-                                    log.error("联盟" + this.leagueId + "中的" + this.userId + "不能给自己发送消息");
+                                    log.error("onMessage：" + "联盟" + this.leagueId + "中的" + this.userId + "不能给自己发送消息");
                                     return;
                                 }
                             } else {
-                                log.error("请求参数有问题，参数中没有填写toId参数");
+                                log.error("onMessage：" + "请求参数有问题，参数中没有填写toId参数");
                             }
 
                             ConcurrentHashMap<Long, LeagueMessageServer> memberSocketMap = webLeagueSocketMap.get(leagueId);
@@ -199,22 +203,22 @@ public class LeagueMessageServer {
                                 LeagueMessageDto messageDto = JSON.parseObject(message, LeagueMessageDto.class);
                                 LeagueMessageVo messageVo = leagueMessageService.insertLeagueMessage(messageDto);
                                 if (null == messageVo) {
-                                    log.error("已经发送过该消息：" + jsonObject.toJSONString());
+                                    log.error("onMessage：" + "已经发送过该消息：" + jsonObject.toJSONString());
                                     return;
                                 }
 
                                 leagueMessageServer.sendMessage(messageVo);
                             } else {
-                                log.error("请求的userId:" + userId + "不在该服务器上");
+                                log.error("onMessage：" + "请求的userId:" + userId + "不在该服务器上");
                             }
                         }
 
 
                     } else {
-                        log.error("请求的leagueId:" + leagueId + "不在该服务器上");
+                        log.error("onMessage：" + "请求的leagueId:" + leagueId + "不在该服务器上");
                     }
                 } else {
-                    log.error("请求参数有问题，参数中没有填写teamId参数");
+                    log.error("onMessage：" + "请求参数有问题，参数中没有填写teamId参数");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -224,7 +228,7 @@ public class LeagueMessageServer {
 
     @OnError
     public void onError(Throwable error) {
-        log.error("战队:" + this.leagueId + "成员:" + this.userId + ",error原因:" + error.getMessage());
+        log.error("onMessage：" + "联盟:" + this.leagueId + "成员:" + this.userId + ",error原因:" + error.getMessage());
         error.printStackTrace();
     }
 

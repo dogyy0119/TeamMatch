@@ -20,6 +20,7 @@ import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.league.LeagueService;
 import com.gs.utils.JpaUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class LeagueServiceLmpl implements LeagueService {
 
     private LeagueRepository leagueRepository;
@@ -144,6 +146,7 @@ public class LeagueServiceLmpl implements LeagueService {
         //判断待添加的队员是否已经在战队中
         LeagueTeam leagueTeam = leagueTeamRepository.findLeagueTeamByLeagueIdAndTeamId(leagueId, teamId);
         if (null != leagueTeam) {
+            log.error("addTeam：" + "战队已经在联盟里");
             return CodeEnum.IS_TEAM_ALLEARY_IN_LEAGUE;
         }
 
@@ -151,6 +154,7 @@ public class LeagueServiceLmpl implements LeagueService {
         League league = leagueRepository.findLeagueById(leagueId);
         //判断战队的人数是否已经达到上线
         if (league.getMaxTeamNum() <= league.getLeagueTeams().size()) {
+            log.error("addTeam：" + "超出战队成员数上限");
             return CodeEnum.IS_BEYOND_LIMIT_ERROR;
         }
 
@@ -181,6 +185,7 @@ public class LeagueServiceLmpl implements LeagueService {
     @Override
     public CodeEnum doAddTeamRequest(Long managerId, Long requestId, Integer flg){
         if (!leagueTeamRequestRepository.existsById(requestId)){
+            log.error("doAddTeamRequest：" + "联盟战队请求不存在");
             return CodeEnum.IS_LEAGUE_TEAM_REQUEST_NOT_EXIST;
         }
 
@@ -189,23 +194,28 @@ public class LeagueServiceLmpl implements LeagueService {
 
         Team team = teamRepository.findTeamById(leagueTeamRequest.getToTeamId());
         if (team == null ){
+            log.error("doAddTeamRequest：" + "联盟战队请求错误");
             return CodeEnum.IS_LEAGUE_TEAM_REQUEST_ERROR;
         }
 
         Member member = memberRepository.findMemberById(managerId);
         if (member == null ){
+            log.error("doAddTeamRequest：" + "玩家不存在");
             return CodeEnum.IS_MEMBER_NOT_EXIST;
         }
 
         TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
         if (teamMember == null){
+            log.error("doAddTeamRequest：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
         if (teamMember.getJob()==MemberJobEnum.IS_TEAM_MEMBER.getJob()){
+            log.error("doAddTeamRequest：" + "只有队长和副队长有权限查看联盟");
             return CodeEnum.IS_TEAM_LEAGUE_PERMISSION;
         }
 
         if (!leagueRepository.existsById(leagueId)){
+            log.error("doAddTeamRequest：" + "联盟不存在");
             return CodeEnum.IS_LEAGUE_NOT_EXIST;
         }
 
@@ -249,6 +259,7 @@ public class LeagueServiceLmpl implements LeagueService {
         //判断待添加的队员是否已经在战队中
         LeagueTeam leagueTeam = leagueTeamRepository.findLeagueTeamByLeagueIdAndTeamId(leagueId, leagueTeamDTO.getTeamId());
         if (null != leagueTeam) {
+            log.error("joinLeague：" + "战队已经在联盟里");
             return CodeEnum.IS_TEAM_ALLEARY_IN_LEAGUE;
         }
 
@@ -256,6 +267,7 @@ public class LeagueServiceLmpl implements LeagueService {
         League league = leagueRepository.findLeagueById(leagueId);
         //判断战队的人数是否已经达到上线
         if (league.getMaxTeamNum() <= league.getLeagueTeams().size()) {
+            log.error("joinLeague：" + "超出战队成员数上限");
             return CodeEnum.IS_BEYOND_LIMIT_ERROR;
         }
 
@@ -284,6 +296,7 @@ public class LeagueServiceLmpl implements LeagueService {
     @Override
     public CodeEnum doJoinLeagueRequest(Long managerId, Long requestId, Integer flg){
         if (!leagueRequestRepository.existsById(requestId)){
+            log.error("doJoinLeagueRequest：" + "联盟请求不存在");
             return CodeEnum.IS_LEAGUE_REQUEST_NOT_EXIST;
         }
 
@@ -292,6 +305,7 @@ public class LeagueServiceLmpl implements LeagueService {
 
         League league = leagueRepository.findLeagueById(leagueId);
         if (!managerId.equals(league.getCreateMemberId())){
+            log.error("doJoinLeagueRequest：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
@@ -347,12 +361,14 @@ public class LeagueServiceLmpl implements LeagueService {
 
         League league = leagueRepository.findLeagueById(leagueId);
         if (!manageMemberId.equals(league.getCreateMemberId())){
+            log.error("deleteLeagueTeam：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
         //判断待添加的队员是否已经在战队中
         LeagueTeam leagueTeam = leagueTeamRepository.findLeagueTeamByLeagueIdAndTeamId(leagueId, leagueTeamDTO.getTeamId());
         if (null == leagueTeam) {
+            log.error("deleteLeagueTeam：" + "战队不在联盟里");
             return CodeEnum.IS_TEAM_NOT_IN_LEAGUE;
         }
 
@@ -396,16 +412,19 @@ public class LeagueServiceLmpl implements LeagueService {
         TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
 
         if (teamMember == null){
+            log.error("quitLeague：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
         }
 
         if (teamMember.getJob()==MemberJobEnum.IS_TEAM_MEMBER.getJob()){
+            log.error("quitLeague：" + "只有队长和副队长有权限查看联盟");
             return CodeEnum.IS_TEAM_LEAGUE_PERMISSION;
         }
 
         //判断待添加的队员是否已经在战队中
         LeagueTeam leagueTeam = leagueTeamRepository.findLeagueTeamByLeagueIdAndTeamId(leagueId, leagueTeamDTO.getTeamId());
         if (null == leagueTeam) {
+            log.error("quitLeague：" + "战队不在联盟里");
             return CodeEnum.IS_TEAM_NOT_IN_LEAGUE;
         }
 
@@ -436,6 +455,7 @@ public class LeagueServiceLmpl implements LeagueService {
 
         League league = leagueRepository.findLeagueById(leagueId);
         if (!Objects.equals(league.getCreateMemberId(), managerId)){
+            log.error("deleteLeague：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
@@ -473,6 +493,7 @@ public class LeagueServiceLmpl implements LeagueService {
         League league = leagueRepository.findLeagueById(leagueId);
 
         if (!manageMemberId.equals(league.getCreateMemberId())){
+            log.error("updateLeagueInfo：" + "只有联盟创建者有权限");
             return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
         }
 
@@ -484,18 +505,18 @@ public class LeagueServiceLmpl implements LeagueService {
         //创建队务
         String teamTaskContent;
 
-        if (!league.getName().equals(leagueUpdateInfoDTO.getName())){
+        if (!leagueUpdateInfoDTO.getName().isEmpty() && !league.getName().equals(leagueUpdateInfoDTO.getName())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更改了联盟名称";
             createLeagueTeak(league.getId(), teamTaskContent);
         }
 
-        if (!league.getDescriptionInfo().equals(leagueUpdateInfoDTO.getDescriptionInfo())){
+        if (!leagueUpdateInfoDTO.getDescriptionInfo().isEmpty() && !league.getDescriptionInfo().equals(leagueUpdateInfoDTO.getDescriptionInfo())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更改了联盟简介";
             createLeagueTeak(league.getId(), teamTaskContent);
         }
 
 
-        if (!league.getLogoUrl().equals(leagueUpdateInfoDTO.getLogoUrl())){
+        if (!leagueUpdateInfoDTO.getLogoUrl().isEmpty() && !league.getLogoUrl().equals(leagueUpdateInfoDTO.getLogoUrl())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更新了联盟logo";
             createLeagueTeak(league.getId(), teamTaskContent);
         }
@@ -556,6 +577,7 @@ public class LeagueServiceLmpl implements LeagueService {
         League league = leagueRepository.findLeagueByCreateMemberId(memberId);
 
         if (league != null){
+
             leagueLst.add(league);
         }
 

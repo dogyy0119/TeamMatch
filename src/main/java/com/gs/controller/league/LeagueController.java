@@ -13,6 +13,7 @@ import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@Slf4j
 public class LeagueController {
 
     private final LeagueService leagueService;
@@ -37,6 +39,8 @@ public class LeagueController {
     @RequestMapping(value = "/createLeague", method = RequestMethod.POST)
     public R createLeague(
             @Validated @RequestBody LeagueCreateDTO leagueCreateDTO){
+        log.info("createLeague：" + "leagueCreateDTO = " + leagueCreateDTO.toString());
+
         if (leagueService.existsByCreateMemberId(leagueCreateDTO.getCreateMemberId())){
             return R.error(CodeEnum.IS_ALREADY_CREATE_LEAGUE.getCode(), "创建战队失败:该用户已经创建过联盟");
         }
@@ -48,6 +52,8 @@ public class LeagueController {
     public R getLeagues(
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize){
+
+        log.info("getLeagues：" + "pageNum = " + pageNum + "pageSize = " + pageSize);
         return R.success(leagueService.getLeagues(pageNum, pageSize));
     }
 
@@ -55,6 +61,8 @@ public class LeagueController {
     @RequestMapping(value = "/getLeague", method = RequestMethod.GET)
     public R getLeague(
             @RequestParam String leagueId){
+        log.info("getLeague：" + "leagueId = " + leagueId);
+
         try {
             Long myLeagueId = Long.getLong(leagueId);
             if (myLeagueId == null)
@@ -72,6 +80,8 @@ public class LeagueController {
             @RequestParam Long managerId,
             @RequestParam Long messageId,
             @RequestParam Integer flg) {
+        log.info("doJoinLeagueRequest：" + "managerId = " + managerId + "messageId = " + messageId + "flg = " + flg);
+
         CodeEnum result = leagueService.doJoinLeagueRequest(managerId, messageId, flg);
         if (flg == 0){
             return R.result(result);
@@ -91,6 +101,8 @@ public class LeagueController {
             @RequestParam Long managerId,
             @RequestParam Long messageId,
             @RequestParam Integer flg) {
+
+        log.info("doAddTeamRequest：" + "managerId = " + managerId + "messageId = " + messageId + "flg = " + flg);
         return R.result(leagueService.doAddTeamRequest(managerId, messageId, flg));
     }
 
@@ -99,6 +111,8 @@ public class LeagueController {
     public R deleteLeagueTeam(
             @RequestParam Long manageMemberId,
             @Validated @RequestBody LeagueTeamDTO leagueTeamDTO) {
+        log.info("deleteLeagueTeam：" + "manageMemberId = " + manageMemberId + "leagueTeamDTO = " + leagueTeamDTO.toString());
+
         return R.result(leagueService.deleteLeagueTeam(manageMemberId, leagueTeamDTO));
     }
 
@@ -107,12 +121,16 @@ public class LeagueController {
     public R quitLeague(
             @RequestParam Long manageMemberId,
             @Validated @RequestBody LeagueTeamDTO leagueTeamDTO) {
+        log.info("quitLeague：" + "manageMemberId = " + manageMemberId + "leagueTeamDTO = " + leagueTeamDTO.toString());
+
         return R.result(leagueService.quitLeague(manageMemberId, leagueTeamDTO));
     }
 
     @ApiOperation(value = "删除联盟")
     @RequestMapping(value = "/deleteLeague", method = RequestMethod.GET)
     public R deleteLeague(@RequestParam Long managerId, @RequestParam Long leagueId){
+        log.info("deleteLeague：" + "managerId = " + managerId + "leagueId = " + leagueId);
+
         return R.success(leagueService.deleteLeague(managerId, leagueId));
     }
 
@@ -122,6 +140,7 @@ public class LeagueController {
             @RequestParam("manageMemberId") Long manageMemberId,
             @Validated @RequestBody LeagueUpdateInfoDTO leagueUpdateInfoDTO) {
 
+        log.info("updateLeagueInfo：" + "manageMemberId = " + manageMemberId + "leagueUpdateInfoDTO = " + leagueUpdateInfoDTO.toString());
         return R.result(leagueService.updateLeagueInfo(manageMemberId, leagueUpdateInfoDTO));
     }
 
@@ -130,6 +149,8 @@ public class LeagueController {
     public R queryLeagues(@RequestParam String key,
                           @RequestParam Integer pageNum,
                           @RequestParam Integer pageSize) {
+        log.info("queryLeagues：" + "key = " + key + "pageNum = " + pageNum + "pageSize = " + pageSize);
+
         return R.success(leagueService.queryLeaguesBykey(key, pageNum, pageSize));
     }
 
@@ -140,6 +161,8 @@ public class LeagueController {
             @RequestParam Long memberId,
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize){
+
+        log.info("getLeaguesByMember：" + "memberId = " + memberId + "pageNum = " + pageNum + "pageSize = " + pageSize);
         return R.success(leagueService.getLeaguesByMember(memberId, pageNum, pageSize));
     }
 

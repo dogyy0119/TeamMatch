@@ -67,6 +67,8 @@ public class TeamMessageServer {
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("teamId") Long teamId, @PathParam("userId") Long userId) {
+        log.info("onOpen：" + "teamId = " + teamId + "userId = " + userId);
+
         this.session = session;
         this.userId = userId;
         this.teamId = teamId;
@@ -113,6 +115,8 @@ public class TeamMessageServer {
      */
     @OnClose
     public void onClose() {
+
+        log.info("onClose：" + "teamId = " + teamId + "userId = " + userId);
         if (webTeamSocketMap.containsKey(teamId)) {
             ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(teamId);
             if (memberSocketMap.containsKey(userId)) {
@@ -149,7 +153,7 @@ public class TeamMessageServer {
      */
     @OnMessage
     public void onMessage(String message) {
-        log.info("战队" + teamId + "成员" + userId + ",报文:" + message);
+        log.info("onMessage ： 战队" + teamId + "成员" + userId + ",报文:" + message);
         //可以群发消息
         //消息保存到数据库、redis
         if (message !=null && !message.isEmpty()) {
@@ -163,7 +167,7 @@ public class TeamMessageServer {
                     int type = jsonObject.getInteger("type");
 
                     if (type != 3 && type != 4) {
-                        log.error("战队" + this.teamId + "中的" + this.userId + "消息类型不正确:" + type);
+                        log.error("onMessage: " + "战队" + this.teamId + "中的" + this.userId + "消息类型不正确:" + type);
                         return;
                     }
 
@@ -174,7 +178,7 @@ public class TeamMessageServer {
                             MessageDto messageDto = JSON.parseObject(message, MessageDto.class);
                             MessageVo messageVo = messageService.insertMessage(messageDto);
                             if (null == messageVo) {
-                                log.error("已经发送过该消息：" + jsonObject.toJSONString());
+                                log.error("onMessage: " + "已经发送过该消息：" + jsonObject.toJSONString());
                                 return;
                             }
 
@@ -183,11 +187,11 @@ public class TeamMessageServer {
                             Long toUserId = jsonObject.getLong("toId");
                             if (toUserId != null) {
                                 if (toUserId.equals(userId)) {
-                                    log.error("战队" + this.teamId + "中的" + this.userId + "不能给自己发送消息");
+                                    log.error("onMessage: " + "战队" + this.teamId + "中的" + this.userId + "不能给自己发送消息");
                                     return;
                                 }
                             } else {
-                                log.error("请求参数有问题，参数中没有填写toId参数");
+                                log.error("onMessage: " + "请求参数有问题，参数中没有填写toId参数");
                             }
 
                             ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(teamId);
@@ -200,22 +204,22 @@ public class TeamMessageServer {
                                 MessageDto messageDto = JSON.parseObject(message, MessageDto.class);
                                 MessageVo messageVo = messageService.insertMessage(messageDto);
                                 if (null == messageVo) {
-                                    log.error("已经发送过该消息：" + jsonObject.toJSONString());
+                                    log.error("onMessage: " + "已经发送过该消息：" + jsonObject.toJSONString());
                                     return;
                                 }
 
                                 teamMessageServer.sendMessage(messageVo);
                             } else {
-                                log.error("请求的userId:" + userId + "不在该服务器上");
+                                log.error("onMessage: " + "请求的userId:" + userId + "不在该服务器上");
                             }
                         }
 
 
                     } else {
-                        log.error("请求的teamId:" + teamId + "不在该服务器上");
+                        log.error("onMessage: " + "请求的teamId:" + teamId + "不在该服务器上");
                     }
                 } else {
-                    log.error("请求参数有问题，参数中没有填写teamId参数");
+                    log.error("onMessage: " + "请求参数有问题，参数中没有填写teamId参数");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -225,7 +229,7 @@ public class TeamMessageServer {
 
     @OnError
     public void onError(Throwable error) {
-        log.error("战队:" + this.userId + "成员:" + this.userId + ",error原因:" + error.getMessage());
+        log.error("onMessage: " + "战队:" + this.teamId + "成员:" + this.userId + ",error原因:" + error.getMessage());
         error.printStackTrace();
     }
 

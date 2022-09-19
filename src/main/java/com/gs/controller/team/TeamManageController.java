@@ -11,6 +11,7 @@ import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @AllArgsConstructor
+@Slf4j
 public class TeamManageController {
 
     @Resource
@@ -58,11 +60,15 @@ public class TeamManageController {
             @RequestParam("createMemberId") Long createMemberId,
             @Validated @RequestBody TeamCreateDTO teamCreateDTO) {
 
+        log.info("createTeam：" + "createMemberId = " + createMemberId + ", teamCreateDTO = " + teamCreateDTO.toString());
+
         if (!memberService.existsById(createMemberId)) {
+            log.error("createTeam：" + "创建战队失败:该用户不存在:" + createMemberId);
             return R.error(CodeEnum.IS_MEMBER_NOT_EXIST.getCode(), "创建战队失败:该用户不存在");
         }
 
         if (teamService.existsByCreateMemberId(createMemberId)) {
+            log.error("createTeam：" + "创建战队失败:该用户已经创建过战队:" + createMemberId);
             return R.error(CodeEnum.IS_ALREADY_CREATE_TEAM.getCode(), "创建战队失败:该用户已经创建过战队");
         }
 
@@ -74,6 +80,8 @@ public class TeamManageController {
     public R getTeamPage(
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {
+        log.info("getTeamPage：" + "pageNum = " + pageNum + ", pageSize = " + pageSize);
+
         return R.success(teamService.getTeamPage(pageNum, pageSize));
     }
 
@@ -83,12 +91,15 @@ public class TeamManageController {
             @RequestParam Long memberId,
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {
+        log.info("getTeamPageByPlayerId：" + "memberId = " + memberId + ", pageNum = " + pageNum + ", pageSize = " + pageSize);
+
         return R.success(teamMemberService.getTeamPageByPlayerId(memberId, pageNum, pageSize));
     }
 
     @ApiOperation(value = "获取战队")
     @RequestMapping(value = "/getTeamByTeamId", method = RequestMethod.GET)
     public R getTeamByTeamId(@RequestParam String teamId) {
+        log.info("getTeamByTeamId：" + "teamId = " + teamId);
 
         try {
             Long myTeamId = Long.getLong(teamId);
@@ -105,6 +116,8 @@ public class TeamManageController {
     public R doTeamRequest(
             @RequestParam Long messageId,
             @RequestParam Integer flg) {
+        log.info("doTeamRequest：" + "messageId = " + messageId + "flg = " + flg);
+
         return R.result(teamService.doTeamRequest(messageId, flg));
     }
 
@@ -114,6 +127,7 @@ public class TeamManageController {
             @RequestParam Long messageId,
             @RequestParam Integer flg) {
 
+        log.info("doMemberRequest：" + "messageId = " + messageId + "flg = " + flg);
         CodeEnum result = teamService.doMemberRequest(messageId, flg);
         if (flg == 0){
             return R.result(result);
@@ -132,6 +146,7 @@ public class TeamManageController {
     public R deleteMember(
             @RequestParam Long manageMemberId,
             @Validated @RequestBody TeamMemberDTO teamMemberDTO) {
+        log.info("deleteMember：" + "manageMemberId = " + manageMemberId + "teamMemberDTO = " + teamMemberDTO.toString());
         return R.result(teamService.deleteMember(manageMemberId, teamMemberDTO));
     }
 
@@ -139,6 +154,8 @@ public class TeamManageController {
     @RequestMapping(value = "/quitTeam", method = RequestMethod.POST)
     public R quitTeam(
             @Validated @RequestBody TeamMemberDTO teamMemberDTO) {
+
+        log.info("quitTeam：" + "teamMemberDTO = " + teamMemberDTO.toString());
         return R.result(teamService.quitTeam(teamMemberDTO));
     }
 
@@ -147,6 +164,7 @@ public class TeamManageController {
     public R transferTeamLeader(
             @RequestParam Long manageMemberId,
             @Validated @RequestBody TeamMemberDTO teamMemberDTO) {
+        log.info("transferTeamLeader：" + "manageMemberId = " + manageMemberId + "teamMemberDTO = " + teamMemberDTO.toString());
 
         return R.result(teamService.transferTeamLeader(manageMemberId, teamMemberDTO));
     }
@@ -157,6 +175,7 @@ public class TeamManageController {
             @RequestParam Long manageMemberId,
             @Validated @RequestBody TeamMemberDTO teamMemberDTO) {
 
+        log.info("setSecondTeamLeader：" + "manageMemberId = " + manageMemberId + "teamMemberDTO = " + teamMemberDTO.toString());
         return R.result(teamService.setSecondTeamLeader(manageMemberId, teamMemberDTO));
 
     }
@@ -166,6 +185,8 @@ public class TeamManageController {
     public R releaseSecondTeamLeader(
             @RequestParam Long manageMemberId,
             @Validated @RequestBody TeamMemberDTO teamMemberDTO) {
+        log.info("releaseSecondTeamLeader：" + "manageMemberId = " + manageMemberId + "teamMemberDTO = " + teamMemberDTO.toString());
+
         return R.result(teamService.releaseSecondTeamLeader(manageMemberId, teamMemberDTO));
     }
 
@@ -174,6 +195,8 @@ public class TeamManageController {
     public R changeSilentFlg(
             @RequestParam Long manageMemberId,
             @Validated @RequestBody TeamMemberDTO teamMemberDTO) {
+
+        log.info("changeSilentFlg：" + "manageMemberId = " + manageMemberId + "teamMemberDTO = " + teamMemberDTO.toString());
         return R.result(teamService.changeSilentFlg(manageMemberId, teamMemberDTO));
 
     }
@@ -183,6 +206,9 @@ public class TeamManageController {
     public R releaseTeam(
             @RequestParam("manageMemberId") Long manageMemberId,
             @RequestParam("teamId") Long teamId) {
+
+        log.info("releaseTeam：" + "manageMemberId = " + manageMemberId + "teamId = " + teamId);
+
         return R.result(teamService.releaseTeam(manageMemberId, teamId));
 
     }
@@ -192,6 +218,7 @@ public class TeamManageController {
     public R updateTeamInfo(
             @RequestParam("manageMemberId") Long manageMemberId,
             @Validated @RequestBody TeamUpdateInfoDTO teamUpdateInfoDTO) {
+        log.info("updateTeamInfo：" + "manageMemberId = " + manageMemberId + "teamUpdateInfoDTO = " + teamUpdateInfoDTO.toString());
 
         return R.result(teamService.updateTeamInfo(manageMemberId, teamUpdateInfoDTO));
     }
@@ -202,6 +229,7 @@ public class TeamManageController {
     public R updateTeamName(
             @RequestParam("manageMemberId") Long manageMemberId,
             @Validated @RequestBody TeamUpdateInfoDTO teamUpdateInfoDTO) {
+        log.info("updateTeamName：" + "manageMemberId = " + manageMemberId + "teamUpdateInfoDTO = " + teamUpdateInfoDTO.toString());
 
         return R.result(teamService.updateTeamName(manageMemberId, teamUpdateInfoDTO));
 
@@ -214,6 +242,7 @@ public class TeamManageController {
             @RequestParam("manageMemberId") Long manageMemberId,
             @Validated @RequestBody TeamUpdateInfoDTO teamUpdateInfoDTO) {
 
+        log.info("updateTeamMaxMemberNum：" + "manageMemberId = " + manageMemberId + "teamUpdateInfoDTO = " + teamUpdateInfoDTO.toString());
         return R.result(teamService.updateTeamMaxMemberNum(manageMemberId, teamUpdateInfoDTO));
 
     }
@@ -224,6 +253,9 @@ public class TeamManageController {
     public R updateTeamDescriptionInfo(
             @RequestParam("manageMemberId") Long manageMemberId,
             @Validated @RequestBody TeamUpdateInfoDTO teamUpdateInfoDTO) {
+
+        log.info("updateTeamDescriptionInfo：" + "manageMemberId = " + manageMemberId + "teamUpdateInfoDTO = " + teamUpdateInfoDTO.toString());
+
         return R.result(teamService.updateTeamDescriptionInfo(manageMemberId, teamUpdateInfoDTO));
 
     }
@@ -235,6 +267,8 @@ public class TeamManageController {
             @RequestParam String key,
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {
+        log.info("queryTeam：" + "currentMemberId = " + currentMemberId + "key = " + key + "pageNum = " + pageNum + "pageSize = " + pageSize);
+
         return R.success(teamService.queryTeamBykey(currentMemberId, key, pageNum, pageSize));
     }
 }

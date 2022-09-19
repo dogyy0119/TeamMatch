@@ -12,6 +12,7 @@ import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.repository.jpa.team.TeamRequestRepository;
 import com.gs.service.intf.team.TeamRequestService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import java.util.Objects;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class TeamRequestServiceLmpl implements TeamRequestService {
 
     TeamRequestRepository teamRequestRepository;
@@ -63,6 +65,8 @@ public class TeamRequestServiceLmpl implements TeamRequestService {
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, memberId);
         if ((null == teamMember ) || teamMember.getJob() == MemberJobEnum.IS_TEAM_MEMBER.getJob()) {
+            log.error("getTeamRequestLst：" + "只有队长和副队长可以查看");
+
             return null;
         }
 
@@ -103,10 +107,13 @@ public class TeamRequestServiceLmpl implements TeamRequestService {
 
         TeamRequest teamRequest = teamRequestRepository.findTeamRequestById(id);
         if (teamRequest == null){
+            log.error("deleteTeamRequest：" + "该请求不存在");
             return CodeEnum.IS_NOT_EXIST;
         }
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamRequest.getTeamId(), memberId);
         if ((null == teamMember ) || teamMember.getJob() == MemberJobEnum.IS_TEAM_MEMBER.getJob()) {
+
+            log.error("deleteTeamRequest：" + "只有队长和副队长可以删除");
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION;
         }
 
@@ -120,6 +127,8 @@ public class TeamRequestServiceLmpl implements TeamRequestService {
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, memberId);
         if ((null == teamMember ) || teamMember.getJob() == MemberJobEnum.IS_TEAM_MEMBER.getJob()) {
+            log.error("deleteAllTeamRequest：" + "只有队长和副队长可以删除");
+
             return null;
         }
 
@@ -157,6 +166,7 @@ public class TeamRequestServiceLmpl implements TeamRequestService {
 
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, memberId);
         if ((null == teamMember ) || teamMember.getJob() == MemberJobEnum.IS_TEAM_MEMBER.getJob()) {
+            log.error("deleteAllDoneTeamRequest：" + "只有队长和副队长可以删除");
             return null;
         }
 

@@ -6,6 +6,7 @@ import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/game/v1.0/app/gameteam/manager")
 @Validated
 @AllArgsConstructor
+@Slf4j
 public class LeagueMessageController {
 
     private final LeagueMessageService messageService;
@@ -23,6 +25,7 @@ public class LeagueMessageController {
     public R getLeagueGroupChatMsgs(@RequestParam Long leagueId,
                               @RequestParam Integer pageNum,
                               @RequestParam Integer pageSize) {
+        log.info("getLeagueGroupChatMsgs：" + "leagueId = " + leagueId + "pageNum = " + pageNum + "pageSize = " + pageSize);
 
         return R.success(messageService.getLeagueGroupChatMsgs(leagueId, pageNum, pageSize));
     }
@@ -36,6 +39,7 @@ public class LeagueMessageController {
                                 @RequestParam Integer pageNum,
                                 @RequestParam Integer pageSize) {
 
+        log.info("getLeagueGroupChatMsgs：" + "fromId = " + fromId + "toId = " + toId + "leagueId = " + leagueId + "pageNum = " + pageNum + "pageSize = " + pageSize);
         return R.success(messageService.getLeaguePrivateChatMsgs(leagueId, fromId, toId, pageNum, pageSize));
     }
 
@@ -44,6 +48,7 @@ public class LeagueMessageController {
     public R deleteLeagueChatMsgs(@RequestParam Long leagueId,
                                 @RequestParam Long memberId) {
 
+        log.info("getLeagueGroupChatMsgs：" + "leagueId = " + leagueId + "memberId = " + memberId);
         messageService.deleteLeagueChatMsgs(leagueId, memberId);
         return R.success();
     }

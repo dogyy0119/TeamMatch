@@ -10,6 +10,7 @@ import com.gs.repository.jpa.team.MemberRequestRepository;
 import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.team.MemberRequestService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
+@Slf4j
 public class MemberRequestServiceLmpl implements MemberRequestService {
 
     MemberRequestRepository memberRequestRepository;
@@ -41,6 +43,8 @@ public class MemberRequestServiceLmpl implements MemberRequestService {
     public CodeEnum sendMemberRequest(MemberRequestDTO memberRequestDTO) {
 
         if (memberRequestRepository.existsByTeamIdAndToIdAndTypeAndStatus(memberRequestDTO.getTeamId(), memberRequestDTO.getToId(), memberRequestDTO.getType(), 1)) {
+
+            log.error("sendMemberRequest：" + "已存在");
             return CodeEnum.IS_EXIST;
         }
 
