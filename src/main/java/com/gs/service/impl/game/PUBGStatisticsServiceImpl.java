@@ -41,6 +41,44 @@ public class PUBGStatisticsServiceImpl implements PUBGStatisticsService {
     @Autowired
     private PUBGMatchDataRepository pubgMatchDataRepository;
 
+    private String squadStr= "{\n" +
+            "                    \"currentTier\": {\n" +
+            "                        \"tier\": \"Silver\",\n" +
+            "                        \"subTier\": \"1\"\n" +
+            "                    },\n" +
+            "                    \"currentRankPoint\": 0,\n" +
+            "                    \"bestTier\": {\n" +
+            "                        \"tier\": \"Silver\",\n" +
+            "                        \"subTier\": \"1\"\n" +
+            "                    },\n" +
+            "                    \"bestRankPoint\": 0,\n" +
+            "                    \"roundsPlayed\": 0,\n" +
+            "                    \"avgRank\": 0,\n" +
+            "                    \"avgSurvivalTime\": 0,\n" +
+            "                    \"top10Ratio\": 0,\n" +
+            "                    \"winRatio\": 0,\n" +
+            "                    \"assists\": 1,\n" +
+            "                    \"wins\": 0,\n" +
+            "                    \"kda\": 0,\n" +
+            "                    \"kdr\": 0,\n" +
+            "                    \"kills\": 0,\n" +
+            "                    \"deaths\": 0,\n" +
+            "                    \"roundMostKills\": 0,\n" +
+            "                    \"longestKill\": 0,\n" +
+            "                    \"headshotKills\": 0,\n" +
+            "                    \"headshotKillRatio\": 0,\n" +
+            "                    \"damageDealt\": 0.0,\n" +
+            "                    \"dBNOs\": 0,\n" +
+            "                    \"reviveRatio\": 0,\n" +
+            "                    \"revives\": 0,\n" +
+            "                    \"heals\": 0,\n" +
+            "                    \"boosts\": 0,\n" +
+            "                    \"weaponsAcquired\": 0,\n" +
+            "                    \"teamKills\": 0,\n" +
+            "                    \"playTime\": 0,\n" +
+            "                    \"killStreak\": 0\n" +
+            "                }";
+
     @Override
     public List<PUBGSeason> GetSeasons() {
         String url = "/shards/steam/seasons";
@@ -186,6 +224,19 @@ public class PUBGStatisticsServiceImpl implements PUBGStatisticsService {
             logger.info("GetRankedSeasonStats result is null");
             return null;
         }
+
+        JSONObject json = new JSONObject(result);
+        JSONObject jsonRankedGameModeStats = json.getJSONObject("data").getJSONObject("attributes").getJSONObject("rankedGameModeStats");
+        JSONObject squad = jsonRankedGameModeStats.getJSONObject("squad");
+        if( squad == null ) {
+            squad =  new JSONObject(squadStr);
+            jsonRankedGameModeStats.putOpt("squad",squad);
+            logger.info( "liuhang: add squad:  " + jsonRankedGameModeStats);
+        }
+
+        logger.info( "liuhang: add:  " + json);
+        result = json.toString();
+
 
 //        PutRankedSeasonStats( 46L, result);
         return result;
@@ -369,17 +420,35 @@ public class PUBGStatisticsServiceImpl implements PUBGStatisticsService {
                 pubgStatistics.setGameData(gameData);
             }
 
-            String rankedSeasonStats = GetRankedSeasonStats(accountid,lastSeasonid);
+            String rankedSeasonStats = GetRankedSeasonStats(accountid,curSeasonid);
             if( rankedSeasonStats != null && !rankedSeasonStats.equals("") ) {
                 rankedSeasonStats = rankedSeasonStats.replace("solo-fpp", "solofpp");
                 rankedSeasonStats = rankedSeasonStats.replace("duo-fpp", "duofpp");
                 rankedSeasonStats = rankedSeasonStats.replace("squad-fpp", "squadfpp");
+
+                JSONObject json = new JSONObject(rankedSeasonStats);
+                JSONObject jsonRankedGameModeStats = json.getJSONObject("data").getJSONObject("attributes").getJSONObject("rankedGameModeStats");
+                JSONObject squad = jsonRankedGameModeStats.getJSONObject("squad");
+                if( squad == null ) {
+                    squad =  new JSONObject(squadStr);
+                    jsonRankedGameModeStats.putOpt("squad",squad);
+                    rankedSeasonStats = json.toString();
+                }
+
+                JSONObject squadfpp = jsonRankedGameModeStats.getJSONObject("squadfpp");
+                if( squadfpp == null ) {
+                    squadfpp =  new JSONObject(squadStr);
+                    jsonRankedGameModeStats.putOpt("squadfpp",squadfpp);
+                    rankedSeasonStats = json.toString();
+                }
+
                 pubgStatistics.setRankedSeasonStats(rankedSeasonStats);
             }
 
             pubgStatistics.setDatetime( new Date());
         } else {
-            if( (new Date().getTime() - pubgStatistics.getDatetime().getTime()) < 24*60*60*1000) {
+            if( (new Date().getTime() - pubgStatistics.getDatetime().getTime()) < 18*60*60*1000) {
+                logger.info(" time is not small ten one day");
                 return false;
             }
 
@@ -402,11 +471,28 @@ public class PUBGStatisticsServiceImpl implements PUBGStatisticsService {
                 pubgStatistics.setGameData(gameData);
             }
 
-            String rankedSeasonStats = GetRankedSeasonStats(accountid,lastSeasonid);
+            String rankedSeasonStats = GetRankedSeasonStats(accountid,curSeasonid);
             if( rankedSeasonStats != null && !rankedSeasonStats.equals("") ) {
                 rankedSeasonStats = rankedSeasonStats.replace("solo-fpp", "solofpp");
                 rankedSeasonStats = rankedSeasonStats.replace("duo-fpp", "duofpp");
                 rankedSeasonStats = rankedSeasonStats.replace("squad-fpp", "squadfpp");
+
+                JSONObject json = new JSONObject(rankedSeasonStats);
+                JSONObject jsonRankedGameModeStats = json.getJSONObject("data").getJSONObject("attributes").getJSONObject("rankedGameModeStats");
+                JSONObject squad = jsonRankedGameModeStats.getJSONObject("squad");
+                if( squad == null ) {
+                    squad =  new JSONObject(squadStr);
+                    jsonRankedGameModeStats.putOpt("squad",squad);
+                    rankedSeasonStats = json.toString();
+                }
+                JSONObject squadfpp = jsonRankedGameModeStats.getJSONObject("squadfpp");
+                if( squadfpp == null ) {
+                    squadfpp =  new JSONObject(squadStr);
+                    jsonRankedGameModeStats.putOpt("squadfpp",squadfpp);
+                    rankedSeasonStats = json.toString();
+                }
+
+
                 pubgStatistics.setRankedSeasonStats(rankedSeasonStats);
             }
 

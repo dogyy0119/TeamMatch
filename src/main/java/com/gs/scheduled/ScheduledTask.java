@@ -80,7 +80,7 @@ public class ScheduledTask {
     /**
      * 每天定时 4点开始
      */
-    @Scheduled(cron = "0 0 4 * * ?")
+    @Scheduled(cron = "0 0 12 * * ?")
     @Async
     public void PullPUBGMatchData() throws InterruptedException, ParseException {
         List<Member> memberList = memberRepository.findAllByPubgIdContaining("account.");
@@ -108,18 +108,18 @@ public class ScheduledTask {
     /**
      * 每天定时 12点开始
      */
-    @Scheduled(cron = "0 0 12 * * ?")
+    @Scheduled(cron = "0 35  4 * * ?")
     @Async
     public void PullPUBGData() throws InterruptedException {
         List<Member> memberList = memberRepository.findAllByPubgIdContaining("account.");
         System.out.println(memberList.size());
         System.out.println(memberList.get(0).getId());
         PUBGSeason curSeason = pubgStatisticsService.GetCurSeason();
-        PUBGSeason lastSeason = pubgStatisticsService.GetLastSeason();
+//        PUBGSeason lastSeason = pubgStatisticsService.GetLastSeason();
         for (Member member : memberList) {
             logger.info(" member id: {}", member.getId());
             logger.info(" member getPubgId: {}", member.getPubgId());
-            Boolean update = pubgStatisticsService.UpdateAll(member.getId(), member.getPubgId(), curSeason.getName(), lastSeason.getName());
+            Boolean update = pubgStatisticsService.UpdateAll(member.getId(), member.getPubgId(), curSeason.getName(), null);
             if (update) {
                 Thread.sleep(30 * 1000);
             }

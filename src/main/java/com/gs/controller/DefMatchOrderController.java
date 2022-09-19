@@ -82,7 +82,7 @@ public class DefMatchOrderController {
         // 队长报名
         if (defMatchManageDTO.getMode() == 1 ) {
            Boolean isExists = teamRepository.existsTeamById(defMatchOrderDTO.getOrderId());
-           if( !isExists ) return R.error("战队id :" + defMatchOrderDTO.getOrderId() + " 有问题");
+           if( !isExists ) return R.error("请先创建或加入战队，再申请加入比赛");
 
             Member member = memberRepository.findMemberById(memberId);
             if(member == null) return R.error("MemberId 有问题 ！");
@@ -96,7 +96,7 @@ public class DefMatchOrderController {
 //            System.out.println(" teamMember:" + teamMember.getJob() );
 
             if( teamMember.getJob()  == 3 ) {
-                return R.error("MemberId 不是队长或者副队长 ！");
+                return R.error("您还不是队长或者副队长 ！");
             }
 
         }
