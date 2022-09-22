@@ -18,7 +18,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Table(name="users")
+@Table(name="t_users")
 public class User extends BaseEntity {
 
     /**

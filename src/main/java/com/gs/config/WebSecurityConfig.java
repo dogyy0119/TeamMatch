@@ -62,10 +62,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // dont authenticate this particular request
                 .authorizeRequests()
                 .antMatchers("/","/home").permitAll()
-                .antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui",
-                        "/swagger-resources", "/swagger-resources/configuration/security",
-                        "/swagger-ui.html", "/webjars/**").permitAll() // 解除swagger拦截
+//                .antMatchers("/v2/api-docs", "/swagger-resources/configuration/ui",
+//                        "/swagger-resources", "/swagger-resources/configuration/security",
+//                        "/swagger-ui.html", "/webjars/**").permitAll() // 解除swagger拦截
                 .antMatchers("/api/login").permitAll()
+                .antMatchers("/api/user").permitAll()
                 .antMatchers("/api/mobileValidCode/*/*").permitAll()
                 .antMatchers("/game/v1.0/app/gameteam/manager/*").permitAll()
                 .antMatchers("/game/v1.0/app/gameteam/manager/*/*").permitAll()
@@ -79,6 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/game/v1.0/app/matches/PUBG/Manager/**").permitAll()
                 .antMatchers("/game/v1.0/app/matches/TeamOrder/**").permitAll()
                 .antMatchers("/game/v1.0/app/matches/PUBGStatistics/**").permitAll()
+                .antMatchers("/game/v1.0/app/matches/UIControl/**").permitAll()
                 .antMatchers("/actuator/*").permitAll()
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().

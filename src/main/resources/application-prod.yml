@@ -64,6 +64,7 @@ pubg:
     matches: https://api.pubg.com/shards/steam/players?filter[playerNames]=
     season: https://api.pubg.com/shards/steam/seasons/$season/gameMode/$Game_mode/players?filter[playerIds]=$player_Ids
     games: https://api.pubg.com/shards/steam/matches/
+  token-pull: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjNDg5NmFkMC1jZDJhLTAxMzktYjVmNC0zYjViM2FiYjhjNjMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjI2OTY1NzI0LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6ImdhbWUtY29tbXVuaXR5In0.65XK7C_xHrCSh1DcRkHzCzh7PF5mLUjMqs5jF1IYssQ
   token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5MGFlNzYwMC1iMmE5LTAxM2EtNDY0YS0yYjVjODA1ZjgyMjMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjUyMTk4OTk5LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6ImdhbWUtY2VudGVyIn0.ggmiM-6whtPKNi2yWMc-yY1b_Plgkf3WOGKRebRjxlY
   head-token: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI5MGFlNzYwMC1iMmE5LTAxM2EtNDY0YS0yYjVjODA1ZjgyMjMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjUyMTk4OTk5LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6ImdhbWUtY2VudGVyIn0.ggmiM-6whtPKNi2yWMc-yY1b_Plgkf3WOGKRebRjxlY"
   head-formate: "application/vnd.api+json"

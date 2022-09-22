@@ -56,6 +56,7 @@ public class UserServiceLmpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserDTO create(UserDTO dto) {
+        dto.setPassword( DigestUtils.md5DigestAsHex(dto.getPassword().getBytes()) );
         User user = userRepository.save(userConvert.toEntity(dto));
         return userConvert.toDto(user);
     }
@@ -63,6 +64,7 @@ public class UserServiceLmpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(UserDTO dto) {
+        dto.setPassword( DigestUtils.md5DigestAsHex(dto.getPassword().getBytes()) );
         userRepository.save(userConvert.toEntity(dto));
     }
 
