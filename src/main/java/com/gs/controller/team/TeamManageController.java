@@ -7,6 +7,7 @@ import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
 import com.gs.model.vo.team.MemberRequestVo;
 import com.gs.service.intf.team.*;
+import com.gs.utils.HttpUtils;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+
 
 /**
  * 战队管理接口
@@ -102,9 +104,7 @@ public class TeamManageController {
         log.info("getTeamByTeamId：" + "teamId = " + teamId);
 
         try {
-            Long myTeamId = Long.getLong(teamId);
-            if (myTeamId == null)
-                return R.success();
+            Long myTeamId = Long.valueOf(teamId);
             return R.success(teamService.getTeamByTeamId(myTeamId));
         }catch (Exception e) {
             return R.success("undefinded");
@@ -156,6 +156,7 @@ public class TeamManageController {
             @Validated @RequestBody TeamMemberDTO teamMemberDTO) {
 
         log.info("quitTeam：" + "teamMemberDTO = " + teamMemberDTO.toString());
+
         return R.result(teamService.quitTeam(teamMemberDTO));
     }
 
@@ -208,7 +209,7 @@ public class TeamManageController {
             @RequestParam("teamId") Long teamId) {
 
         log.info("releaseTeam：" + "manageMemberId = " + manageMemberId + "teamId = " + teamId);
-
+        HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/dismissteam/logout?teamId=" + teamId , null, null);
         return R.result(teamService.releaseTeam(manageMemberId, teamId));
 
     }

@@ -64,9 +64,7 @@ public class LeagueController {
         log.info("getLeague：" + "leagueId = " + leagueId);
 
         try {
-            Long myLeagueId = Long.getLong(leagueId);
-            if (myLeagueId == null)
-                return R.success();
+            Long myLeagueId = Long.valueOf(leagueId);
             return R.success(leagueService.getLeague(myLeagueId));
         }catch (Exception e) {
             return R.success("undefinded");
