@@ -106,12 +106,15 @@ public class TeamOrderController {
     }
 
     @ApiOperation(value = "更新战队比赛内部申请")
+    /**
+     * memberId 操作者
+     */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public R updateTeamOrder(@RequestParam Long memberId, @RequestBody TeamOrderVO teamOrderVO) {
-        Optional<TeamOrder> teamOrderOptional = teamOrderRepository.findById(teamOrderVO.getId());
-        if( !teamOrderOptional.isPresent() ) {
-            return R.error("主键 id 有误");
-        }
+//        Optional<TeamOrder> teamOrderOptional = teamOrderRepository.findById(teamOrderVO.getId());
+//        if( !teamOrderOptional.isPresent() ) {
+//            return R.error("主键 id 有误");
+//        }
 
         DefMatchOrder defMatchOrder = null;
         try {
@@ -124,7 +127,8 @@ public class TeamOrderController {
             TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
             if (teamMember == null) return R.error("memberId or teamId 有误！");
 
-            if(teamMember.getJob() == 3) return R.error("操作者不是队长或副队长，没有权限！");
+            // 申请通过的必须是队长或者副队长，自己可以取消自己的报名
+            if(teamOrderVO.getStatus() == 1 &&  teamMember.getJob() == 3) return R.error("操作者不是队长或副队长，没有权限！");
 
             DefMatch defMatch = defMatchRepository.findDefMatchById(teamOrderVO.getMatchId());
 
@@ -135,14 +139,21 @@ public class TeamOrderController {
             Member member1 = memberRepository.findMemberById(teamOrderVO.getMemberId());
             if (member1 == null) return R.error("memberid 有误！");
 
-            TeamOrder teamOrder = teamOrderOptional.get();
+            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder,member1);
+
+            if(teamOrderList.size() == 0) {
+                return  R.error("无法执行此操作！");
+            }
+
+            TeamOrder teamOrder = teamOrderList.get(0);
+
             if( teamOrder.getMember().getId() != teamOrderVO.getMemberId()) {
                 return R.error("TeamOrderVO 里面 memberid 有问题");
             }
 
             if (defMatchOrder != null) {
                 TeamOrderDTO teamOrderDTO = new TeamOrderDTO();
-                teamOrderDTO.setId(teamOrderVO.getId());
+                teamOrderDTO.setId(teamOrder.getId());
                 teamOrderDTO.setMemberId(teamOrderVO.getMemberId());
                 teamOrderDTO.setDefMatchOrderId(defMatchOrder.getId());
                 teamOrderDTO.setStatus(teamOrderVO.getStatus());

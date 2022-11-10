@@ -79,7 +79,7 @@ public enum CodeEnum {
     /**
      * 待删除的队员是否是队长或者副队长
      */
-    IS_TEAM_DELETE_ERROR("10018", "待删除的队员是否是队长"),
+    IS_TEAM_DELETE_ERROR("10018", "队长不可以退出"),
 
     /**
      * 该战队已经存在副队长

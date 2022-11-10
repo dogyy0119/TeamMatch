@@ -806,7 +806,10 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamRepository.findTeamById(teamId);
 
-        teamRepository.delete(team);
+        if(team != null) {
+            teamRepository.deleteTeamById(teamId);
+        }
+//        teamRepository.delete(team);
 
         //战队解散了，删除所有和战队相关的资源
         List<TeamTask> teamTaskList = teamTaskRepository.findTeamTasksByTeamId(teamId);
@@ -867,7 +870,7 @@ public class TeamServiceImpl implements TeamService {
         }
 
 
-        if (!teamUpdateInfoDTO.getLogoUrl().isEmpty() && !team.getLogoUrl().equals(teamUpdateInfoDTO.getLogoUrl())){
+        if (teamUpdateInfoDTO.getLogoUrl() != null && !teamUpdateInfoDTO.getLogoUrl().isEmpty() && !team.getLogoUrl().equals(teamUpdateInfoDTO.getLogoUrl())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更新了战队logo";
             createTeamTeak(team.getId(), teamTaskContent);
         }

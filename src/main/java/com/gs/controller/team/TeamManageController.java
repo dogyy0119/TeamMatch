@@ -1,5 +1,6 @@
 package com.gs.controller.team;
 
+import cn.hutool.json.JSONObject;
 import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.team.MemberRequestDTO;
 import com.gs.model.dto.team.TeamCreateDTO;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -209,7 +212,13 @@ public class TeamManageController {
             @RequestParam("teamId") Long teamId) {
 
         log.info("releaseTeam：" + "manageMemberId = " + manageMemberId + "teamId = " + teamId);
-        HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/dismissteam/logout?teamId=" + teamId , null, null);
+
+        Map<String, Long> requestMap = new HashMap<>();
+        requestMap.put("teamId", teamId);
+
+        JSONObject json = new JSONObject(requestMap);
+
+        HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/dismissteam/logout?teamId=" + teamId , json.toString(), null);
         return R.result(teamService.releaseTeam(manageMemberId, teamId));
 
     }

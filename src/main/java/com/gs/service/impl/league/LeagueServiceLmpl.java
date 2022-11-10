@@ -516,7 +516,7 @@ public class LeagueServiceLmpl implements LeagueService {
         }
 
 
-        if (!leagueUpdateInfoDTO.getLogoUrl().isEmpty() && !league.getLogoUrl().equals(leagueUpdateInfoDTO.getLogoUrl())){
+        if ( leagueUpdateInfoDTO.getLogoUrl() != null && !leagueUpdateInfoDTO.getLogoUrl().isEmpty() && !league.getLogoUrl().equals(leagueUpdateInfoDTO.getLogoUrl())){
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更新了联盟logo";
             createLeagueTeak(league.getId(), teamTaskContent);
         }

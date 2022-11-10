@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * DateTime: 2022-04-29
  **/
 public @interface IsTeamExist {
-    String message() default "不存在该战队";
+    String message() default "不存在战队";
 
     Class<?>[] groups() default {};
 
@@ -40,7 +40,8 @@ public @interface IsTeamExist {
 
         @Override
         public boolean isValid(Long value, ConstraintValidatorContext context) {
-
+            if(value == null)
+                return false;
             if (teamRepository.existsById(value)) {
                 return true;
             }else {

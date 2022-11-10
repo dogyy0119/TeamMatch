@@ -8,12 +8,14 @@ import com.gs.service.intf.team.MemberService;
 import com.gs.service.intf.team.MessageService;
 import com.gs.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.io.EOFException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -156,7 +158,7 @@ public class TeamMessageServer {
         log.info("onMessage ： 战队" + teamId + "成员" + userId + ",报文:" + message);
         //可以群发消息
         //消息保存到数据库、redis
-        if (message !=null && !message.isEmpty()) {
+        if (message != null && !message.isEmpty()) {
             try {
                 //解析发送的报文
                 JSONObject jsonObject = JSON.parseObject(message);
@@ -197,9 +199,7 @@ public class TeamMessageServer {
                             ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(teamId);
 
                             if (memberSocketMap.containsKey(toUserId)) {
-
                                 TeamMessageServer teamMessageServer = memberSocketMap.get(toUserId);
-
                                 //将message存在在数据库中
                                 MessageDto messageDto = JSON.parseObject(message, MessageDto.class);
                                 MessageVo messageVo = messageService.insertMessage(messageDto);
@@ -207,13 +207,11 @@ public class TeamMessageServer {
                                     log.error("onMessage: " + "已经发送过该消息：" + jsonObject.toJSONString());
                                     return;
                                 }
-
                                 teamMessageServer.sendMessage(messageVo);
                             } else {
                                 log.error("onMessage: " + "请求的userId:" + userId + "不在该服务器上");
                             }
                         }
-
 
                     } else {
                         log.error("onMessage: " + "请求的teamId:" + teamId + "不在该服务器上");
@@ -229,8 +227,19 @@ public class TeamMessageServer {
 
     @OnError
     public void onError(Throwable error) {
-        log.error("onMessage: " + "战队:" + this.teamId + "成员:" + this.userId + ",error原因:" + error.getMessage());
-        error.printStackTrace();
+        log.error("onError: " + "战队:" + this.teamId + "成员:" + this.userId + ",error原因:" + error.getMessage());
+        if ((error instanceof EOFException) && error.getCause() == null) {
+            log.warn("客户端异常退出：{}", session.getId());
+        } else {
+            log.error("socket发生异常：{}", session.getId());
+            log.error("异常信息", error);
+        }
+
+        try {
+            session.close();
+        } catch (IOException e) {
+            log.error("关闭socket发生异常", e);
+        }
     }
 
     /**
@@ -262,6 +271,29 @@ public class TeamMessageServer {
             if (!Objects.equals(entry.userId, this.userId)) {
                 entry.sendMessage(message);
             }
+        }
+    }
+
+    @Scheduled(fixedRate = 5000) //1000毫秒执行一次
+    public void heatBeat() {
+        for (Long userId : webTeamSocketMap.keySet()) {
+            if (!webTeamSocketMap.containsKey(userId)) {
+                continue;
+            }
+            ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(userId);
+            for (TeamMessageServer entry : memberSocketMap.values()) {
+                if (!Objects.equals(entry.userId, this.userId)) {
+                    entry.sendMessage("Heat beat!");
+                }
+            }
+        }
+    }
+
+    public void sendMessage(String message) {
+        try {
+            this.session.getBasicRemote().sendText(message);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

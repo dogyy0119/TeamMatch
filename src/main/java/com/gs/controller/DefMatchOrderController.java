@@ -141,10 +141,10 @@ public class DefMatchOrderController {
 //        System.out.println( defMatchOrderDTO.getStatus() );
 //        System.out.println( defMatchOrderDTO.getMode() );
 
-        Optional<DefMatchOrder> defMatchOrder = defMatchOrderRepository.findById(defMatchOrderDTO.getId());
-        if( !defMatchOrder.isPresent() ) {
-            return R.error("主键 id 有误");
-        }
+//        Optional<DefMatchOrder> defMatchOrder = defMatchOrderRepository.findById(defMatchOrderDTO.getId());
+//        if( !defMatchOrder.isPresent() ) {
+//            return R.error("主键 id 有误");
+//        }
 
         try {
             DefMatchManageDTO defMatchManageDTO = defMatchManageService.findByMatchId(defMatchOrderDTO.getMatchId());
@@ -159,46 +159,43 @@ public class DefMatchOrderController {
                     && defMatchOrderDTO1.getStatus() != 1
                     && defMatchManageDTO.getAllOrder() > defMatchManageDTO.getCurOrder()) {
                 defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() + 1);
-//                System.out.println(" update(defMatchManageDTO)");
                 defMatchManageService.update(defMatchManageDTO);
 
                 // 构建cost 请求
                 DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchManageDTO.getMatchId());
-                Map<String, String> requestMap = new HashMap<>();
-                requestMap.put("fee", defMatch.getGameBill().toString());
-                requestMap.put("memberId", memberId.toString());
-
-                if (defMatchOrderDTO.getMode() == 1) {
-                    requestMap.put("teamId", defMatchOrderDTO.getOrderId().toString());
-                } else {
-                    requestMap.put("teamId", "0");
-                }
-                JSONObject json = new JSONObject(requestMap);
-                HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/createCost",json.toString(), null);
-
-            }
-
-            if (defMatchOrderDTO.getStatus() == -1) {
-                if (defMatchOrderDTO1.getStatus() == 1) {
-
-//                    System.out.println(" update(defMatchManageDTO) = -1");
-                    defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() - 1);
-                    defMatchManageService.update(defMatchManageDTO);
-
-                    // 构建cost 请求
-                    DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchManageDTO.getMatchId());
+                if(defMatch.getGameBill().toString().equals("0")) {
                     Map<String, String> requestMap = new HashMap<>();
                     requestMap.put("fee", defMatch.getGameBill().toString());
                     requestMap.put("memberId", memberId.toString());
-
                     if (defMatchOrderDTO.getMode() == 1) {
                         requestMap.put("teamId", defMatchOrderDTO.getOrderId().toString());
                     } else {
                         requestMap.put("teamId", "0");
                     }
                     JSONObject json = new JSONObject(requestMap);
-                    HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/createCost",json.toString(), null);
+                    HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/createCost", json.toString(), null);
+                }
+            }
 
+            if (defMatchOrderDTO.getStatus() == -1) {
+                if (defMatchOrderDTO1.getStatus() == 1) {
+                    defMatchManageDTO.setCurOrder(defMatchManageDTO.getCurOrder() - 1);
+                    defMatchManageService.update(defMatchManageDTO);
+
+                    // 构建cost 请求
+                    DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchManageDTO.getMatchId());
+                    if(defMatch.getGameBill().toString().equals("0")) {
+                        Map<String, String> requestMap = new HashMap<>();
+                        requestMap.put("fee", defMatch.getGameBill().toString());
+                        requestMap.put("memberId", memberId.toString());
+                        if (defMatchOrderDTO.getMode() == 1) {
+                            requestMap.put("teamId", defMatchOrderDTO.getOrderId().toString());
+                        } else {
+                            requestMap.put("teamId", "0");
+                        }
+                        JSONObject json = new JSONObject(requestMap);
+                        HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/createCost", json.toString(), null);
+                    }
                 }
             }
 
