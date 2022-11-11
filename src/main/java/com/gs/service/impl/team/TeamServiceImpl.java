@@ -851,10 +851,6 @@ public class TeamServiceImpl implements TeamService {
         }
 
         Team team = teamRepository.findTeamById(teamId);
-        String[] Field = {"name", "descriptionInfo", "logoId"};  //更新 Field指定允许字段
-        JpaUtil.copyNotNullPropertiesAllow(teamUpdateInfoDTO, team, Field);
-
-        teamRepository.save(team);
 
         //创建队务
         String teamTaskContent;
@@ -875,6 +871,12 @@ public class TeamServiceImpl implements TeamService {
             createTeamTeak(team.getId(), teamTaskContent);
         }
 
+        String[] Field = {"name", "descriptionInfo", "logoId"};  //更新 Field指定允许字段
+        JpaUtil.copyNotNullPropertiesAllow(teamUpdateInfoDTO, team, Field);
+
+
+
+        teamRepository.save(team);
 
         return CodeEnum.IS_SUCCESS;
     }

@@ -45,6 +45,10 @@ public class MessageServiceLmpl implements MessageService {
     @Override
     public List<MessageVo> getGroupChatMsgs(String teamId, Integer pageNum, Integer pageSize){
 
+        if (null == teamId || teamId.isEmpty()){
+            return null;
+        }
+
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
@@ -52,16 +56,13 @@ public class MessageServiceLmpl implements MessageService {
 
             public Predicate toPredicate(Root<Message> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Path<String> teamIdPath = root.get("teamId");
+                Path<Long> teamIdPath = root.get("teamId");
                 Path<Integer> typePath = root.get("type");
                 /**
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
-                if(teamId != null && !teamId.equals("")) {
-                    predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
-                }
-                predicates.add(cb.equal(typePath, 4));
+                predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
                 predicates.add(cb.equal(typePath, 4));
 
                 query.where(predicates.toArray(new Predicate[predicates.size()]));
@@ -82,6 +83,10 @@ public class MessageServiceLmpl implements MessageService {
     @Override
     public void deleteGroupChatMsgs(String teamId){
 
+        if (null == teamId || teamId.isEmpty()){
+            return;
+        }
+
         List<Message> messagePage = messageRepository.findAll(new Specification<Message>() {
 
             public Predicate toPredicate(Root<Message> root,
@@ -92,9 +97,7 @@ public class MessageServiceLmpl implements MessageService {
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
-                if(teamId != null && !teamId.equals("")) {
-                    predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
-                }
+                predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
                 predicates.add(cb.equal(typePath, 4));
 
                 query.where(predicates.toArray(new Predicate[predicates.size()]));
@@ -112,6 +115,9 @@ public class MessageServiceLmpl implements MessageService {
 
     @Override
     public List<MessageVo> getPrivateChatMsgs(String teamId, Long fromId, Long toId, Integer pageNum, Integer pageSize){
+        if (null == teamId || teamId.isEmpty()){
+            return null;
+        }
 
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
@@ -120,7 +126,7 @@ public class MessageServiceLmpl implements MessageService {
 
             public Predicate toPredicate(Root<Message> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Path<String> teamIdPath = root.get("teamId");
+                Path<Long> teamIdPath = root.get("teamId");
                 Path<Long> toIdPath = root.get("toId");
                 Path<Long> fromIdPath = root.get("fromId");
                 Path<Integer> typePath = root.get("type");
@@ -128,10 +134,7 @@ public class MessageServiceLmpl implements MessageService {
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
-                if(teamId != null && !teamId.equals("")) {
-                    predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
-                }
-                predicates.add(cb.equal(typePath, 4));
+                predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
                 predicates.add(cb.equal(typePath, 3));
                 predicates.add(cb.or(cb.and(cb.equal(toIdPath, fromId), cb.equal(fromIdPath, toId)), cb.and(cb.equal(toIdPath, toId), cb.equal(fromIdPath, fromId))));
 
@@ -152,12 +155,14 @@ public class MessageServiceLmpl implements MessageService {
 
     @Override
     public void deletePrivateChatMsgs(String teamId, Long fromId, Long toId){
-
+        if (null == teamId || teamId.isEmpty()){
+            return;
+        }
         List<Message> messagePage = messageRepository.findAll(new Specification<Message>() {
 
             public Predicate toPredicate(Root<Message> root,
                                          CriteriaQuery<?> query, CriteriaBuilder cb) {
-                Path<String> teamIdPath = root.get("teamId");
+                Path<Long> teamIdPath = root.get("teamId");
                 Path<Long> toIdPath = root.get("toId");
                 Path<Long> fromIdPath = root.get("fromId");
                 Path<Integer> typePath = root.get("type");
@@ -165,10 +170,7 @@ public class MessageServiceLmpl implements MessageService {
                  * 连接查询条件, 不定参数，可以连接0..N个查询条件
                  */
                 List<Predicate> predicates = new ArrayList<>();
-                if(teamId != null && !teamId.equals("")) {
-                    predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
-                }
-                predicates.add(cb.equal(typePath, 4));
+                predicates.add(cb.equal(teamIdPath, Long.valueOf(teamId)));
                 predicates.add(cb.equal(typePath, 3));
                 predicates.add(cb.or(cb.and(cb.equal(toIdPath, fromId), cb.equal(fromIdPath, toId)), cb.and(cb.equal(toIdPath, toId), cb.equal(fromIdPath, fromId))));
 

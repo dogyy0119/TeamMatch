@@ -492,15 +492,6 @@ public class LeagueServiceLmpl implements LeagueService {
         Long leagueId = leagueUpdateInfoDTO.getLeagueId();
         League league = leagueRepository.findLeagueById(leagueId);
 
-        if (!manageMemberId.equals(league.getCreateMemberId())){
-            log.error("updateLeagueInfo：" + "只有联盟创建者有权限");
-            return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
-        }
-
-        String[] Field = {"name", "descriptionInfo", "logoUrl"};  //更新 Field指定允许字段
-        JpaUtil.copyNotNullPropertiesAllow(leagueUpdateInfoDTO, league, Field);
-
-        leagueRepository.save(league);
 
         //创建队务
         String teamTaskContent;
@@ -520,6 +511,16 @@ public class LeagueServiceLmpl implements LeagueService {
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更新了联盟logo";
             createLeagueTeak(league.getId(), teamTaskContent);
         }
+
+        if (!manageMemberId.equals(league.getCreateMemberId())){
+            log.error("updateLeagueInfo：" + "只有联盟创建者有权限");
+            return CodeEnum.IS_LEAGUE_PERMISSION_ERROR;
+        }
+
+        String[] Field = {"name", "descriptionInfo", "logoUrl"};  //更新 Field指定允许字段
+        JpaUtil.copyNotNullPropertiesAllow(leagueUpdateInfoDTO, league, Field);
+
+        leagueRepository.save(league);
 
         return CodeEnum.IS_SUCCESS;
     }
