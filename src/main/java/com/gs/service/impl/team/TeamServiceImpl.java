@@ -65,11 +65,12 @@ public class TeamServiceImpl implements TeamService {
 
     /**
      * 添加队务
-     * @param id teamId
+     *
+     * @param id      teamId
      * @param content 队务内容
      * @return
      */
-    private void createTeamTeak(Long id, String content){
+    private void createTeamTeak(Long id, String content) {
         TeamTask teamTask = new TeamTask();
         teamTask.setTeamId(id);
         teamTask.setTeamTaskContent(content);
@@ -99,6 +100,7 @@ public class TeamServiceImpl implements TeamService {
     public Boolean existById(Long id) {
         return teamRepository.existsById(id);
     }
+
     /**
      * @param createMemberId 创建战队的用户ID
      * @param teamCreateDTO  team相关输入dto
@@ -172,7 +174,7 @@ public class TeamServiceImpl implements TeamService {
     /**
      * 加入战队
      *
-     * @param teamMemberDTO  成员相关信息DTO
+     * @param teamMemberDTO 成员相关信息DTO
      * @return 是否成功添加
      */
 
@@ -220,7 +222,7 @@ public class TeamServiceImpl implements TeamService {
      * 处理战队请求消息
      *
      * @param requestId 消息Id
-     * @param flg  是否同意
+     * @param flg       是否同意
      * @return 是否成功添加
      */
     @Override
@@ -228,7 +230,7 @@ public class TeamServiceImpl implements TeamService {
     public CodeEnum doTeamRequest(
             Long requestId,
             Integer flg) {
-        if (!teamRequestRepository.existsById(requestId)){
+        if (!teamRequestRepository.existsById(requestId)) {
             return CodeEnum.IS_REQUEST_NOT_EXIST;
         }
 
@@ -238,7 +240,7 @@ public class TeamServiceImpl implements TeamService {
 
 
         //选择拒绝后，直接生成队务，然后删除战队请求
-        if (flg == 0){
+        if (flg == 0) {
             //创建队务
             String teamTaskContent;
             teamTaskContent = "拒绝" + memberRepository.findMemberById(teamRequest.getFromId()).getName() + " 加入战队的申请";
@@ -331,7 +333,7 @@ public class TeamServiceImpl implements TeamService {
      * 处理成员请求消息
      *
      * @param requestId 消息Id
-     * @param flg  是否同意
+     * @param flg       是否同意
      * @return 是否成功添加
      */
     @Override
@@ -339,7 +341,7 @@ public class TeamServiceImpl implements TeamService {
     public CodeEnum doMemberRequest(
             Long requestId,
             Integer flg) {
-        if (!memberRequestRepository.existsById(requestId)){
+        if (!memberRequestRepository.existsById(requestId)) {
             return CodeEnum.IS_REQUEST_NOT_EXIST;
         }
 
@@ -348,7 +350,7 @@ public class TeamServiceImpl implements TeamService {
 
 
         //选择拒绝后，直接生成队务，然后删除战队请求
-        if (flg == 0){
+        if (flg == 0) {
             //创建队务
             String teamTaskContent;
             teamTaskContent = memberRepository.findMemberById(memberRequest.getToId()).getName() + " 拒绝了战队的邀请";
@@ -452,7 +454,7 @@ public class TeamServiceImpl implements TeamService {
     /**
      * 退出战队
      *
-     * @param teamMemberDTO  成员相关信息DTO
+     * @param teamMemberDTO 成员相关信息DTO
      * @return 是否成功删除
      */
     @Override
@@ -497,10 +499,11 @@ public class TeamServiceImpl implements TeamService {
 
     /**
      * 判断队员是否已经是某个战队的队长
+     *
      * @param memberId 队员id
      * @return 是否已经是某个战队的队长
      */
-    private Boolean isMemberAreadyLeader(Long memberId){
+    private Boolean isMemberAreadyLeader(Long memberId) {
         List<TeamMember> teamMembers = teamMemberRepository.findAll(new Specification<TeamMember>() {
             @Override
             public Predicate toPredicate(Root<TeamMember> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -517,14 +520,15 @@ public class TeamServiceImpl implements TeamService {
             }
         });
 
-        for (TeamMember teamMember : teamMembers){
-            if (teamMember.getJob() == MemberJobEnum.IS_TEAM_LEADER.getJob()){
+        for (TeamMember teamMember : teamMembers) {
+            if (teamMember.getJob() == MemberJobEnum.IS_TEAM_LEADER.getJob()) {
                 return true;
             }
         }
 
         return false;
     }
+
     /**
      * 转让队长
      *
@@ -561,7 +565,7 @@ public class TeamServiceImpl implements TeamService {
         }
 
         //判断待转让的队员是否已经是某一个战队的队长
-        if (isMemberAreadyLeader(teamMemberDTO.getMemberId())){
+        if (isMemberAreadyLeader(teamMemberDTO.getMemberId())) {
             log.error("transferTeamLeader：" + "该队长已经是某一个战队的队长");
             return CodeEnum.IS_ALEARDY_TEAM_LEADER;
         }
@@ -763,9 +767,9 @@ public class TeamServiceImpl implements TeamService {
         //创建队务
         String teamTaskContent;
 
-        if (teamMemberDTO.getSilentFlg() == 1){
+        if (teamMemberDTO.getSilentFlg() == 1) {
             teamTaskContent = memberRepository.findMemberById(teamMemberDTO.getMemberId()).getName() + " 被禁言";
-        }else{
+        } else {
             teamTaskContent = "解除了" + memberRepository.findMemberById(teamMemberDTO.getMemberId()).getName() + " 的禁言";
         }
 
@@ -806,7 +810,7 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamRepository.findTeamById(teamId);
 
-        if(team != null) {
+        if (team != null) {
             teamRepository.deleteTeamById(teamId);
         }
 //        teamRepository.delete(team);
@@ -834,7 +838,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public CodeEnum updateTeamInfo(
             Long manageMemberId,
-            TeamUpdateInfoDTO teamUpdateInfoDTO){
+            TeamUpdateInfoDTO teamUpdateInfoDTO) {
         Long teamId = teamUpdateInfoDTO.getTeamId();
 
         //校验该管理员是否在该战队中
@@ -855,25 +859,24 @@ public class TeamServiceImpl implements TeamService {
         //创建队务
         String teamTaskContent;
 
-        if (!teamUpdateInfoDTO.getName().isEmpty() && !team.getName().equals(teamUpdateInfoDTO.getName())){
+        if (!teamUpdateInfoDTO.getName().isEmpty() && !team.getName().equals(teamUpdateInfoDTO.getName())) {
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更改了战队名称";
             createTeamTeak(team.getId(), teamTaskContent);
         }
 
-        if (!teamUpdateInfoDTO.getDescriptionInfo().isEmpty() && !team.getDescriptionInfo().equals(teamUpdateInfoDTO.getDescriptionInfo())){
+        if (!teamUpdateInfoDTO.getDescriptionInfo().isEmpty() && !team.getDescriptionInfo().equals(teamUpdateInfoDTO.getDescriptionInfo())) {
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更改了战队简介";
             createTeamTeak(team.getId(), teamTaskContent);
         }
 
 
-        if (teamUpdateInfoDTO.getLogoUrl() != null && !teamUpdateInfoDTO.getLogoUrl().isEmpty() && !team.getLogoUrl().equals(teamUpdateInfoDTO.getLogoUrl())){
+        if (teamUpdateInfoDTO.getLogoUrl() != null && !teamUpdateInfoDTO.getLogoUrl().isEmpty() && !teamUpdateInfoDTO.getLogoUrl().equals(team.getLogoUrl())) {
             teamTaskContent = memberRepository.findMemberById(manageMemberId).getName() + " 更新了战队logo";
             createTeamTeak(team.getId(), teamTaskContent);
         }
 
-        String[] Field = {"name", "descriptionInfo", "logoId"};  //更新 Field指定允许字段
+        String[] Field = {"name", "descriptionInfo", "logoUrl"};  //更新 Field指定允许字段
         JpaUtil.copyNotNullPropertiesAllow(teamUpdateInfoDTO, team, Field);
-
 
 
         teamRepository.save(team);
@@ -987,8 +990,9 @@ public class TeamServiceImpl implements TeamService {
 
     /**
      * 根据关键字进行模糊查询
-     * @param key 关键字
-     * @param pageNum 当前页
+     *
+     * @param key      关键字
+     * @param pageNum  当前页
      * @param pageSize 页容量
      * @return 符合条件得Team List
      */
@@ -1025,7 +1029,7 @@ public class TeamServiceImpl implements TeamService {
         List<TeamVo> teamVoList = new ArrayList<>();
 
         for (Team entry : teamPage) {
-            if (null == findTeamMemberByTeamIdAndMemberId(entry.getId(), currentMemberId)){
+            if (null == findTeamMemberByTeamIdAndMemberId(entry.getId(), currentMemberId)) {
                 teamVoList.add(teamToVoConvert.toVo(entry));
             }
         }

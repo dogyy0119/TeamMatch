@@ -230,7 +230,12 @@ public class TeamManageController {
             @Validated @RequestBody TeamUpdateInfoDTO teamUpdateInfoDTO) {
         log.info("updateTeamInfo：" + "manageMemberId = " + manageMemberId + "teamUpdateInfoDTO = " + teamUpdateInfoDTO.toString());
 
-        return R.result(teamService.updateTeamInfo(manageMemberId, teamUpdateInfoDTO));
+        CodeEnum result1 = teamService.updateTeamInfo(manageMemberId, teamUpdateInfoDTO);
+
+        if (result1 == CodeEnum.IS_SUCCESS){
+            return R.success(teamService.getTeamByTeamId(teamUpdateInfoDTO.getTeamId()));
+        }
+        return R.result(result1);
     }
 
     @Deprecated
