@@ -45,11 +45,6 @@ public class TeamMessageServer {
     private MessageService messageService;
     private MemberService memberService;
 
-    public void initServiceImp() {
-        this.messageService = SpringUtil.getBean(MessageService.class);
-        this.memberService = SpringUtil.getBean(MemberService.class);
-    }
-
     /**
      * 将每个客户端对应的MyWebSocket对象按照team进行分组
      */
@@ -71,15 +66,17 @@ public class TeamMessageServer {
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    @Autowired
     private TeamMemberRepository teamMemberRepository;
-
-    @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
     private TeamRepository teamRepository;
 
+    public void initServiceImp() {
+        this.messageService = SpringUtil.getBean(MessageService.class);
+        this.memberService = SpringUtil.getBean(MemberService.class);
+        this.teamMemberRepository = SpringUtil.getBean(TeamMemberRepository.class);
+        this.memberRepository = SpringUtil.getBean(MemberRepository.class);
+        this.teamRepository = SpringUtil.getBean(TeamRepository.class);
+    }
     /**
      * 连接建立成功调用的方法
      */
