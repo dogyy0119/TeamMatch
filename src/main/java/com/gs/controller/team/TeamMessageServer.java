@@ -44,11 +44,8 @@ public class TeamMessageServer {
 
     private MessageService messageService;
     private MemberService memberService;
-
     private  TeamMemberRepository teamMemberRepository;
-
     private  MemberRepository memberRepository;
-
     private TeamRepository teamRepository;
 
     public void initServiceImp() {
