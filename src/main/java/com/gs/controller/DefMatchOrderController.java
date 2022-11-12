@@ -89,12 +89,7 @@ public class DefMatchOrderController {
             if(member == null) return R.error("MemberId 有问题 ！");
 
             Team team = teamRepository.findTeamById(defMatchOrderDTO.getOrderId());
-
             TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member,team);
-
-//            System.out.println(" teamMember:" + teamMember.getTeamMemberId() );
-//            System.out.println(" teamMember:" + teamMember.getTeam().getTeamId() );
-//            System.out.println(" teamMember:" + teamMember.getJob() );
 
             if( teamMember.getJob()  == 3 ) {
                 return R.error("您还不是队长或者副队长 ！");
@@ -114,16 +109,26 @@ public class DefMatchOrderController {
             defMatchOrderDTO.setStatus(0);
         }
 
-//        System.out.println("defMatchOrderDTO id:" + defMatchOrderDTO.getId());
-//        System.out.println("defMatchOrderDTO getOrderId:" + defMatchOrderDTO.getOrderId());
-
-
         DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManageConvert.toEntity(defMatchManageDTO), defMatchOrderDTO.getOrderId());
 
         if(defMatchOrder != null)  {
-//            System.out.println("defMatchOrder id:" + defMatchOrder.getId());
-//            System.out.println("defMatchOrder getOrderId:" + defMatchOrder.getOrderId());
             return R.error("该比赛已经申请过了");
+        }
+
+        DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchManageDTO.getMatchId());
+        if(!defMatch.getGameBill().toString().equals("0")) {
+            float fee = 0;
+            if (defMatchOrderDTO.getMode() == 1) {
+                fee = PayCenterUtil.QueryTeamFunds(defMatchOrderDTO.getOrderId().toString());
+                if(fee < defMatch.getGameBill()){
+                    return R.error("战队账户余额不足");
+                }
+            } else {
+                fee = PayCenterUtil.QueryMemberFunds(memberId.toString());
+                if(fee < defMatch.getGameBill()){
+                    return R.error("个人账户余额不足");
+                }
+            }
         }
 
         DefMatchOrderDTO dto = defMatchOrderService.create(defMatchOrderDTO);
