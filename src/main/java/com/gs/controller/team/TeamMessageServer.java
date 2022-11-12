@@ -45,9 +45,18 @@ public class TeamMessageServer {
     private MessageService messageService;
     private MemberService memberService;
 
+    private  TeamMemberRepository teamMemberRepository;
+
+    private  MemberRepository memberRepository;
+
+    private TeamRepository teamRepository;
+
     public void initServiceImp() {
         this.messageService = SpringUtil.getBean(MessageService.class);
         this.memberService = SpringUtil.getBean(MemberService.class);
+        this.teamMemberRepository = SpringUtil.getBean(TeamMemberRepository.class);
+        this.memberRepository = SpringUtil.getBean(MemberRepository.class);
+        this.teamRepository = SpringUtil.getBean(TeamRepository.class);
     }
 
     /**
@@ -70,15 +79,6 @@ public class TeamMessageServer {
     private Long teamId = null;
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private TeamMemberRepository teamMemberRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private TeamRepository teamRepository;
 
     /**
      * 连接建立成功调用的方法
@@ -176,15 +176,31 @@ public class TeamMessageServer {
         Member member = memberRepository.findMemberById(userId);
         Team team = teamRepository.findTeamById(teamId);
 
-        if(member ==null || team == null) {
+        if(member == null || team == null) {
+            log.info("member == null || team == null");
             return;
         }
         TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member,team);
         if( teamMember == null) {
+            log.info("teamMember == null");
             return;
         }
 
         if(teamMember.getSilentFlg() == 1) {
+            MessageVo messageVo = new MessageVo();
+            messageVo.setTeamId(teamId);
+            messageVo.setFromId(userId);
+            messageVo.setToId(userId);
+            messageVo.setType(5);
+            messageVo.setContent("您已经被管理员禁言了");
+
+            try {
+                sendMessage(messageVo);
+            } catch (IOException e) {
+                log.info(" onMessage ： 战队\" + teamId + \"成员\"" + ", 发送异常");
+                throw new RuntimeException(e);
+            }
+
             return;
         }
 

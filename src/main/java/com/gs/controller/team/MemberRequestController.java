@@ -2,15 +2,21 @@ package com.gs.controller.team;
 
 import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.team.MemberRequestDTO;
+import com.gs.model.entity.jpa.db1.team.Member;
+import com.gs.model.entity.jpa.db1.team.TeamMember;
+import com.gs.repository.jpa.team.MemberRepository;
+import com.gs.repository.jpa.team.TeamMemberRepository;
 import com.gs.service.intf.team.MemberRequestService;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @Api(tags = "成员请求接口")
@@ -23,6 +29,12 @@ public class MemberRequestController {
 
     private final MemberRequestService memberRequestService;
 
+    @Autowired
+    private TeamMemberRepository teamMemberRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
     @ApiOperation(value = "发送成员请求")
     @RequestMapping(value = "/sendMemberRequest", method = RequestMethod.POST)
     public R sendMemberRequest(@Validated @RequestBody MemberRequestDTO memberRequestDTO) {
@@ -33,6 +45,14 @@ public class MemberRequestController {
             log.error("sendMemberRequest：" + "不能邀请自己加入战队");
             return R.error(CodeEnum.IS_REQUEST_INVITATION_OWN.getCode(), "不能邀请自己加入战队");
         }
+
+        Member member = memberRepository.findMemberById(memberRequestDTO.getToId());
+        List<TeamMember> teamMemberList = teamMemberRepository.findTeamMembersByMember(member);
+        if( teamMemberList.size() > 0 ) {
+            log.error("sendMemberRequest：" + "对方已经加入战队");
+            return R.error(CodeEnum.IS_REQUEST_INVITATION_OWN.getCode(), "对方已经加入战队");
+        }
+
         return R.result(memberRequestService.sendMemberRequest(memberRequestDTO));
     }
 
