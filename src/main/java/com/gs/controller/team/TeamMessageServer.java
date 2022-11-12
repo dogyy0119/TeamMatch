@@ -3,11 +3,18 @@ package com.gs.controller.team;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gs.model.dto.team.MessageDto;
+import com.gs.model.entity.jpa.db1.team.Member;
+import com.gs.model.entity.jpa.db1.team.Team;
+import com.gs.model.entity.jpa.db1.team.TeamMember;
 import com.gs.model.vo.team.MessageVo;
+import com.gs.repository.jpa.team.MemberRepository;
+import com.gs.repository.jpa.team.TeamMemberRepository;
+import com.gs.repository.jpa.team.TeamRepository;
 import com.gs.service.intf.team.MemberService;
 import com.gs.service.intf.team.MessageService;
 import com.gs.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -63,6 +70,15 @@ public class TeamMessageServer {
     private Long teamId = null;
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @Autowired
+    private TeamMemberRepository teamMemberRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
 
     /**
      * 连接建立成功调用的方法
@@ -156,6 +172,22 @@ public class TeamMessageServer {
     @OnMessage
     public void onMessage(String message) {
         log.info("onMessage ： 战队" + teamId + "成员" + userId + ",报文:" + message);
+
+        Member member = memberRepository.findMemberById(userId);
+        Team team = teamRepository.findTeamById(teamId);
+
+        if(member ==null || team == null) {
+            return;
+        }
+        TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member,team);
+        if( teamMember == null) {
+            return;
+        }
+
+        if(teamMember.getSilentFlg() == 1) {
+            return;
+        }
+
         //可以群发消息
         //消息保存到数据库、redis
         if (message != null && !message.isEmpty()) {
