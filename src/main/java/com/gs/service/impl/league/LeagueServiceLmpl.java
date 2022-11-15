@@ -81,13 +81,26 @@ public class LeagueServiceLmpl implements LeagueService {
     }
 
     /**
-     * 根据创建者的成员ID，查看是否已经创建过联盟
+     * 根据id。查看是否已经在联盟中
      *
-     * @param createMemberId 创建者的成员ID
+     * @param memberId 创建者的成员ID
      * @return 是否创建过联盟
      */
-    public Boolean existsByCreateMemberId(Long createMemberId) {
-        return leagueRepository.existsByCreateMemberId(createMemberId);
+    public Boolean isAleadyInLeague(Long memberId) {
+        //先检查是否已经在联盟中
+        List<League> leagueLst = leagueRepository.findAll();
+        for (League league : leagueLst){
+            for (LeagueTeam leagueTeam : league.getLeagueTeams()){
+                Team team = teamRepository.findTeamById(leagueTeam.getTeamId());
+                for (TeamMember teamMember : team.getTeamMembers()){
+                    if (Objects.equals(teamMember.getMember().getId(), memberId)){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -234,6 +247,20 @@ public class LeagueServiceLmpl implements LeagueService {
             return CodeEnum.IS_SUCCESS;
         }
 
+        if (leagueTeamRepository.existsByTeamId(leagueTeamRequest.getToTeamId())){
+
+            //创建队务
+            String teamTaskContent;
+            teamTaskContent = teamRepository.findTeamById(leagueTeamRequest.getToTeamId()).getName() + " 已经加入其他联盟";
+
+            createLeagueTeak(leagueId, teamTaskContent);
+
+            //处理完毕后更新战队请求的状态
+            leagueTeamRequest.setStatus(2);
+            leagueTeamRequestRepository.save(leagueTeamRequest);
+            return CodeEnum.IS_ALREADY_IN_LEAGUE;
+        }
+
         //添加战队之前更新战队请求的状态
         leagueTeamRequest.setStatus(2);
         leagueTeamRequestRepository.save(leagueTeamRequest);
@@ -324,6 +351,19 @@ public class LeagueServiceLmpl implements LeagueService {
             return CodeEnum.IS_SUCCESS;
         }
 
+        if (isAleadyInLeague(leagueRequest.getFromMemberId())){
+
+            //创建队务
+            String teamTaskContent;
+            teamTaskContent = teamRepository.findTeamById(leagueRequest.getFromTeamId()).getName() + " 已经加入其他联盟";
+
+            createLeagueTeak(leagueId, teamTaskContent);
+
+            //处理完毕后更新战队请求的状态
+            leagueRequest.setStatus(2);
+            leagueRequestRepository.save(leagueRequest);
+            return CodeEnum.IS_ALREADY_IN_LEAGUE;
+        }
 
         //添加成员之前更新战队请求的状态
         leagueRequest.setStatus(2);
@@ -604,6 +644,25 @@ public class LeagueServiceLmpl implements LeagueService {
         }
         return leagueVoConvert.toVo(leagueLst);
     }
-    
 
+    /**
+     *
+     * @param createMemberId  创建者的memberId
+     * @return true：可以创建；false不可以创建
+     */
+    public Boolean isHavePermission(Long createMemberId){
+        Member member = memberRepository.findMemberById(createMemberId);
+        List<TeamMember> teamMemberList = teamMemberRepository.findTeamMembersByMember(member);
+        if (teamMemberList.isEmpty()){
+            return true;
+        }
+
+        for (TeamMember teamMember : teamMemberList) {
+            if (teamMember.getJob() == MemberJobEnum.IS_TEAM_LEADER.getJob()){
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

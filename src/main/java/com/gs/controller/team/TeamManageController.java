@@ -2,7 +2,6 @@ package com.gs.controller.team;
 
 import cn.hutool.json.JSONObject;
 import com.gs.constant.enums.CodeEnum;
-import com.gs.model.dto.team.MemberRequestDTO;
 import com.gs.model.dto.team.TeamCreateDTO;
 import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
@@ -16,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -72,9 +70,9 @@ public class TeamManageController {
             return R.error(CodeEnum.IS_MEMBER_NOT_EXIST.getCode(), "创建战队失败:该用户不存在");
         }
 
-        if (teamService.existsByCreateMemberId(createMemberId)) {
+        if (teamService.isAleadyInTeam(createMemberId)) {
             log.error("createTeam：" + "创建战队失败:该用户已经创建过战队:" + createMemberId);
-            return R.error(CodeEnum.IS_ALREADY_CREATE_TEAM.getCode(), "创建战队失败:该用户已经创建过战队");
+            return R.error(CodeEnum.IS_ALEARY_IN_TEAM.getCode(), "您已经加入过战队");
         }
 
         return R.success(teamService.createTeam(createMemberId, teamCreateDTO));
@@ -181,7 +179,6 @@ public class TeamManageController {
 
         log.info("setSecondTeamLeader：" + "manageMemberId = " + manageMemberId + "teamMemberDTO = " + teamMemberDTO.toString());
         return R.result(teamService.setSecondTeamLeader(manageMemberId, teamMemberDTO));
-
     }
 
     @ApiOperation(value = "解除副队长")

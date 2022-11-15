@@ -50,7 +50,7 @@ public class MemberRequestController {
         List<TeamMember> teamMemberList = teamMemberRepository.findTeamMembersByMember(member);
         if( teamMemberList.size() > 0 ) {
             log.error("sendMemberRequest：" + "对方已经加入战队");
-            return R.error(CodeEnum.IS_REQUEST_INVITATION_OWN.getCode(), "对方已经加入战队");
+            return R.error(CodeEnum.IS_ALEARY_IN_TEAM.getCode(), "对方已经加入战队");
         }
 
         return R.result(memberRequestService.sendMemberRequest(memberRequestDTO));

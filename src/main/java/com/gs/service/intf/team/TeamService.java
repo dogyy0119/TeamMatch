@@ -25,7 +25,7 @@ public interface TeamService {
      * @param createMemberId 创建者的成员ID
      * @return 是否创建过战队
      */
-    Boolean existsByCreateMemberId(Long createMemberId);
+    Boolean isAleadyInTeam(Long createMemberId);
 
     /**
      * 根据ID，判断是否存在对应的战队

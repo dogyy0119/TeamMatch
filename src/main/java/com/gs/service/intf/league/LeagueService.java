@@ -23,10 +23,10 @@ public interface LeagueService {
     /**
      * 根据创建者的成员ID，查看是否已经创建过联盟
      *
-     * @param createMemberId 创建者的成员ID
+     * @param memberId 创建者的成员ID
      * @return 是否创建过联盟
      */
-    Boolean existsByCreateMemberId(Long createMemberId);
+    Boolean isAleadyInLeague(Long memberId);
 
     /**
      * @param leagueCreateDTO  联盟相关输入dto
@@ -124,5 +124,10 @@ public interface LeagueService {
 
     List<LeagueVo> getLeaguesByMember(Long teamId, Integer pageNum, Integer pageSize);
 
-
+    /**
+     *
+     * @param createMemberId  创建者的memberId
+     * @return true：可以创建；false不可以创建
+     */
+    Boolean isHavePermission(Long createMemberId);
 }

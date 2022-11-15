@@ -2,6 +2,10 @@ package com.gs.controller.team;
 
 import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.team.TeamRequestDTO;
+import com.gs.model.entity.jpa.db1.team.Member;
+import com.gs.model.entity.jpa.db1.team.TeamMember;
+import com.gs.repository.jpa.team.MemberRepository;
+import com.gs.repository.jpa.team.TeamMemberRepository;
 import com.gs.service.intf.team.TeamRequestService;
 import com.gs.service.intf.team.TeamService;
 import com.gs.utils.R;
@@ -9,8 +13,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Api(tags = "战队请求接口")
 @RestController
@@ -23,6 +30,12 @@ public class TeamRequestController {
     private final TeamRequestService teamRequestService;
     private final TeamService teamService;
 
+    @Autowired
+    private TeamMemberRepository teamMemberRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
     @ApiOperation(value = "发送战队请求")
     @RequestMapping(value = "/sendTeamRequest", method = RequestMethod.POST)
     public R sendTeamRequest(@Validated @RequestBody TeamRequestDTO teamRequestDTO) {
@@ -33,6 +46,14 @@ public class TeamRequestController {
             log.error("sendTeamRequest：" + "您已经在该战队");
             return R.error(CodeEnum.IS_MEMBER_ALREADY_IN_TEAM.getCode(), "您已经在该战队");
         }
+
+        Member member = memberRepository.findMemberById(teamRequestDTO.getFromId());
+        List<TeamMember> teamMemberList = teamMemberRepository.findTeamMembersByMember(member);
+        if( teamMemberList.size() > 0 ) {
+            log.error("sendTeamRequest：" + "您已经加入过战队");
+            return R.error(CodeEnum.IS_ALEARY_IN_TEAM.getCode(), "您已经加入过战队");
+        }
+
         return R.result(teamRequestService.sendTeamRequest(teamRequestDTO));
     }
 

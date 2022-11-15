@@ -3,17 +3,11 @@ package com.gs.controller.league;
 import com.gs.constant.enums.CodeEnum;
 import com.gs.constant.enums.MemberJobEnum;
 import com.gs.model.dto.league.LeagueRequestDTO;
-import com.gs.model.dto.team.TeamRequestDTO;
-import com.gs.model.entity.jpa.db1.league.LeagueRequest;
-import com.gs.model.entity.jpa.db1.league.LeagueTeam;
-import com.gs.repository.jpa.league.LeagueRepository;
 import com.gs.service.intf.league.LeagueRequestService;
 import com.gs.service.intf.league.LeagueService;
 import com.gs.service.intf.league.LeagueTeamService;
 import com.gs.service.intf.team.MemberService;
 import com.gs.service.intf.team.TeamMemberService;
-import com.gs.service.intf.team.TeamRequestService;
-import com.gs.service.intf.team.TeamService;
 import com.gs.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -57,7 +51,11 @@ public class LeagueRequestController {
             return R.result(CodeEnum.IS_TEAM_LEAGUE_PERMISSION);
         }
 
-        if (leagueTeamService.existsByLeagueIdAndTeamId(leagueRequestDTO.getLeagueId(), leagueRequestDTO.getFromTeamId())){
+        if (leagueService.isAleadyInLeague(leagueRequestDTO.getFromMemberId())){
+            return R.result(CodeEnum.IS_ALREADY_IN_LEAGUE);
+        }
+
+        if (leagueTeamService.existsByTeamId(leagueRequestDTO.getFromTeamId())){
             log.error("sendLeagueRequest：" + "该战队已经在该联盟中");
             return R.error(CodeEnum.IS_TEAM_ALLEARY_IN_LEAGUE.getCode(), "该战队已经在该联盟中");
         }

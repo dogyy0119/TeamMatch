@@ -12,11 +12,11 @@ import com.gs.model.vo.team.TeamVo;
 import com.gs.repository.jpa.team.*;
 import com.gs.service.intf.team.TeamService;
 import com.gs.utils.JpaUtil;
+import com.gs.utils.R;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -82,12 +82,14 @@ public class TeamServiceImpl implements TeamService {
     /**
      * 根据创建者的成员ID，查看是否已经创建过战队
      *
-     * @param createMemberId 创建者的成员ID
+     * @param memberId 创建者的成员ID
      * @return 是否创建过战队
      */
     @Override
-    public Boolean existsByCreateMemberId(Long createMemberId) {
-        return teamRepository.existsByCreateMemberId(createMemberId);
+    public Boolean isAleadyInTeam(Long memberId) {
+        Member member = memberRepository.findMemberById(memberId);
+        List<TeamMember> teamMemberList = teamMemberRepository.findTeamMembersByMember(member);
+        return teamMemberList.size() > 0;
     }
 
     /**
@@ -238,7 +240,6 @@ public class TeamServiceImpl implements TeamService {
         Long teamId = teamRequest.getTeamId();
         Integer type = teamRequest.getType();
 
-
         //选择拒绝后，直接生成队务，然后删除战队请求
         if (flg == 0) {
             //创建队务
@@ -254,6 +255,20 @@ public class TeamServiceImpl implements TeamService {
             return CodeEnum.IS_SUCCESS;
         }
 
+        //申请加入的队员目前已经加入其他战队
+        if (isAleadyInTeam(teamRequest.getFromId())){
+            //创建队务
+            String teamTaskContent;
+            teamTaskContent = memberRepository.findMemberById(teamRequest.getFromId()).getName() + " 已经加入其它战队";
+
+            createTeamTeak(teamId, teamTaskContent);
+
+            //处理完毕后更新战队请求的状态
+            teamRequest.setStatus(2);
+            teamRequestRepository.save(teamRequest);
+
+            return CodeEnum.IS_ALEARY_IN_TEAM;
+        }
 
         //添加成员之前更新战队请求的状态
         teamRequest.setStatus(2);
@@ -364,7 +379,20 @@ public class TeamServiceImpl implements TeamService {
             return CodeEnum.IS_SUCCESS;
         }
 
+        //申请加入的队员目前已经加入其他战队
+        if (isAleadyInTeam(memberRequest.getToId())){
+            //创建队务
+            String teamTaskContent;
+            teamTaskContent = memberRepository.findMemberById(memberRequest.getToId()).getName() + " 已经加入其它战队";
 
+            createTeamTeak(teamId, teamTaskContent);
+
+            //处理完毕后更新战队请求的状态
+            memberRequest.setStatus(2);
+            memberRequestRepository.save(memberRequest);
+
+            return CodeEnum.IS_ALEARY_IN_TEAM;
+        }
         //添加成员之前更新战队请求的状态
         memberRequest.setStatus(2);
         memberRequestRepository.save(memberRequest);
@@ -623,6 +651,11 @@ public class TeamServiceImpl implements TeamService {
             return CodeEnum.IS_TEAM_UPDATE_PERMISSION2;
         }
 
+        //队长设置自己为副队长的情况
+        if (manageMemberId.equals(teamMemberDTO.getMemberId())){
+            return CodeEnum.IS_SET_SOCOND_LEADER_ERROR;
+        }
+
         TeamMember teamMember = findTeamMemberByTeamIdAndMemberId(teamId, teamMemberDTO.getMemberId());
         //判断战队中是否存在待转让的队员
         if (null == teamMember) {
@@ -751,6 +784,17 @@ public class TeamServiceImpl implements TeamService {
         if (null == teamMember) {
             log.error("changeSilentFlg：" + "该玩家不在该战队中");
             return CodeEnum.IS_MEMBER_NOT_IN_TEAM;
+        }
+
+        //队长和副队长禁言自己
+        if (manageMemberId.equals(teamMemberDTO.getMemberId())){
+            return CodeEnum.IS_SILENT_ERROR;
+        }
+
+        //副队长禁言队长
+        if (Objects.equals(MemberJobEnum.IS_TEAM_SECOND_LEADER.getJob(), manageTeamMember.getJob())
+        && Objects.equals(MemberJobEnum.IS_TEAM_LEADER.getJob(), teamMember.getJob())){
+            return CodeEnum.IS_SILENT_ERROR;
         }
 
         //禁言或解除禁言
@@ -1029,9 +1073,7 @@ public class TeamServiceImpl implements TeamService {
         List<TeamVo> teamVoList = new ArrayList<>();
 
         for (Team entry : teamPage) {
-            if (null == findTeamMemberByTeamIdAndMemberId(entry.getId(), currentMemberId)) {
-                teamVoList.add(teamToVoConvert.toVo(entry));
-            }
+            teamVoList.add(teamToVoConvert.toVo(entry));
         }
 
         return teamVoList;

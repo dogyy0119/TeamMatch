@@ -32,8 +32,8 @@ public class LeagueMatchWholeController {
     @RequestMapping(value = "/createLeague111", method = RequestMethod.POST)
     public R createLeague(
             @Validated @RequestBody LeagueCreateDTO leagueCreateDTO){
-        if (leagueService.existsByCreateMemberId(leagueCreateDTO.getCreateMemberId())){
-            return R.error(CodeEnum.IS_ALREADY_CREATE_LEAGUE.getCode(), "创建战队失败:该用户已经创建过联盟");
+        if (leagueService.isAleadyInLeague(leagueCreateDTO.getCreateMemberId())){
+            return R.error(CodeEnum.IS_ALREADY_IN_LEAGUE.getCode(), "创建战队失败:该用户已经创建过联盟");
         }
         return R.success(leagueService.createLeague(leagueCreateDTO));
     }

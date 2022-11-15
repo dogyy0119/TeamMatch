@@ -3,16 +3,8 @@ package com.gs.controller.league;
 import com.gs.constant.enums.CodeEnum;
 import com.gs.constant.enums.MemberJobEnum;
 import com.gs.model.dto.league.LeagueTeamRequestDTO;
-import com.gs.model.dto.team.MemberRequestDTO;
-import com.gs.model.entity.jpa.db1.team.Member;
-import com.gs.model.entity.jpa.db1.team.Team;
-import com.gs.model.entity.jpa.db1.team.TeamMember;
-import com.gs.model.vo.team.MemberVo;
-import com.gs.model.vo.team.TeamMemberVo;
-import com.gs.model.vo.team.TeamVo;
 import com.gs.service.intf.league.LeagueTeamRequestService;
 import com.gs.service.intf.league.LeagueTeamService;
-import com.gs.service.intf.team.MemberRequestService;
 import com.gs.service.intf.team.MemberService;
 import com.gs.service.intf.team.TeamMemberService;
 import com.gs.service.intf.team.TeamService;
@@ -48,9 +40,9 @@ public class LeagueTeamRequestController {
     public R sendLeagueTeamRequest(@Validated @RequestBody LeagueTeamRequestDTO leagueTeamRequestDTO) {
         log.info("sendLeagueTeamRequest：" + "leagueTeamRequestDTO = " + leagueTeamRequestDTO.toString());
 
-        if (leagueTeamService.existsByLeagueIdAndTeamId(leagueTeamRequestDTO.getLeagueId(), leagueTeamRequestDTO.getToTeamId())){
+        if (leagueTeamService.existsByTeamId(leagueTeamRequestDTO.getToTeamId())){
             log.error("sendLeagueTeamRequest：" + "该战队已经在该联盟中");
-            return R.error(CodeEnum.IS_TEAM_ALLEARY_IN_LEAGUE.getCode(), "该战队已经在该联盟中");
+            return R.error(CodeEnum.IS_TEAM_ALLEARY_IN_LEAGUE.getCode(), "战队已经在联盟里");
         }
 
         return R.result(leagueTeamRequestService.sendLeagueTeamRequest(leagueTeamRequestDTO));

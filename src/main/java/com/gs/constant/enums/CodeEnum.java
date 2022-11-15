@@ -106,54 +106,74 @@ public enum CodeEnum {
     /**
      * 自己不能邀请自己
      */
-    IS_REQUEST_INVITATION_OWN("10022", "自己不能邀请自己"),
+    IS_REQUEST_INVITATION_OWN("10023", "自己不能邀请自己"),
+    /**
+     * 已经加入战队
+     */
+    IS_ALEARY_IN_TEAM("10024", "已经加入战队"),
 
     /**
-     * 该玩家已经创建过联盟
+     * 该玩家已经加入联盟
      */
-    IS_ALREADY_CREATE_LEAGUE("10023", "该玩家已经创建过联盟"),
+    IS_ALREADY_IN_LEAGUE("10025", "该玩家已经加入联盟"),
     /**
      * 只有队长和副队长有权限查看联盟
      */
-    IS_TEAM_LEAGUE_PERMISSION("10024", "只有队长和副队长有权限查看联盟"),
+    IS_TEAM_LEAGUE_PERMISSION("10026", "只有队长和副队长有权限查看联盟"),
 
     /**
      * 联盟不存在
      */
-    IS_LEAGUE_NOT_EXIST("10025", "联盟不存在"),
+    IS_LEAGUE_NOT_EXIST("10027", "联盟不存在"),
 
     /**
      * 只有联盟创建者有权限
      */
-    IS_LEAGUE_PERMISSION_ERROR("10026", "只有联盟创建者有权限"),
+    IS_LEAGUE_PERMISSION_ERROR("10028", "只有联盟创建者有权限"),
 
     /**
      * 战队已经在联盟里
      */
-    IS_TEAM_ALLEARY_IN_LEAGUE("10027", "战队已经在联盟里"),
+    IS_TEAM_ALLEARY_IN_LEAGUE("10029", "战队已经在联盟里"),
     /**
      * 战队不在联盟里
      */
-    IS_TEAM_NOT_IN_LEAGUE("10028", "战队不在联盟里"),
+    IS_TEAM_NOT_IN_LEAGUE("10030", "战队不在联盟里"),
     /**
      * 联盟请求不存在
      */
-    IS_LEAGUE_REQUEST_NOT_EXIST("10029", "联盟请求不存在"),
+    IS_LEAGUE_REQUEST_NOT_EXIST("10031", "联盟请求不存在"),
 
     /**
      * 联盟战队请求不存在
      */
-    IS_LEAGUE_TEAM_REQUEST_NOT_EXIST("10030", "联盟战队请求不存在"),
+    IS_LEAGUE_TEAM_REQUEST_NOT_EXIST("10032", "联盟战队请求不存在"),
 
     /**
      * 联盟战队请求错误
      */
-    IS_LEAGUE_TEAM_REQUEST_ERROR("10031", "联盟战队请求错误"),
+    IS_LEAGUE_TEAM_REQUEST_ERROR("10033", "联盟战队请求错误"),
 
     /**
      * 不存在该联盟快递信息
      */
-    IS_LEAGUE_TASK_NOT_EXIST("10032", "不存在该联盟快递信息"),
+    IS_LEAGUE_TASK_NOT_EXIST("10034", "不存在该联盟快递信息"),
+
+    /**
+     * 队长不能设置自己为副队长
+     */
+    IS_SET_SOCOND_LEADER_ERROR("10035", "队长不能设置自己为副队长"),
+
+    /**
+     * 不能禁言自己或队长
+     */
+    IS_SILENT_ERROR("10036", "不能禁言自己或队长"),
+
+    /**
+     * 只有队长可以创建联盟
+     */
+    IS_CREATE_LEAGUE_ERROR("10037", "只有队长可以创建联盟"),
+
     /**
      * 系统异常
      */
