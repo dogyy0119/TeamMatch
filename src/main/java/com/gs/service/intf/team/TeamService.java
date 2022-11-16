@@ -147,6 +147,9 @@ public interface TeamService {
             Long manageMemberId,
             TeamMemberDTO teamMemberDTO);
 
+    Integer getSilentFlg(
+            Long teamId,
+            Long memberId);
     /**
      * 解散战队
      *

@@ -202,6 +202,30 @@ public class TeamManageController {
 
     }
 
+    @ApiOperation(value = "获取禁言标志")
+    @RequestMapping(value = "/getSilentFlg", method = RequestMethod.GET)
+    public R getSilentFlg(
+            @RequestParam Long teamId,
+            @RequestParam Long memberId) {
+        log.info("getSilentFlg：" + "teamId = " + teamId + "memberId = " + memberId);
+
+        if (!memberService.existsById(memberId)) {
+            log.error("getSilentFlg：" + "获取禁言标志:该用户不存在:" + memberId);
+            return R.error(CodeEnum.IS_MEMBER_NOT_EXIST.getCode(), "该用户不存在");
+        }
+
+        if (!teamService.existById(teamId)){
+            log.error("getSilentFlg：" + "获取禁言标志:该战队不存在" + teamId);
+            return R.error(CodeEnum.IS_TEAM_NOT_EXIST.getCode(), "该战队不存在");
+        }
+
+        if (null == teamService.findTeamMemberByTeamIdAndMemberId(teamId, memberId)){
+            return R.error(CodeEnum.IS_MEMBER_NOT_IN_TEAM.getCode(), "该玩家不在该战队中");
+        }
+
+        return R.success(teamService.getSilentFlg(teamId, memberId));
+
+    }
     @ApiOperation(value = "解散战队")
     @RequestMapping(value = "/releaseTeam", method = RequestMethod.GET)
     public R releaseTeam(

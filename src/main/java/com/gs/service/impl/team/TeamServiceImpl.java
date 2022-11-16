@@ -822,6 +822,16 @@ public class TeamServiceImpl implements TeamService {
         return CodeEnum.IS_SUCCESS;
     }
 
+    public Integer getSilentFlg(
+            Long teamId,
+            Long memberId){
+        Team team = teamRepository.findTeamById(teamId);
+        Member member = memberRepository.findMemberById(memberId);
+
+        TeamMember teamMember = teamMemberRepository.findTeamMemberByMemberAndTeam(member, team);
+
+        return teamMember.getSilentFlg();
+    }
     /**
      * 解散战队
      *
