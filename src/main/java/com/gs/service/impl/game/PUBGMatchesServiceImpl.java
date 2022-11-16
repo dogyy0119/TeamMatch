@@ -23,6 +23,7 @@ import com.gs.scheduled.ScheduledTask;
 import com.gs.service.intf.def.DefMatchService;
 import com.gs.service.intf.game.PUBGMatchesService;
 import com.gs.utils.HttpUtils;
+import com.gs.utils.ScoreUtils;
 import org.bouncycastle.math.ec.ScaleYNegateXPointMap;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +100,15 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     @Override
     public PUBGMatchesDTO create(String pubgMatchesId, Long defMatchId) {
 
-        perseGameData(pubgMatchesId, defMatchId);
+        List<PUBGMatches> pubgMatchesList = findPUBGMatchesByDefMatchId(defMatchId);
+        logger.info("pubgMatchesList.size ： {}", pubgMatchesList.size());
+
+        DefMatch defMatch = defMatchRepository.findDefMatchById(defMatchId);
+
+        getPUBGMatches(pubgMatchesId, defMatchId, pubgMatchesList.size() + 1, ScoreUtils.perseRank(defMatch.getGameRankItems()), ScoreUtils.perseKill(defMatch.getGameKillItems()));
+
+
+        //perseGameData(pubgMatchesId, defMatchId);
         return null;
     }
 
@@ -345,7 +354,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     @Override
     public void getPUBGMatches(String pubgMatchesId, Long defMatchId, Integer defMatchIndex, Map<Integer, Integer> rank, Integer killScore) {
         Map<String, String> headerMap = new HashMap<>();
-        headerMap.put("Authorization", pubgConfig.getHead_token());
+//        headerMap.put("Authorization", pubgConfig.getHead_token());
         headerMap.put("Accept", pubgConfig.getHead_formate());
 
         PUBGMatches matches = pubgMatchesRepository.findPUBGMatchesByPubgMatchesId(pubgMatchesId);
@@ -362,6 +371,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
         JSONObject json = new JSONObject(result);
         JSONObject data = json.getJSONObject("data");
+        logger.info(json.toString());
         PUBGMatches pubgMatches = new PUBGMatches();
         pubgMatches.setPubgMatchesId(pubgMatchesId);
         pubgMatches.setDefMatchId(defMatchId);
@@ -369,7 +379,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
         pubgMatches.setDefMatchIndex(defMatchIndex);
         JSONObject attributes = data.getJSONObject("attributes");
 
-//        System.out.println("gameMode: " + attributes.get("gameMode").toString());
+        System.out.println("gameMode: " + attributes.get("gameMode").toString());
         pubgMatches.setType(attributes.get("gameMode").toString());
 
         JSONObject relationships = data.getJSONObject("relationships");
@@ -428,8 +438,8 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                             // 遍历 jsonarray 数组，把每一个对象转成 json 对象
                             JSONObject job = participants_data.getJSONObject(j);
 
-//                            System.out.println(job.get("type").toString());
-//                            System.out.println(job.get("id").toString());
+                            System.out.println(job.get("type").toString());
+                            System.out.println(job.get("id").toString());
                             PUBGPlayer pubgPlayer = new PUBGPlayer();
                             pubgPlayerMap1.put(job.get("id").toString(), pubgPlayer);
                         }
@@ -463,17 +473,17 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
 
                 PUBGPlayer pubgPlayer = pubgPlayerMap.get(player);
 
-//                System.out.println("pubgTeam.getPubgTeamId() :" + pubgTeam.getPubgTeamId());
-//                System.out.println("pubgTeam.getPubgMatchesId() :" + pubgTeam.getPubgMatchesId());
-//                System.out.println("pubgTeam.getTeamName() :" + pubgTeam.getTeamName());
-//                System.out.println("pubgTeam.getTeamScore() :" + pubgTeam.getTeamScore());
-//                System.out.println("pubgPlayer.getPlayerScore() :" + pubgPlayer.getPlayerScore());
+                System.out.println("pubgTeam.getPubgTeamId() :" + pubgTeam.getPubgTeamId());
+                System.out.println("pubgTeam.getPubgMatchesId() :" + pubgTeam.getPubgMatchesId());
+                System.out.println("pubgTeam.getTeamName() :" + pubgTeam.getTeamName());
+                System.out.println("pubgTeam.getTeamScore() :" + pubgTeam.getTeamScore());
+                System.out.println("pubgPlayer.getPlayerScore() :" + pubgPlayer.getPlayerScore());
 
                 // 根据 account 查找 设置teamId
                 String account = pubgPlayer.getPubgPlayerId();
                 Member member = memberRepository.findMemberByPubgId(account);
                 List<TeamMember> teamMemberList = teamMemberRepository.findTeamMembersByMember(member);
-                if(teamMemberList.size() >= 0) {
+                if(teamMemberList.size() > 0) {
                     TeamMember teamMember = teamMemberList.get(0);
                     pubgTeam.setTeamName(teamMember.getTeam().getId().toString());
                 }
