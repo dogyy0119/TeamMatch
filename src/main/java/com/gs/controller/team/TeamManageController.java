@@ -2,7 +2,6 @@ package com.gs.controller.team;
 
 import cn.hutool.json.JSONObject;
 import com.gs.constant.enums.CodeEnum;
-import com.gs.model.dto.team.MemberRequestDTO;
 import com.gs.model.dto.team.TeamCreateDTO;
 import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
@@ -16,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -72,9 +70,9 @@ public class TeamManageController {
             return R.error(CodeEnum.IS_MEMBER_NOT_EXIST.getCode(), "创建战队失败:该用户不存在");
         }
 
-        if (teamService.existsByCreateMemberId(createMemberId)) {
+        if (teamService.isAleadyInTeam(createMemberId)) {
             log.error("createTeam：" + "创建战队失败:该用户已经创建过战队:" + createMemberId);
-            return R.error(CodeEnum.IS_ALREADY_CREATE_TEAM.getCode(), "创建战队失败:该用户已经创建过战队");
+            return R.error(CodeEnum.IS_ALEARY_IN_TEAM.getCode(), "您已经加入过战队");
         }
 
         return R.success(teamService.createTeam(createMemberId, teamCreateDTO));
@@ -181,7 +179,6 @@ public class TeamManageController {
 
         log.info("setSecondTeamLeader：" + "manageMemberId = " + manageMemberId + "teamMemberDTO = " + teamMemberDTO.toString());
         return R.result(teamService.setSecondTeamLeader(manageMemberId, teamMemberDTO));
-
     }
 
     @ApiOperation(value = "解除副队长")
@@ -205,6 +202,30 @@ public class TeamManageController {
 
     }
 
+    @ApiOperation(value = "获取禁言标志")
+    @RequestMapping(value = "/getSilentFlg", method = RequestMethod.GET)
+    public R getSilentFlg(
+            @RequestParam Long teamId,
+            @RequestParam Long memberId) {
+        log.info("getSilentFlg：" + "teamId = " + teamId + "memberId = " + memberId);
+
+        if (!memberService.existsById(memberId)) {
+            log.error("getSilentFlg：" + "获取禁言标志:该用户不存在:" + memberId);
+            return R.error(CodeEnum.IS_MEMBER_NOT_EXIST.getCode(), "该用户不存在");
+        }
+
+        if (!teamService.existById(teamId)){
+            log.error("getSilentFlg：" + "获取禁言标志:该战队不存在" + teamId);
+            return R.error(CodeEnum.IS_TEAM_NOT_EXIST.getCode(), "该战队不存在");
+        }
+
+        if (null == teamService.findTeamMemberByTeamIdAndMemberId(teamId, memberId)){
+            return R.error(CodeEnum.IS_MEMBER_NOT_IN_TEAM.getCode(), "该玩家不在该战队中");
+        }
+
+        return R.success(teamService.getSilentFlg(teamId, memberId));
+
+    }
     @ApiOperation(value = "解散战队")
     @RequestMapping(value = "/releaseTeam", method = RequestMethod.GET)
     public R releaseTeam(

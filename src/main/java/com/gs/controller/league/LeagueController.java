@@ -4,9 +4,7 @@ import com.gs.constant.enums.CodeEnum;
 import com.gs.model.dto.league.LeagueCreateDTO;
 import com.gs.model.dto.league.LeagueTeamDTO;
 import com.gs.model.dto.league.LeagueUpdateInfoDTO;
-import com.gs.model.entity.jpa.db1.league.LeagueRequest;
 import com.gs.model.vo.league.LeagueRequestVo;
-import com.gs.model.vo.team.MemberRequestVo;
 import com.gs.service.intf.league.LeagueRequestService;
 import com.gs.service.intf.league.LeagueService;
 import com.gs.utils.R;
@@ -41,9 +39,15 @@ public class LeagueController {
             @Validated @RequestBody LeagueCreateDTO leagueCreateDTO){
         log.info("createLeague：" + "leagueCreateDTO = " + leagueCreateDTO.toString());
 
-        if (leagueService.existsByCreateMemberId(leagueCreateDTO.getCreateMemberId())){
-            return R.error(CodeEnum.IS_ALREADY_CREATE_LEAGUE.getCode(), "创建战队失败:该用户已经创建过联盟");
+        if (leagueService.isAleadyInLeague(leagueCreateDTO.getCreateMemberId())){
+            return R.error(CodeEnum.IS_ALREADY_IN_LEAGUE.getCode(), "您已经在某个联盟中");
         }
+
+        
+        if (!leagueService.isHavePermission(leagueCreateDTO.getCreateMemberId())){
+            return R.error(CodeEnum.IS_CREATE_LEAGUE_ERROR.getCode(), "只有队长可以创建联盟");
+        }
+
         return R.success(leagueService.createLeague(leagueCreateDTO));
     }
 
@@ -69,7 +73,6 @@ public class LeagueController {
         }catch (Exception e) {
             return R.success("undefinded");
         }
-
     }
 
     @ApiOperation(value = "处理加入联盟的请求")

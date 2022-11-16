@@ -38,8 +38,8 @@ public class LeagueTeamServiceImpl implements LeagueTeamService {
     private LeagueTeamRepository leagueTeamRepository;
 
     @Override
-    public boolean existsByLeagueIdAndTeamId(Long leagueId, Long teamId){
-        return leagueTeamRepository.existsByLeagueIdAndTeamId(leagueId, teamId);
+    public boolean existsByTeamId(Long teamId){
+        return leagueTeamRepository.existsByTeamId(teamId);
     }
 
 }

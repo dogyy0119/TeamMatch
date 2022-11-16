@@ -10,5 +10,5 @@ import java.util.List;
 public interface LeagueTeamRepository extends JpaRepository<LeagueTeam, Long>, JpaSpecificationExecutor<LeagueTeam> {
     LeagueTeam findLeagueTeamByLeagueIdAndTeamId(Long leagueId, Long teamId);
     List<LeagueTeam> findLeagueTeamsByTeamId(Long teamId);
-    Boolean existsByLeagueIdAndTeamId(Long leagueId, Long teamId);
+    Boolean existsByTeamId(Long teamId);
 }
