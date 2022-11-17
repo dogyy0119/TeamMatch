@@ -127,7 +127,7 @@ public class PUBGMatchesController {
     @RequestMapping(value = "/getPUBGMatchesSortByMatchType", method = RequestMethod.GET)
     public R getPUBGMatchesSortByMatchType(
             @RequestParam Long memberId,
-            @RequestParam Long teamId,
+            @RequestParam(defaultValue = "0") Long teamId,
             @RequestParam String matchType,
             @RequestParam Integer pageNum,
             @RequestParam Integer pageSize) {

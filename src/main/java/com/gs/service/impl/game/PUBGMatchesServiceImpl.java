@@ -672,12 +672,14 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                     PersonOrder personOrder = personOrderRepository.findPersonOrderByDefMatchOrderAndMember(defMatchOrder, member);
                     if (personOrder != null) pubgMatchesVO.setIsLike(personOrder.getIsLike());
                 } else {
-                    DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
+                    if(teamId != 0) {
+                        DefMatchOrder defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
 //                    defMatchOrder = defMatchOrderRepository.findDefMatchOrderByDefMatchManageAndOrderId(defMatchManage, teamId);
-                    Team team = teamRepository.findTeamById(defMatchOrder.getOrderId());
-                    if (team != null) {
-                        List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
-                        if (teamOrderList.size() > 0) pubgMatchesVO.setIsLike(teamOrderList.get(0).getIsLike());
+                        Team team = teamRepository.findTeamById(defMatchOrder.getOrderId());
+                        if (team != null) {
+                            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrderAndMember(defMatchOrder, member);
+                            if (teamOrderList.size() > 0) pubgMatchesVO.setIsLike(teamOrderList.get(0).getIsLike());
+                        }
                     }
                 }
                 pubgMatchesVOS.add(pubgMatchesVO);
