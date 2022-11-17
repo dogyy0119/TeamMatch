@@ -1,6 +1,7 @@
 package com.gs.repository.jpa.team;
 
 import com.gs.model.entity.jpa.db1.team.MemberRequest;
+import com.gs.model.entity.jpa.db1.team.TeamRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,5 @@ public interface MemberRequestRepository extends JpaRepository<MemberRequest, Lo
 
     void deleteAllByTeamId(Long teamId);
     List<MemberRequest> findMemberRequestsByTeamId(Long teamId);
-
     MemberRequest findMemberRequestById(Long id);
 }

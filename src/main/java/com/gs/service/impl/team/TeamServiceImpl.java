@@ -7,8 +7,14 @@ import com.gs.convert.team.TeamToVoConvert;
 import com.gs.model.dto.team.TeamCreateDTO;
 import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
+import com.gs.model.entity.jpa.db1.league.LeagueRequest;
+import com.gs.model.entity.jpa.db1.league.LeagueTeam;
+import com.gs.model.entity.jpa.db1.league.LeagueTeamRequest;
 import com.gs.model.entity.jpa.db1.team.*;
 import com.gs.model.vo.team.TeamVo;
+import com.gs.repository.jpa.league.LeagueRequestRepository;
+import com.gs.repository.jpa.league.LeagueTeamRepository;
+import com.gs.repository.jpa.league.LeagueTeamRequestRepository;
 import com.gs.repository.jpa.team.*;
 import com.gs.service.intf.team.TeamService;
 import com.gs.utils.JpaUtil;
@@ -62,6 +68,11 @@ public class TeamServiceImpl implements TeamService {
     private MemberRequestRepository memberRequestRepository;
 
     private MessageRepository messageRepository;
+
+    private LeagueRequestRepository leagueRequestRepository;
+    private LeagueTeamRequestRepository leagueTeamRequestRepository;
+
+    private LeagueTeamRepository leagueTeamRepository;
 
     /**
      * 添加队务
@@ -878,6 +889,18 @@ public class TeamServiceImpl implements TeamService {
 
         List<TeamRequest> teamRequestList = teamRequestRepository.findTeamRequestsByTeamId(teamId);
         teamRequestRepository.deleteAll(teamRequestList);
+
+        List<MemberRequest> memberRequestList = memberRequestRepository.findMemberRequestsByTeamId(teamId);
+        memberRequestRepository.deleteAll(memberRequestList);
+
+        List<LeagueRequest> leagueRequestList = leagueRequestRepository.findLeagueRequestsByFromTeamId(teamId);
+        leagueRequestRepository.deleteAll(leagueRequestList);
+
+        List<LeagueTeam> leagueTeamList = leagueTeamRepository.findLeagueTeamsByTeamId(teamId);
+        leagueTeamRepository.deleteAll(leagueTeamList);
+
+        List<LeagueTeamRequest> leagueTeamRequestList = leagueTeamRequestRepository.findLeagueTeamRequestsByToTeamId(teamId);
+        leagueTeamRequestRepository.deleteAll(leagueTeamRequestList);
 
         return CodeEnum.IS_SUCCESS;
     }

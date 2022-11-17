@@ -82,6 +82,8 @@ public interface LeagueService {
             Long manageMemberId,
             LeagueTeamDTO leagueTeamDTO);
 
+    CodeEnum deleteLeagueTeamByTeamId(Long teamId);
+
     /**
      * 退出联盟
      *

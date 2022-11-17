@@ -432,6 +432,26 @@ public class LeagueServiceLmpl implements LeagueService {
         return CodeEnum.IS_SUCCESS;
     }
 
+    public CodeEnum deleteLeagueTeamByTeamId(Long teamId){
+        List<LeagueTeam> leagueTeamList = leagueTeamRepository.findLeagueTeamsByTeamId(teamId);
+
+        for (LeagueTeam leagueTeam : leagueTeamList){
+            League league = leagueTeam.getLeague();
+            //删除战队
+            league.getLeagueTeams().removeIf(leagueTeam1 -> {
+
+                if (Objects.equals(leagueTeam1.getTeamId(), teamId)) {
+                    return true;
+                }
+                return false;
+            });
+
+            leagueRepository.save(league);
+
+        }
+
+        return CodeEnum.IS_SUCCESS;
+    }
     /**
      * 退出联盟
      *

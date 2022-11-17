@@ -10,5 +10,7 @@ public interface LeagueTeamRequestRepository extends JpaRepository<LeagueTeamReq
 
     boolean existsByLeagueIdAndToTeamIdAndTypeAndStatus(Long leagueId, Long toTeamId, Integer type, Integer status);
     List<LeagueTeamRequest> findLeagueRequestsByLeagueId(Long leagueId);
+
+    List<LeagueTeamRequest> findLeagueTeamRequestsByToTeamId(Long toTeamId);
     LeagueTeamRequest findLeagueTeamRequestById(Long id);
 }

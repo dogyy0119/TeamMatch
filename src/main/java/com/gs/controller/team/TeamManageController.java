@@ -7,6 +7,7 @@ import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
 import com.gs.model.vo.team.MemberRequestVo;
 import com.gs.service.intf.def.DefMatchOrderService;
+import com.gs.service.intf.league.LeagueService;
 import com.gs.service.intf.team.*;
 import com.gs.utils.HttpUtils;
 import com.gs.utils.R;
@@ -53,6 +54,9 @@ public class TeamManageController {
 
     @Autowired
     DefMatchOrderService defMatchOrderService;
+
+    @Resource
+    LeagueService leagueService;
 
 
     /**
@@ -249,6 +253,7 @@ public class TeamManageController {
         if(codeEnum.equals(CodeEnum.IS_SUCCESS)) {
             HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/dismissteam/logout?teamId=" + teamId, json.toString(), null);
             defMatchOrderService.deleteByTeamId(teamId);
+            leagueService.deleteLeagueTeamByTeamId(teamId);
         }
         return R.result(codeEnum);
 
