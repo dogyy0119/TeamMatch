@@ -341,4 +341,12 @@ public class DefMatchOrderController {
 
         return R.success( jsonArray );
     }
-}
+
+    @ApiOperation(value = "删除战队报名信息")
+    @RequestMapping(value = "/deleteMatchOrderByTeamId", method = RequestMethod.GET)
+    public R deleteMatchOrderByTeamId(
+            @RequestParam Long teamId ) {
+            defMatchOrderService.deleteByTeamId(teamId);
+            return R.success();
+        }
+    }

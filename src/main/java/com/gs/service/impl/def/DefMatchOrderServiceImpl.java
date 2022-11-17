@@ -5,10 +5,7 @@ import com.gs.convert.DefMatchOrderConvert;
 import com.gs.model.dto.def.DefMatchDTO;
 import com.gs.model.dto.def.DefMatchOrderDTO;
 import com.gs.model.dto.def.DefMatchOrderQuery;
-import com.gs.model.entity.jpa.db1.def.DefMatch;
-import com.gs.model.entity.jpa.db1.def.DefMatchManage;
-import com.gs.model.entity.jpa.db1.def.DefMatchOrder;
-import com.gs.model.entity.jpa.db1.def.PersonOrder;
+import com.gs.model.entity.jpa.db1.def.*;
 import com.gs.model.entity.jpa.db1.team.Member;
 import com.gs.model.entity.jpa.db1.team.Team;
 import com.gs.repository.jpa.def.*;
@@ -52,6 +49,9 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private TeamOrderRepository teamOrderRepository;
 
     @Autowired
     private PersonOrderRepository personOrderRepository;
@@ -151,6 +151,18 @@ public class DefMatchOrderServiceImpl implements DefMatchOrderService {
         Optional<DefMatchOrder> optionalNews = defMatchOrderRepository.findById(id);
         if(optionalNews.isPresent()){
             defMatchOrderRepository.deleteById(id);
+        }
+    }
+
+    @Override
+    public void deleteByTeamId(Long teamId) {
+        List<DefMatchOrder> defMatchOrders = defMatchOrderRepository.findDefMatchOrderByModeAndOrderId(1, teamId);
+        for (DefMatchOrder defMatchOrder : defMatchOrders) {
+            List<TeamOrder> teamOrderList = teamOrderRepository.findTeamOrderByDefMatchOrder(defMatchOrder);
+            for (TeamOrder teamOrder : teamOrderList) {
+                teamOrderRepository.delete(teamOrder);
+            }
+            defMatchOrderRepository.delete(defMatchOrder);
         }
     }
 

@@ -42,6 +42,12 @@ public interface DefMatchOrderService {
      */
     void delete(Long id);
 
+    /**
+     * 删除 teamId 比赛
+     * @param  teamId
+     */
+    void deleteByTeamId(Long teamId);
+
     List<DefMatchOrderDTO> getMatchOrderPage(DefMatchOrderQuery defMatchOrderQuery,
                                              Integer pageNum,
                                              Integer pageSize);

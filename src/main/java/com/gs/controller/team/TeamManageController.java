@@ -6,6 +6,7 @@ import com.gs.model.dto.team.TeamCreateDTO;
 import com.gs.model.dto.team.TeamMemberDTO;
 import com.gs.model.dto.team.TeamUpdateInfoDTO;
 import com.gs.model.vo.team.MemberRequestVo;
+import com.gs.service.intf.def.DefMatchOrderService;
 import com.gs.service.intf.team.*;
 import com.gs.utils.HttpUtils;
 import com.gs.utils.R;
@@ -13,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,6 +50,9 @@ public class TeamManageController {
 
     @Resource
     MemberRequestService memberRequestService;
+
+    @Autowired
+    DefMatchOrderService defMatchOrderService;
 
 
     /**
@@ -239,8 +244,13 @@ public class TeamManageController {
 
         JSONObject json = new JSONObject(requestMap);
 
-        HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/dismissteam/logout?teamId=" + teamId , json.toString(), null);
-        return R.result(teamService.releaseTeam(manageMemberId, teamId));
+
+        CodeEnum codeEnum = teamService.releaseTeam(manageMemberId, teamId);
+        if(codeEnum.equals(CodeEnum.IS_SUCCESS)) {
+            HttpUtils.doPost("http://127.0.0.1:8083/game/v1.0/paycenter/dismissteam/logout?teamId=" + teamId, json.toString(), null);
+            defMatchOrderService.deleteByTeamId(teamId);
+        }
+        return R.result(codeEnum);
 
     }
 
