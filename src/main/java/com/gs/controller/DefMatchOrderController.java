@@ -262,6 +262,10 @@ public class DefMatchOrderController {
 
         List<DefMatchDTO> defMatchDTOList = defMatchOrderService.getMatchPage( 1, teamId, status, pageNum, pageSize );
 
+        if(defMatchDTOList.size() == 0) {
+            return R.success();
+        }
+
         List<DefMatchDTO> defMatchDTOS = new ArrayList<>();
         for (DefMatchDTO entity : defMatchDTOList){
             // 过期的比赛不显示
