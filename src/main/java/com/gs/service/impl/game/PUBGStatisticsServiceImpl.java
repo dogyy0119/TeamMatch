@@ -714,8 +714,8 @@ public class PUBGStatisticsServiceImpl implements PUBGStatisticsService {
         if( pubgId==null || pubgId.equals("") || matchId==null || matchId.equals("") ) {
             return false;
         }
-        PUBGMatchData pubgMatchData = pubgMatchDataRepository.findPUBGMatchDataByPubgIdAndMatchId(pubgId,matchId);
-        if (pubgMatchData != null) {
+        List<PUBGMatchData> pubgMatchDataList = pubgMatchDataRepository.findPUBGMatchDataByPubgIdAndMatchId(pubgId,matchId);
+        if (pubgMatchDataList.size() > 0) {
             return false;
         }
 
@@ -731,7 +731,7 @@ public class PUBGStatisticsServiceImpl implements PUBGStatisticsService {
             mdyFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
             date = mdyFormat.parse(createAt);
         }
-        pubgMatchData = new PUBGMatchData();
+        PUBGMatchData pubgMatchData = new PUBGMatchData();
         pubgMatchData.setPubgId(pubgId);
         pubgMatchData.setMatchId(matchId);
         pubgMatchData.setData(result.get("data"));

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface PUBGMatchDataRepository extends JpaRepository<PUBGMatchData, Long>, JpaSpecificationExecutor<PUBGMatchData> {
-    PUBGMatchData findPUBGMatchDataByPubgIdAndMatchId(String pubgId, String matchId);
+    List<PUBGMatchData> findPUBGMatchDataByPubgIdAndMatchId(String pubgId, String matchId);
 
     List<PUBGMatchData> findPUBGMatchDataByPubgId(String pubgId);
 }
