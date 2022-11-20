@@ -16,7 +16,7 @@ public interface PUBGTeamRepository extends JpaRepository<PUBGTeam, String>, Jpa
 
     PUBGTeam findPUBGTeamByPubgMatchesIdAndTeamMembers(PUBGMatches pubgMatches, PUBGPlayer pubgPlayer);
 
-    PUBGTeam findPUBGTeamByIndexAndAndPubgMatchesId(Integer index, String pubgMatchesId);
+    PUBGTeam findPUBGTeamByIndexAndAndPubgMatchesId(Integer index, PUBGMatches pubgMatches);
 
 //    @Query(value = "SELECT top 1 B.pubgTeamId FROM t_pubg_team B where (B.pubgMatchesId =:vin) order by B.teamScore desc")
 //    String findPUBGTeamScoreMost(@Param("vin")String vin);

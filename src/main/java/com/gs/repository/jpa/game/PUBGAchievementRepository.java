@@ -9,4 +9,6 @@ import java.util.List;
 public interface PUBGAchievementRepository extends JpaRepository<PUBGAchievement, Long>, JpaSpecificationExecutor<PUBGAchievement> {
 
     List<PUBGAchievement> findPUBGAchievementByTeamId(Long teamId);
+
+    PUBGAchievement findPUBGAchievementByDefMatchIdAndAndDefMatchIndex(Long defMatchID, Integer defMatchIndex);
 }

@@ -188,4 +188,10 @@ public class PUBGMatchesController {
         return R.success( pubgMatchesService.getTeamSuccessByTeamId(teamId) );
     }
 
+    @ApiOperation(value = "查询战队成就")
+    @RequestMapping(value = "/findTopScoreTeamByDefMatchId", method = RequestMethod.POST)
+    public R findTopScoreTeamByDefMatchId(
+            @RequestParam Long defMatchId) {
+        return R.success( pubgMatchesService.findTopScoreTeamByDefMatchId(defMatchId) );
+    }
 }

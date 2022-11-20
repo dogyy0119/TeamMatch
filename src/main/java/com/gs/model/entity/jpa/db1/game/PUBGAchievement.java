@@ -21,6 +21,12 @@ public class PUBGAchievement {
     @Column(name = "defMatchId")
     private Long defMatchId;
 
+    @Column(name = "defMatchIndex")
+    private Integer defMatchIndex;
+
+    @Column(name = "pubgTeamId")
+    private String pubgTeamId;
+
     @Column(name = "teamId")
     private Long teamId;
 

@@ -456,6 +456,7 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
             String pubgteam = entry.getKey();
 
             PUBGTeam pubgTeam = new PUBGTeam();
+
             pubgTeam.setPubgTeamId(pubgteam);
             pubgTeam.setIndex(teamIndexMap.get(pubgteam));
             if (rank.get(pubgTeam.getIndex()) == null) {
@@ -486,6 +487,11 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 if (teamMemberList.size() > 0) {
                     TeamMember teamMember = teamMemberList.get(0);
                     pubgTeam.setTeamName(teamMember.getTeam().getId().toString());
+                    Team team = teamMember.getTeam();
+                    if(team != null) {
+                        logger.info(" Team info name:" + team.getName() + "; Id" +team.getId());
+                        pubgTeam.setTeamId(team.getId());
+                    }
                 }
 
                 pubgTeam.setTeamScore(pubgTeam.getTeamScore() + pubgPlayer.getPlayerScore());
@@ -1031,9 +1037,12 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
     public PUBGTeam findTopScoreTeamByDefMatchId(Long defMatchId) {
         List<PUBGMatches> pubgMatchesList = pubgMatchesRepository.findPUBGMatchesByDefMatchId(defMatchId);
 
+        logger.info(" findTopScoreTeamByDefMatchId  pubgMatchesList size:" + pubgMatchesList.size());
+
         for (PUBGMatches pubgMatches : pubgMatchesList) {
+            logger.info(" findTopScoreTeamByDefMatchId  pubgMatches PubgMatchesId :" + pubgMatches.getPubgMatchesId() );
 //            String pubgTeamId = pubgTeamRepository.findPUBGTeamScoreMost(pubgMatches.getPubgMatchesId());
-            PUBGTeam pubgTeam = pubgTeamRepository.findPUBGTeamByIndexAndAndPubgMatchesId(1, pubgMatches.getPubgMatchesId());
+            PUBGTeam pubgTeam = pubgTeamRepository.findPUBGTeamByIndexAndAndPubgMatchesId(1, pubgMatches);
 //            if( pubgTeamId==null || pubgTeamId.equals("")) {
 //                logger.info( "findTopScoreTeamByDefMatchId pubgTeamId is null " );
 //                continue;
@@ -1043,6 +1052,8 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 logger.info("findTopScoreTeamByDefMatchId pubgTeam is null ");
                 continue;
             }
+            logger.info(" findTopScoreTeamByDefMatchId  PubgTeamId :" + pubgTeam.getPubgTeamId() );
+            logger.info(" findTopScoreTeamByDefMatchId  TeamId:" + pubgTeam.getTeamId() );
 
             DefMatch defMatch = defMatchRepository.findDefMatchById(pubgTeam.getPubgMatchesId().getDefMatchId());
             if (defMatch == null) {
@@ -1050,12 +1061,14 @@ public class PUBGMatchesServiceImpl implements PUBGMatchesService {
                 continue;
             }
 
-            List<PUBGAchievement> pubgAchievements = pubgAchievementRepository.findPUBGAchievementByTeamId(pubgTeam.getTeamId());
-            if (pubgAchievements.size() == 0) {
-                PUBGAchievement pubgAchievement = new PUBGAchievement();
+            PUBGAchievement pubgAchievement = pubgAchievementRepository.findPUBGAchievementByDefMatchIdAndAndDefMatchIndex(pubgMatches.getDefMatchId(), pubgMatches.getDefMatchIndex());
+            if (pubgAchievement == null) {
+                pubgAchievement = new PUBGAchievement();
                 pubgAchievement.setDefMatchId(pubgTeam.getPubgMatchesId().getDefMatchId());
+                pubgAchievement.setDefMatchIndex(pubgMatches.getDefMatchIndex());
+                pubgAchievement.setPubgTeamId(pubgTeam.getPubgTeamId());
                 pubgAchievement.setTeamId(pubgTeam.getTeamId());
-                pubgAchievement.setName(defMatch.getName() + " ：第" + pubgTeam.getPubgMatchesId().getDefMatchIndex() + "场");
+                pubgAchievement.setName(defMatch.getName() + " ：第" + pubgMatches.getDefMatchIndex() + "场");
                 pubgAchievement.setGameIndex(1);
                 pubgAchievement.setGameLogo(defMatch.getGameLogo());
                 pubgAchievement.setMatchType(defMatch.getMatchType());
