@@ -328,7 +328,18 @@ public class TeamMessageServer {
             ConcurrentHashMap<Long, TeamMessageServer> memberSocketMap = webTeamSocketMap.get(userId);
             for (TeamMessageServer entry : memberSocketMap.values()) {
                 if (!Objects.equals(entry.userId, this.userId)) {
-                    entry.sendMessage("Heat beat!");
+
+                    MessageVo messageVo = new MessageVo();
+                    messageVo.setTeamId(teamId);
+                    messageVo.setToId(userId);
+                    messageVo.setType(10);
+                    messageVo.setContent("Heat beat!");
+
+                    try {
+                        entry.sendMessage(messageVo);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

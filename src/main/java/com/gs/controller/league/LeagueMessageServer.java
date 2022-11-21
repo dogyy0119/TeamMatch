@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gs.controller.team.TeamMessageServer;
 import com.gs.model.dto.league.LeagueMessageDto;
 import com.gs.model.vo.league.LeagueMessageVo;
+import com.gs.model.vo.team.MessageVo;
 import com.gs.service.intf.league.LeagueMessageService;
 import com.gs.service.intf.team.MemberService;
 import com.gs.utils.SpringUtil;
@@ -287,7 +288,18 @@ public class LeagueMessageServer {
             ConcurrentHashMap<Long, LeagueMessageServer> memberSocketMap = webLeagueSocketMap.get(leagueId);
             for (LeagueMessageServer entry : memberSocketMap.values()) {
                 if (!Objects.equals(entry.leagueId, this.leagueId)) {
-                    entry.sendMessage("Heat beat!");
+
+                    LeagueMessageVo messageVo = new LeagueMessageVo();
+                    messageVo.setLeagueId(leagueId);
+                    messageVo.setToId(userId);
+                    messageVo.setType(10);
+                    messageVo.setContent("Heat beat!");
+
+                    try {
+                        entry.sendMessage(messageVo);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
